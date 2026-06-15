@@ -1,0 +1,7 @@
+interface:
+  display_name: "Research Monthly"
+  short_description: "生成最近一个月领域调研月报"
+  brand_color: "#D97706"
+  default_prompt: "Use $research-monthly to review the last month of progress in a research domain."
+policy:
+  allow_implicit_invocation: true

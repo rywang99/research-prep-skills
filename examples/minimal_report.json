@@ -1,0 +1,114 @@
+{
+  "topic": "自动化调研 Agent",
+  "topic_slug": "auto-research-agent",
+  "mode": "weekly",
+  "snapshot_date": "2026-06-15",
+  "time_window": {
+    "label": "最近 7 天",
+    "start": "2026-06-09",
+    "end": "2026-06-15"
+  },
+  "topic_profile": {
+    "aliases": ["research agent", "deep research", "automated research"],
+    "subtopics": ["query planning", "source grounding", "report generation"],
+    "broader_terms": ["AI agent", "information retrieval"],
+    "exclusions": ["market research only"],
+    "likely_sources": ["arXiv", "GitHub", "official blogs"]
+  },
+  "queries": [
+    {"query": "automated research agent GitHub latest", "purpose": "追踪开源项目", "source": "web"},
+    {"query": "deep research agent arXiv", "purpose": "查找论文和综述", "source": "web"}
+  ],
+  "summary_judgments": [
+    {
+      "title": "调研 Agent 正在从单轮搜索转向多阶段工作流",
+      "body": "规划、检索、证据归并、报告生成和复核逐步拆分为稳定模块。",
+      "tone": "green",
+      "sources": ["src-gptr"]
+    },
+    {
+      "title": "可追溯来源仍是报告可信度核心",
+      "body": "没有来源链接和访问日期的自动报告难以用于严肃研究决策。",
+      "tone": "amber",
+      "sources": ["src-policy"]
+    }
+  ],
+  "metrics": [
+    {"label": "来源", "value": "2", "note": "样例来源数"},
+    {"label": "发现", "value": "2", "note": "样例核心发现"},
+    {"label": "热词", "value": "2", "note": "样例关键词"},
+    {"label": "趋势", "value": "1", "note": "样例趋势聚类"}
+  ],
+  "findings": [
+    {
+      "title": "多阶段研究流水线成为主流组织方式",
+      "date": "2026-06-15",
+      "category": "repo",
+      "summary": "开源研究 Agent 通常将问题拆解、检索、总结和报告生成分离。",
+      "importance": "便于在 skills 中复用不同时间窗口和分析模式。",
+      "confidence": "medium",
+      "source_ids": ["src-gptr"],
+      "tags": ["workflow", "agent"]
+    }
+  ],
+  "keywords": [
+    {
+      "term": "source-grounded report",
+      "aliases": ["evidence-grounded report", "cited report"],
+      "meaning": "所有关键判断都有可回溯来源支撑的自动报告。",
+      "frequency_signal": "medium",
+      "growth_signal": "sustained",
+      "source_spread": "cross-domain",
+      "evidence_count": 2,
+      "source_ids": ["src-policy", "src-gptr"]
+    }
+  ],
+  "trend_clusters": [
+    {
+      "name": "从搜索工具到调研流水线",
+      "thesis": "自动化调研正在从简单 web search 包装演进为可审计的多阶段 agent workflow。",
+      "drivers": ["LLM tool use", "长上下文", "结构化报告需求"],
+      "evidence_strength": "medium",
+      "maturity": "fast-growing",
+      "opportunities": ["沉淀本地知识库", "按时间窗口复用模板"],
+      "risks": ["检索偏差", "来源过期"],
+      "watchpoints": ["是否能稳定复核来源和日期"],
+      "source_ids": ["src-gptr"]
+    }
+  ],
+  "sections": [
+    {
+      "title": "使用建议",
+      "tone": "blue",
+      "items": ["首轮使用周调研建立基线，再按日调研跟踪突发更新。"]
+    }
+  ],
+  "risks": ["这是样例报告，不能替代真实联网调研。"],
+  "next_queries": ["deep research agent benchmark", "automated literature review agent"],
+  "sources": [
+    {
+      "id": "src-gptr",
+      "title": "GPT Researcher",
+      "url": "https://github.com/assafelovic/gpt-researcher",
+      "source_type": "repo",
+      "published_at": "date_unknown",
+      "accessed_at": "2026-06-15",
+      "authors_or_org": "GPT Researcher contributors",
+      "summary": "开源深度调研 Agent 项目，用作工作流设计参考。",
+      "tags": ["agent", "research"],
+      "confidence": "medium"
+    },
+    {
+      "id": "src-policy",
+      "title": "Local Auto Research Source Policy",
+      "url": ".agents/skills/auto-research-common/references/source_policy.md",
+      "source_type": "other",
+      "published_at": "2026-06-15",
+      "accessed_at": "2026-06-15",
+      "authors_or_org": "local skill library",
+      "summary": "本地调研 skill 的来源优先级和置信度规则。",
+      "tags": ["policy"],
+      "confidence": "high"
+    }
+  ]
+}

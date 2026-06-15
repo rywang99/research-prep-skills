@@ -1,0 +1,7 @@
+interface:
+  display_name: "Yearly Trends"
+  short_description: "分析近一年领域研究趋势"
+  brand_color: "#DC2626"
+  default_prompt: "Use $research-yearly-trends to analyze the last year's trends in a research domain."
+policy:
+  allow_implicit_invocation: true

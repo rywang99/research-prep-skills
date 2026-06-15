@@ -1,0 +1,7 @@
+interface:
+  display_name: "Yearly Hotwords"
+  short_description: "分析近一年领域研究热词"
+  brand_color: "#7C3AED"
+  default_prompt: "Use $research-yearly-hotwords to mine the last year's hot research terms for a domain."
+policy:
+  allow_implicit_invocation: true

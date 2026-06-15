@@ -1,0 +1,7 @@
+interface:
+  display_name: "Auto Research Common"
+  short_description: "调研报告模板、schema 与渲染工具"
+  brand_color: "#475569"
+  default_prompt: "Use $auto-research-common to render or validate an auto-research report JSON."
+policy:
+  allow_implicit_invocation: true

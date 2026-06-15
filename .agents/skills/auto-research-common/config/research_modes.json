@@ -1,0 +1,59 @@
+{
+  "modes": {
+    "daily": {
+      "label": "日调研",
+      "skill": "research-daily",
+      "default_window_days": 1,
+      "description": "今日或最近 24 小时动态"
+    },
+    "weekly": {
+      "label": "周调研",
+      "skill": "research-weekly",
+      "default_window_days": 7,
+      "description": "最近 7 天论文、项目和产业动态"
+    },
+    "monthly": {
+      "label": "月调研",
+      "skill": "research-monthly",
+      "default_window_days": 30,
+      "description": "最近 30 天阶段性综述"
+    },
+    "yearly-hotwords": {
+      "label": "近一年热词分析",
+      "skill": "research-yearly-hotwords",
+      "default_window_days": 365,
+      "description": "近一年研究热词、增长信号和代表证据"
+    },
+    "yearly-trends": {
+      "label": "近一年趋势分析",
+      "skill": "research-yearly-trends",
+      "default_window_days": 365,
+      "description": "近一年趋势聚类、驱动因素、机会和风险"
+    }
+  },
+  "nav_sections": [
+    {"anchor": "overview", "label": "总览"},
+    {"anchor": "findings", "label": "核心发现"},
+    {"anchor": "keywords", "label": "研究热词"},
+    {"anchor": "trends", "label": "趋势聚类"},
+    {"anchor": "analysis", "label": "补充分析"},
+    {"anchor": "risks", "label": "风险与限制"},
+    {"anchor": "next", "label": "后续追踪"},
+    {"anchor": "queries", "label": "检索式"},
+    {"anchor": "refs", "label": "参考来源"}
+  ],
+  "source_types": {
+    "paper": "论文",
+    "repo": "代码",
+    "blog": "博客",
+    "news": "新闻",
+    "benchmark": "评测",
+    "dataset": "数据集",
+    "standard": "标准",
+    "community": "社区",
+    "product": "产品",
+    "signal": "信号",
+    "other": "其他"
+  },
+  "tones": ["blue", "green", "amber", "red", "purple"]
+}

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Research Daily"
+  short_description: "生成今日/24 小时领域动态报告"
+  brand_color: "#0EA5E9"
+  default_prompt: "Use $research-daily to scan today's latest updates for a research domain."
+policy:
+  allow_implicit_invocation: true

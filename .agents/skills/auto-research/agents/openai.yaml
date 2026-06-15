@@ -1,0 +1,7 @@
+interface:
+  display_name: "Auto Research"
+  short_description: "自动扩展领域并生成 HTML 调研报告"
+  brand_color: "#2563EB"
+  default_prompt: "Use $auto-research to research the latest progress in a domain and generate a sourced HTML report."
+policy:
+  allow_implicit_invocation: true

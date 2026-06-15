@@ -1,0 +1,7 @@
+interface:
+  display_name: "Research Weekly"
+  short_description: "生成最近一周领域调研周报"
+  brand_color: "#059669"
+  default_prompt: "Use $research-weekly to produce a sourced weekly research report for a domain."
+policy:
+  allow_implicit_invocation: true

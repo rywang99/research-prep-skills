@@ -5,18 +5,21 @@
 ## 能力概览
 
 - `auto-research`：总控入口，按用户意图自动路由到合适的调研模式。
-- `research-daily`：今日或最近 24 小时动态追踪。
-- `research-weekly`：最近 7 天论文、开源项目、产品和产业信号周报。
+- `research-daily`：今日或最近 24 小时动态追踪，默认不生成研究热词/趋势聚类。
+- `research-weekly`：最近 7 天论文、开源项目、产品和产业信号周报，默认不生成研究热词/趋势聚类。
 - `research-monthly`：最近 30 天阶段性综述。
 - `research-yearly-hotwords`：近一年研究热词、增长信号和代表证据分析。
 - `research-yearly-trends`：近一年趋势聚类、驱动因素、机会和风险分析。
+- `paper-trace`：针对单篇论文生成技术溯源、重点阅读信号和复现风险 HTML。
 - `scripts/collect_sources.py`：从无密钥公共 API 采集候选来源，生成可复用 JSONL。
+- `scripts/trace_report_papers.py`：为日/周调研自动嵌入所有区间内文献的折叠 trace。
 
 ## 目录结构
 
 ```text
 .agents/skills/auto-research/              # 调研总控 skill
 .agents/skills/research-*/                 # 各调研模式的 skill 指令
+.agents/skills/paper-trace/                # 单篇论文技术溯源 skill
 .agents/skills/auto-research-common/       # 共享配置、模板、schema、渲染脚本
 examples/                                  # 示例报告和采集结果 fixture
 scripts/                                   # 仓库级校验和脚手架工具
@@ -55,6 +58,23 @@ python3 scripts/collect_sources.py \
 
 采集脚本默认使用 arXiv、OpenAlex 和 GitHub Search 等无密钥来源；如设置 `GITHUB_TOKEN`，GitHub 请求限额会更高。未传 `--output` 时，结果写入 `knowledge_base/<topic_slug>/collected_sources.jsonl`。
 
+单篇论文技术溯源：
+
+```bash
+python3 scripts/trace_single_paper.py \
+  --paper "2606.13095" \
+  --topic "多说话人语音识别"
+```
+
+周报/日报在渲染前自动执行论文 trace：
+
+```bash
+python3 scripts/trace_report_papers.py \
+  --report reports/<topic_slug>/YYYY-MM-DD_weekly.json
+```
+
+论文 trace 会以默认 `--jobs 8` 并发执行，并嵌入 HTML 的可折叠区块；不会缓存 PDF，也不会写回 PDF 注释。
+
 新增调研模式示例：
 
 ```bash
@@ -76,11 +96,16 @@ python3 scripts/new_research_mode.py quarterly \
 使用 $research-yearly-trends 分析“具身智能大模型”近一年研究趋势、机会和风险，生成中文 HTML 趋势报告。
 ```
 
+```text
+使用 $paper-trace 分析论文 arXiv:2606.13095 的技术脉络、实验协议和复现风险，生成中文 HTML。
+```
+
 更多提示词示例见 `PROMPTS.md`。
 
 ## 输出与隐私
 
 - 默认报告路径：`reports/<topic_slug>/YYYY-MM-DD_<mode>.html`。
+- 单篇论文 trace 默认路径：`reports/paper-trace/<YYYY-MM-DD>_<paper_slug>.html`。
 - 默认知识库路径：`knowledge_base/<topic_slug>/`。
 - `reports/*` 和 `knowledge_base/*` 已在 `.gitignore` 中忽略，只保留 `.gitkeep` 占位文件，避免把个人调研报告、来源列表、运行记录提交到 Git。
 - 不要提交 API Key、浏览器 Cookie、私有源导出或其他敏感材料。

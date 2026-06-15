@@ -20,6 +20,8 @@ REQUIRED_BASE = {
 CONFIG_PATH = SKILLS / "auto-research-common" / "config" / "research_modes.json"
 COLLECTED_FIXTURE = ROOT / "examples" / "collected_sources.jsonl"
 COLLECTOR_PATH = ROOT / "scripts" / "collect_sources.py"
+TRACE_REPORT_PATH = ROOT / "scripts" / "trace_report_papers.py"
+TRACE_SINGLE_PATH = ROOT / "scripts" / "trace_single_paper.py"
 REQUIRED_SOURCE_FIELDS = {
     "id",
     "title",
@@ -128,14 +130,33 @@ def main() -> int:
             fail(f"missing {openai_yaml}")
     json.loads((ROOT / "examples" / "minimal_report.json").read_text(encoding="utf-8"))
     validate_collected_sources_fixture()
+    for path in (TRACE_REPORT_PATH, TRACE_SINGLE_PATH):
+        if not path.exists():
+            fail(f"missing {path}")
     with tempfile.TemporaryDirectory(prefix="auto-research-validate-") as tmp:
         tmpdir = Path(tmp)
+        traced_report = tmpdir / "traced_report.json"
+        subprocess.run(
+            [
+                sys.executable,
+                str(TRACE_REPORT_PATH),
+                "--report",
+                str(ROOT / "examples" / "minimal_report.json"),
+                "--output",
+                str(traced_report),
+            ],
+            cwd=ROOT,
+            check=True,
+        )
+        traced_data = json.loads(traced_report.read_text(encoding="utf-8"))
+        if not traced_data.get("paper_traces"):
+            fail("trace_report_papers did not embed paper_traces")
         subprocess.run(
             [
                 sys.executable,
                 str(SKILLS / "auto-research-common" / "scripts" / "render_report.py"),
                 "--input",
-                str(ROOT / "examples" / "minimal_report.json"),
+                str(traced_report),
                 "--output",
                 str(tmpdir / "demo_weekly.html"),
                 "--update-kb",
@@ -147,8 +168,31 @@ def main() -> int:
         )
         if not (tmpdir / "demo_weekly.html").exists():
             fail("renderer did not create HTML output")
+        html_text = (tmpdir / "demo_weekly.html").read_text(encoding="utf-8")
+        if 'id="paper-traces"' not in html_text or '<details class="trace-card">' not in html_text:
+            fail("renderer did not create collapsible paper trace section")
         if not any((tmpdir / "knowledge_base").rglob("runs.jsonl")):
             fail("renderer did not create temporary knowledge-base run records")
+        subprocess.run(
+            [
+                sys.executable,
+                str(TRACE_SINGLE_PATH),
+                "--paper",
+                "Validation Paper Title",
+                "--output-json",
+                str(tmpdir / "single_trace.json"),
+                "--output-html",
+                str(tmpdir / "single_trace.html"),
+                "--kb-root",
+                str(tmpdir / "paper_trace_kb"),
+            ],
+            cwd=ROOT,
+            check=True,
+        )
+        if not (tmpdir / "single_trace.html").exists():
+            fail("trace_single_paper did not create HTML output")
+        if not any((tmpdir / "paper_trace_kb").rglob("runs.jsonl")):
+            fail("trace_single_paper did not update temporary knowledge base")
     print("skills validation passed")
     return 0
 

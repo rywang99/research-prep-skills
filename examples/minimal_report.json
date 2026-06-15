@@ -9,35 +9,75 @@
     "end": "2026-06-15"
   },
   "topic_profile": {
-    "aliases": ["research agent", "deep research", "automated research"],
-    "subtopics": ["query planning", "source grounding", "report generation"],
-    "broader_terms": ["AI agent", "information retrieval"],
-    "exclusions": ["market research only"],
-    "likely_sources": ["arXiv", "GitHub", "official blogs"]
+    "aliases": [
+      "research agent",
+      "deep research",
+      "automated research"
+    ],
+    "subtopics": [
+      "query planning",
+      "source grounding",
+      "report generation"
+    ],
+    "broader_terms": [
+      "AI agent",
+      "information retrieval"
+    ],
+    "exclusions": [
+      "market research only"
+    ],
+    "likely_sources": [
+      "arXiv",
+      "GitHub",
+      "official blogs"
+    ]
   },
   "queries": [
-    {"query": "automated research agent GitHub latest", "purpose": "追踪开源项目", "source": "web"},
-    {"query": "deep research agent arXiv", "purpose": "查找论文和综述", "source": "web"}
+    {
+      "query": "automated research agent GitHub latest",
+      "purpose": "追踪开源项目",
+      "source": "web"
+    },
+    {
+      "query": "deep research agent arXiv",
+      "purpose": "查找论文和综述",
+      "source": "web"
+    }
   ],
   "summary_judgments": [
     {
       "title": "调研 Agent 正在从单轮搜索转向多阶段工作流",
       "body": "规划、检索、证据归并、报告生成和复核逐步拆分为稳定模块。",
       "tone": "green",
-      "sources": ["src-gptr"]
+      "sources": [
+        "src-gptr"
+      ]
     },
     {
       "title": "可追溯来源仍是报告可信度核心",
       "body": "没有来源链接和访问日期的自动报告难以用于严肃研究决策。",
       "tone": "amber",
-      "sources": ["src-policy"]
+      "sources": [
+        "src-policy"
+      ]
     }
   ],
   "metrics": [
-    {"label": "来源", "value": "2", "note": "样例来源数"},
-    {"label": "发现", "value": "2", "note": "样例核心发现"},
-    {"label": "热词", "value": "2", "note": "样例关键词"},
-    {"label": "趋势", "value": "1", "note": "样例趋势聚类"}
+    {
+      "label": "来源",
+      "value": "3",
+      "note": "样例来源数，含论文 trace fixture"
+    },
+    {
+      "label": "发现",
+      "value": "2",
+      "note": "样例核心发现"
+    },
+    {
+      "label": "论文溯源",
+      "value": "1",
+      "note": "样例折叠分析"
+    }
   ],
   "findings": [
     {
@@ -47,45 +87,48 @@
       "summary": "开源研究 Agent 通常将问题拆解、检索、总结和报告生成分离。",
       "importance": "便于在 skills 中复用不同时间窗口和分析模式。",
       "confidence": "medium",
-      "source_ids": ["src-gptr"],
-      "tags": ["workflow", "agent"]
-    }
-  ],
-  "keywords": [
-    {
-      "term": "source-grounded report",
-      "aliases": ["evidence-grounded report", "cited report"],
-      "meaning": "所有关键判断都有可回溯来源支撑的自动报告。",
-      "frequency_signal": "medium",
-      "growth_signal": "sustained",
-      "source_spread": "cross-domain",
-      "evidence_count": 2,
-      "source_ids": ["src-policy", "src-gptr"]
-    }
-  ],
-  "trend_clusters": [
-    {
-      "name": "从搜索工具到调研流水线",
-      "thesis": "自动化调研正在从简单 web search 包装演进为可审计的多阶段 agent workflow。",
-      "drivers": ["LLM tool use", "长上下文", "结构化报告需求"],
-      "evidence_strength": "medium",
-      "maturity": "fast-growing",
-      "opportunities": ["沉淀本地知识库", "按时间窗口复用模板"],
-      "risks": ["检索偏差", "来源过期"],
-      "watchpoints": ["是否能稳定复核来源和日期"],
-      "source_ids": ["src-gptr"]
+      "source_ids": [
+        "src-gptr",
+        "src-paper-trace-fixture"
+      ],
+      "tags": [
+        "workflow",
+        "agent"
+      ]
     }
   ],
   "sections": [
     {
       "title": "使用建议",
       "tone": "blue",
-      "items": ["首轮使用周调研建立基线，再按日调研跟踪突发更新。"]
+      "items": [
+        "首轮使用周调研建立基线，再按日调研跟踪突发更新。"
+      ]
     }
   ],
-  "risks": ["这是样例报告，不能替代真实联网调研。"],
-  "next_queries": ["deep research agent benchmark", "automated literature review agent"],
+  "risks": [
+    "这是样例报告，不能替代真实联网调研。"
+  ],
+  "next_queries": [
+    "deep research agent benchmark",
+    "automated literature review agent"
+  ],
   "sources": [
+    {
+      "id": "src-paper-trace-fixture",
+      "title": "Example Paper for Trace Rendering",
+      "url": "https://example.com/paper-trace-fixture",
+      "source_type": "paper",
+      "published_at": "2026-06-10",
+      "accessed_at": "2026-06-15",
+      "authors_or_org": "A. Researcher",
+      "summary": "用于验证 paper_traces 折叠渲染的样例论文来源。",
+      "tags": [
+        "arxiv",
+        "fixture"
+      ],
+      "confidence": "high"
+    },
     {
       "id": "src-gptr",
       "title": "GPT Researcher",
@@ -95,7 +138,10 @@
       "accessed_at": "2026-06-15",
       "authors_or_org": "GPT Researcher contributors",
       "summary": "开源深度调研 Agent 项目，用作工作流设计参考。",
-      "tags": ["agent", "research"],
+      "tags": [
+        "agent",
+        "research"
+      ],
       "confidence": "medium"
     },
     {
@@ -107,8 +153,50 @@
       "accessed_at": "2026-06-15",
       "authors_or_org": "local skill library",
       "summary": "本地调研 skill 的来源优先级和置信度规则。",
-      "tags": ["policy"],
+      "tags": [
+        "policy"
+      ],
       "confidence": "high"
+    }
+  ],
+  "paper_traces": [
+    {
+      "source_id": "src-paper-trace-fixture",
+      "title": "Example Paper for Trace Rendering",
+      "url": "https://example.com/paper-trace-fixture",
+      "published_at": "2026-06-10",
+      "authors_or_org": "A. Researcher",
+      "trace_status": "ok",
+      "extraction_status": "metadata_summary",
+      "one_sentence_position": "这是一条用于验证 HTML 折叠论文溯源的中文样例定位。",
+      "core_problem": "验证自动调研报告能在不缓存 PDF 的前提下嵌入中文论文阅读辅助。",
+      "technical_lineage": [
+        "继承自动化调研中的来源追踪和结构化报告思路。"
+      ],
+      "method_delta": [
+        "将论文级技术溯源从外部 PDF 批注转为 HTML 内嵌中文分析。"
+      ],
+      "experiment_protocol": [
+        "使用最小样例检查渲染器、导航和知识库更新。"
+      ],
+      "reproducibility_risks": [
+        "样例内容不代表真实论文结论，只用于渲染验证。"
+      ],
+      "reading_points": [
+        {
+          "category": "方法设计",
+          "statement": "确认可折叠结构能展示中文重点阅读建议。",
+          "why_read": "用于验证报告中不直接展示英文原文摘句。"
+        }
+      ],
+      "follow_up_queries": [
+        "检查论文溯源区块是否为中文陈述。"
+      ],
+      "evidence_urls": [
+        "https://example.com/paper-trace-fixture"
+      ],
+      "generated_at": "2026-06-15T00:00:00+00:00",
+      "display_title": "论文技术溯源"
     }
   ]
 }

@@ -21,11 +21,12 @@ Use this skill for 周报, 本周进展, weekly domain updates, or last-7-day re
 
 ## Report content
 
-- Cluster findings into 3-6 themes.
+- Group updates into 3-6 lightweight themes, but do not fill `keywords` or `trend_clusters` unless the user explicitly asks for them.
 - For each theme: new evidence, why it matters, affected methods/products/datasets, confidence, and next thing to watch.
 - Include a table for notable papers/projects/releases.
 - Add "本周变化 vs 既有背景" so readers can distinguish new information from context.
+- Automatically trace every traceable paper source in the weekly window and embed the analysis as collapsible HTML.
 
 ## Output
 
-Build the JSON described in `../auto-research-common/references/report_schema.md` with `mode: "weekly"`, then render using `../auto-research-common/scripts/render_report.py`.
+Build the JSON described in `../auto-research-common/references/report_schema.md` with `mode: "weekly"`, run `python3 scripts/trace_report_papers.py --report <report.json>` (default `--jobs 8`), then render using `../auto-research-common/scripts/render_report.py`.

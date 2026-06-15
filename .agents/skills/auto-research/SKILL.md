@@ -13,6 +13,7 @@ Use this skill when the user asks for automated research, domain monitoring, lit
 - Default output language is Chinese; keep original English titles, acronyms, model names, venues, repositories, and product names.
 - Use the shared assets in `../auto-research-common/` for mode registry, source policy, report schema, rendering, and HTML style.
 - Save outputs under the current repo: `reports/<topic_slug>/YYYY-MM-DD_<mode>.html` and `knowledge_base/<topic_slug>/`.
+- For daily and weekly reports, automatically trace all in-window paper sources after the report JSON is ready and before rendering.
 - Do not depend on any external template path; the bundled template is the only style source.
 - When useful, start source discovery with `scripts/collect_sources.py` from the repository root; it collects arXiv, OpenAlex, and GitHub candidates without API keys.
 
@@ -52,12 +53,14 @@ Use the profile to generate bilingual search queries. Record the final query lis
 6. For every non-obvious claim, attach a source URL and access date.
 7. Mark weak evidence explicitly instead of overstating.
 8. Convert findings into the schema in `../auto-research-common/references/report_schema.md`.
-9. Render with `../auto-research-common/scripts/render_report.py`.
-10. Use `--update-kb` unless the user asked not to persist data.
+9. For `mode: "daily"` or `mode: "weekly"`, run `python3 scripts/trace_report_papers.py --report reports/<topic_slug>/YYYY-MM-DD_<mode>.json` (default `--jobs 8`).
+10. Render with `../auto-research-common/scripts/render_report.py`.
+11. Use `--update-kb` unless the user asked not to persist data.
 
 ## Report emphasis
 
-- Daily/weekly/monthly: what changed, why it matters, affected subareas, and what to watch next.
+- Daily/weekly: lightweight updates only: what changed, why it matters, affected subareas, paper traces, and what to watch next; do not include research hotwords or trend clusters unless explicitly requested.
+- Monthly: stage-level synthesis with optional clusters when useful.
 - Hotwords: term, aliases, evidence count, growth signal, source spread, representative sources, and research implication.
 - Trends: cluster, timeline signal, drivers, evidence strength, maturity, open questions, and actionable opportunities.
 
@@ -65,5 +68,6 @@ Use the profile to generate bilingual search queries. Record the final query lis
 
 - HTML report opens standalone in a browser.
 - Report includes snapshot date, time window, source count, source links, query list, and next queries.
+- Daily/weekly reports include collapsible HTML paper traces for all traceable in-window paper sources, or state why no source was traced.
 - Knowledge base receives source, keyword, and run entries for later reuse.
 - If less than 5 credible sources are found for a broad topic, state the limitation and suggest narrower follow-up queries.

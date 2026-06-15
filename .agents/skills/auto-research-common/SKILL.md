@@ -16,6 +16,8 @@ This skill provides shared resources for the auto-research skill family.
 - `assets/report_template.html`: self-contained HTML/CSS template inspired by the local spatial-audio planning document.
 - `scripts/render_report.py`: render a report JSON into HTML and optionally update `knowledge_base/`.
 - Repository-level `scripts/collect_sources.py`: collect candidate sources from arXiv, OpenAlex, and GitHub into normalized JSONL.
+- Repository-level `scripts/trace_report_papers.py`: embed collapsible HTML paper traces into daily/weekly report JSON with default `--jobs 8` concurrency.
+- Repository-level `scripts/trace_single_paper.py`: generate standalone single-paper trace JSON/HTML without caching PDFs.
 
 ## Standard command
 

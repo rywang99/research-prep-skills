@@ -29,11 +29,18 @@
       "skill": "research-yearly-trends",
       "default_window_days": 365,
       "description": "近一年趋势聚类、驱动因素、机会和风险"
+    },
+    "paper-trace": {
+      "label": "论文溯源",
+      "skill": "paper-trace",
+      "default_window_days": 0,
+      "description": "单篇论文技术脉络、实验协议和复现风险分析"
     }
   },
   "nav_sections": [
     {"anchor": "overview", "label": "总览"},
     {"anchor": "findings", "label": "核心发现"},
+    {"anchor": "paper-traces", "label": "论文溯源"},
     {"anchor": "keywords", "label": "研究热词"},
     {"anchor": "trends", "label": "趋势聚类"},
     {"anchor": "analysis", "label": "补充分析"},

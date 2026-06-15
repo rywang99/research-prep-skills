@@ -22,11 +22,12 @@ Use this skill for 今日动态, daily monitoring, today/latest updates, or last
 
 ## Report content
 
-- Lead with 3-5 newest items and their importance.
+- Lead with 3-5 newest items and their importance; do not fill `keywords` or `trend_clusters` unless the user explicitly asks for them.
 - Separate "confirmed updates" from "signals to verify".
 - Include a compact timeline table: time/date, source, update, impact, link.
+- Automatically trace every traceable paper source in the daily window and embed the analysis as collapsible HTML.
 - End with watchlist queries for tomorrow.
 
 ## Output
 
-Build the JSON described in `../auto-research-common/references/report_schema.md` with `mode: "daily"`, then render using `../auto-research-common/scripts/render_report.py`.
+Build the JSON described in `../auto-research-common/references/report_schema.md` with `mode: "daily"`, run `python3 scripts/trace_report_papers.py --report <report.json>` (default `--jobs 8`), then render using `../auto-research-common/scripts/render_report.py`.

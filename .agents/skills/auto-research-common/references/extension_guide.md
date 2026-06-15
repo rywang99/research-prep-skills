@@ -16,7 +16,7 @@ Use this guide when adding a new research mode, output section, source type, or 
 
 ## Add a report section
 
-Prefer using the generic `sections` array in `report_schema.md`. Only change the renderer when the section needs a distinct layout, such as a timeline, heatmap, or scorecard.
+Prefer using the generic `sections` array in `report_schema.md`. Use `paper_traces` for paper-level technical lineage that should render as collapsible HTML. Only change the renderer when the section needs a distinct layout, such as a timeline, heatmap, scorecard, or a new interactive block.
 
 When adding a rendered section:
 
@@ -24,6 +24,13 @@ When adding a rendered section:
 2. Add its nav entry to `config/research_modes.json` if it should appear in the sidebar.
 3. Document the JSON field in `report_schema.md`.
 4. Add fixture data to `examples/minimal_report.json` or a new example.
+
+## Add or change paper trace behavior
+
+- Keep trace output HTML-first; do not cache PDFs or write PDF annotations by default.
+- Daily/weekly reports should call `scripts/trace_report_papers.py` before rendering; default concurrency is `--jobs 8`.
+- Single-paper analysis should call `scripts/trace_single_paper.py` and write `reports/paper-trace/` plus `knowledge_base/paper-trace/`.
+- Update `examples/minimal_report.json` and `scripts/validate_skills.py` when changing `paper_traces`.
 
 ## Add a source type or confidence label
 
@@ -44,6 +51,6 @@ Knowledge-base files are append-friendly and should remain backward compatible:
 
 - `sources.jsonl`: append source records; never rewrite historical rows unless repairing invalid JSON.
 - `runs.jsonl`: append one run summary per rendered report.
-- `keywords.json`: latest keyword snapshot for quick reuse.
+- `keywords.json`: latest keyword snapshot for quick reuse; daily/weekly lightweight reports intentionally write an empty keyword list.
 
 If a future migration is required, write a new script under `scripts/` and keep old files readable.

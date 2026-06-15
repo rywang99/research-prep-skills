@@ -68,6 +68,30 @@ The renderer expects one JSON object. Required fields are marked with `required`
       "source_ids": ["source-id"]
     }
   ],
+  "paper_traces": [
+    {
+      "source_id": "source-id for the traced paper",
+      "title": "paper title",
+      "display_title": "中文折叠卡片标题，例如 论文技术溯源",
+      "url": "paper landing page",
+      "published_at": "optional date",
+      "authors_or_org": "optional authors",
+      "trace_status": "ok|metadata_only|failed",
+      "extraction_status": "pdf_temp_pdftotext|metadata_summary|other",
+      "one_sentence_position": "what this paper is about",
+      "core_problem": "problem and why it matters",
+      "technical_lineage": ["predecessor methods, baselines, or inherited ideas"],
+      "method_delta": ["what changed versus direct predecessors"],
+      "experiment_protocol": ["datasets, metrics, baselines, ablations"],
+      "reproducibility_risks": ["code/data/compute/protocol risks"],
+      "reading_points": [
+        {"category": "方法设计", "statement": "中文阅读建议，不粘贴原文摘句", "why_read": "为什么要重点阅读"}
+      ],
+      "follow_up_queries": ["queries for deeper tracing"],
+      "evidence_urls": ["URLs used for trace"],
+      "generated_at": "ISO datetime"
+    }
+  ],
   "sections": [
     {"title": "extra section", "tone": "blue|green|amber|red|purple", "items": ["bullet or paragraph"]}
   ],
@@ -97,7 +121,9 @@ The renderer expects one JSON object. Required fields are marked with `required`
 ## Renderer behavior
 
 - Missing optional arrays render as empty sections.
+- For `mode: "daily"` and `mode: "weekly"`, renderers ignore `keywords` and `trend_clusters` by default because these are lightweight update reports.
 - `summary_judgments`, `findings`, and `sources` should normally be non-empty for real reports.
+- `paper_traces` renders as collapsible HTML cards and is used by daily/weekly paper trace automation.
 - `topic_slug` is sanitized if omitted.
 - `--update-kb` appends source records and run metadata under `knowledge_base/<topic_slug>/`.
 - Extra source provenance fields from `scripts/collect_sources.py` are preserved in the knowledge base and ignored by the HTML renderer unless explicitly displayed.

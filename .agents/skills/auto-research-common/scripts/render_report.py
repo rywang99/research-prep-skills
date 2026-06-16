@@ -276,6 +276,7 @@ def render_value_list(title: str, values: list[Any]) -> str:
 
 def render_paper_traces(data: dict[str, Any], sources: dict[str, dict[str, Any]]) -> str:
     cards = []
+    standalone_single = text(data.get("mode")) == "paper-trace" and len(as_list(data.get("paper_traces"))) == 1
     for idx, trace in enumerate(as_list(data.get("paper_traces")), 1):
         if not isinstance(trace, dict):
             continue
@@ -305,9 +306,10 @@ def render_paper_traces(data: dict[str, Any], sources: dict[str, dict[str, Any]]
             render_value_list("后续追踪建议", as_list(trace.get("follow_up_queries"))),
         ]
         title = trace.get("display_title") or f"论文 {idx} 技术溯源"
+        summary_title = esc(title) if standalone_single else f"{idx}. {esc(title)}"
         cards.append(
             '<details class="trace-card">'
-            f'<summary><span>{idx}. {esc(title)}</span>{tags_html(["展开技术溯源"], "paper")}</summary>'
+            f'<summary><span>{summary_title}</span>{tags_html(["展开技术溯源"], "paper")}</summary>'
             + "\n".join(part for part in body if part)
             + "</details>"
         )
@@ -494,7 +496,7 @@ def append_jsonl(path: Path, rows: Iterable[dict[str, Any]]) -> None:
 def update_kb(data: dict[str, Any], output: Path, kb_root: Path) -> None:
     topic_slug = text(data.get("topic_slug") or slugify(text(data.get("topic"))))
     run_id = hashlib.sha1(f"{topic_slug}:{data.get('mode')}:{data.get('generated_at')}".encode("utf-8")).hexdigest()[:12]
-    topic_dir = kb_root / topic_slug
+    topic_dir = kb_root / "paper-trace" / topic_slug if text(data.get("mode")) == "paper-trace" else kb_root / topic_slug
     topic_dir.mkdir(parents=True, exist_ok=True)
 
     source_rows = []

@@ -9,7 +9,15 @@ import json
 import sys
 from pathlib import Path
 
-from paper_trace_common import generate_trace, slugify, source_from_paper_input, today
+from paper_trace_common import (
+    generate_trace,
+    infer_method_short_name,
+    infer_method_slug,
+    infer_paper_category,
+    source_from_paper_input,
+    stable_id,
+    today,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 RENDERER = ROOT / ".agents" / "skills" / "auto-research-common" / "scripts" / "render_report.py"
@@ -26,6 +34,25 @@ def load_renderer():
     return module
 
 
+def default_output_paths(source: dict, category_slug: str, method_slug: str) -> tuple[Path, Path]:
+    stem = method_slug
+    base_dir = ROOT / "reports" / "paper-trace" / category_slug
+    output_json = base_dir / f"{stem}.json"
+    output_html = base_dir / f"{stem}.html"
+    if not output_json.exists() and not output_html.exists():
+        return output_json, output_html
+    try:
+        existing = json.loads(output_json.read_text(encoding="utf-8"))
+        existing_source = (existing.get("sources") or [{}])[0]
+        if existing_source.get("external_id") == source.get("external_id") and existing_source.get("title") == source.get("title"):
+            return output_json, output_html
+    except Exception:
+        pass
+    suffix = stable_id("m", f"{source.get('external_id')}:{source.get('title')}").removeprefix("m-")[:8]
+    stem = f"{method_slug}-{suffix}"
+    return base_dir / f"{stem}.json", base_dir / f"{stem}.html"
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Trace one paper and write standalone JSON/HTML outputs.")
     parser.add_argument("--paper", required=True, help="arXiv ID/URL, direct PDF URL, local PDF path, or paper title")
@@ -38,20 +65,27 @@ def main() -> int:
     args = parser.parse_args()
 
     source = source_from_paper_input(args.paper, timeout=args.timeout)
-    trace = generate_trace(source, topic=args.topic, timeout=args.timeout)
-    slug = slugify(source.get("external_id") or source.get("title") or args.paper)
-    stem = f"{today()}_{slug}"
-    output_json = args.output_json or ROOT / "reports" / "paper-trace" / f"{stem}.json"
-    output_html = args.output_html or ROOT / "reports" / "paper-trace" / f"{stem}.html"
+    category = infer_paper_category(source, args.topic)
+    method_short_name = infer_method_short_name(source)
+    method_slug = infer_method_slug(source)
+    trace = generate_trace(source, topic=args.topic or category["label"], timeout=args.timeout)
+    trace["display_title"] = method_short_name
+    default_json, default_html = default_output_paths(source, category["slug"], method_slug)
+    output_json = args.output_json or default_json
+    output_html = args.output_html or default_html
     report = {
-        "topic": "单篇论文技术溯源",
-        "topic_slug": "paper-trace",
+        "topic": category["label"],
+        "topic_slug": category["slug"],
         "mode": "paper-trace",
         "snapshot_date": today(),
         "time_window": {"label": "单篇论文技术溯源"},
+        "paper_category_label": category["label"],
+        "paper_category_slug": category["slug"],
+        "method_short_name": method_short_name,
+        "method_slug": method_slug,
         "summary_judgments": [
             {
-                "title": "单篇论文技术溯源已生成",
+                "title": f"{method_short_name} 技术溯源已生成",
                 "body": "分析内容以内嵌折叠区块呈现；未缓存 PDF，也未写入 PDF 批注。",
                 "tone": "green",
                 "sources": [source.get("id")],

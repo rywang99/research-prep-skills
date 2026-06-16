@@ -15,6 +15,10 @@ The renderer expects one JSON object. Required fields are marked with `required`
     "end": "optional YYYY-MM-DD"
   },
   "language": "optional, default zh-CN",
+  "paper_category_label": "optional for standalone paper-trace",
+  "paper_category_slug": "optional for standalone paper-trace storage",
+  "method_short_name": "optional for standalone paper-trace report naming",
+  "method_slug": "optional for standalone paper-trace report naming",
   "topic_profile": {
     "aliases": ["topic aliases"],
     "subtopics": ["narrower terms"],

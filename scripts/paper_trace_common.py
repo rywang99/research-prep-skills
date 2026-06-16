@@ -45,6 +45,98 @@ def slugify(value: str) -> str:
     return "paper-" + hashlib.sha1(value.encode("utf-8")).hexdigest()[:10]
 
 
+def compact_slug(value: str, prefix: str = "item") -> str:
+    slug = re.sub(r"[^a-zA-Z0-9]+", "-", value.strip().lower()).strip("-")
+    if slug:
+        return slug[:80]
+    return f"{prefix}-" + hashlib.sha1(value.encode("utf-8")).hexdigest()[:10]
+
+
+TOPIC_SLUG_ALIASES = [
+    (["空间音频大模型", "spatial audio llm", "spatial-audio-llm"], "spatial-audio-llm"),
+    (["空间音频理解", "spatial audio understanding"], "spatial-audio-understanding"),
+    (["说话人日志", "speaker diarization", "diarization"], "speaker-diarization"),
+    (["多说话人语音识别", "multi-speaker speech recognition", "multi-talker speech recognition"], "multi-speaker-speech-recognition"),
+    (["自动化调研", "auto research", "auto-research"], "auto-research-agent"),
+]
+
+
+def known_topic_slug(value: str) -> str | None:
+    low = clean_space(value).lower()
+    for aliases, slug in TOPIC_SLUG_ALIASES:
+        if any(alias.lower() in low for alias in aliases):
+            return slug
+    return None
+
+
+def infer_method_short_name(source: dict[str, Any]) -> str:
+    title = clean_space(text(source.get("title"), "Paper"))
+    if not title:
+        return "Paper"
+    prefix = re.split(r"\s*[:：]\s*", title, maxsplit=1)[0].strip()
+    if 2 <= len(prefix) <= 60 and len(prefix.split()) <= 8:
+        return prefix
+    markers = [
+        " using ",
+        " via ",
+        " with ",
+        " for ",
+        " from ",
+        " by ",
+        " in ",
+        " on ",
+        " towards ",
+        " toward ",
+    ]
+    split_points = [title.lower().find(marker) for marker in markers]
+    split_points = [idx for idx in split_points if idx > 8]
+    if split_points:
+        candidate = title[: min(split_points)].strip(" -:：")
+        if 2 <= len(candidate) <= 80:
+            return candidate
+    words = re.findall(r"[A-Za-z0-9]+(?:[-'][A-Za-z0-9]+)?", title)
+    if words:
+        return " ".join(words[: min(5, len(words))])
+    return title[:60].strip() or "Paper"
+
+
+def infer_method_slug(source: dict[str, Any]) -> str:
+    return compact_slug(infer_method_short_name(source), prefix="method")
+
+
+def infer_paper_category(source: dict[str, Any], topic: str = "") -> dict[str, str]:
+    topic = clean_space(topic)
+    if topic:
+        return {
+            "label": topic,
+            "slug": known_topic_slug(topic) or compact_slug(topic, prefix="topic"),
+        }
+
+    haystack = " ".join(
+        [
+            text(source.get("title")),
+            text(source.get("summary")),
+            " ".join(text(tag) for tag in as_list(source.get("tags"))),
+        ]
+    ).lower()
+    rules = [
+        ("空间音频大模型", "spatial-audio-llm", ["spatial audio", "foa", "ambisonic", "ambisonics", "omni llm", "lalms", "so-encoder", "sound localization"]),
+        ("说话人日志", "speaker-diarization", ["speaker diarization", "diarization", "eend", "speaker-wise speech"]),
+        ("多说话人语音识别", "multi-speaker-speech-recognition", ["multi-talker", "multi-speaker", "speech recognition", "asr", "whisper"]),
+        ("自动化调研 Agent", "auto-research-agent", ["research agent", "automated research", "auto-research"]),
+    ]
+    for label, slug, keywords in rules:
+        if any(keyword in haystack for keyword in keywords):
+            return {"label": label, "slug": slug}
+
+    tags = [text(tag) for tag in as_list(source.get("tags"))]
+    arxiv_tags = [tag for tag in tags if re.match(r"^[a-z-]+(\.[A-Z]{2})?$", tag)]
+    if arxiv_tags:
+        label = f"arXiv {arxiv_tags[0]}"
+        return {"label": label, "slug": compact_slug(label, prefix="arxiv")}
+    return {"label": "paper-trace", "slug": "paper-trace"}
+
+
 def stable_id(prefix: str, value: str) -> str:
     return f"{prefix}-{hashlib.sha1(value.encode('utf-8')).hexdigest()[:12]}"
 
@@ -79,6 +171,7 @@ def fetch_arxiv_source(arxiv_id: str, timeout: int = 30) -> dict[str, Any]:
         name = author.findtext("a:name", namespaces=ns)
         if name:
             authors.append(name)
+    categories = [cat.attrib.get("term", "") for cat in entry.findall("a:category", ns) if cat.attrib.get("term")]
     return {
         "id": "src-arxiv-" + arxiv_id.replace(".", "-"),
         "title": title or f"arXiv:{arxiv_id}",
@@ -89,7 +182,7 @@ def fetch_arxiv_source(arxiv_id: str, timeout: int = 30) -> dict[str, Any]:
         "accessed_at": today(),
         "authors_or_org": ", ".join(authors),
         "summary": summary,
-        "tags": ["arxiv"],
+        "tags": ["arxiv", *categories[:5]],
         "confidence": "high",
         "provider": "arxiv",
         "query": arxiv_id,

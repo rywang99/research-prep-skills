@@ -35,9 +35,16 @@ python3 scripts/trace_single_paper.py \
 
 The helper writes:
 
-- `reports/paper-trace/<YYYY-MM-DD>_<paper_slug>.json`
-- `reports/paper-trace/<YYYY-MM-DD>_<paper_slug>.html`
-- knowledge-base entries under `knowledge_base/paper-trace/` unless `--no-update-kb` is passed
+- `reports/paper-trace/<category_slug>/<method_slug>.json`
+- `reports/paper-trace/<category_slug>/<method_slug>.html`
+- knowledge-base entries under `knowledge_base/paper-trace/<category_slug>/` unless `--no-update-kb` is passed
+
+Default categorization and naming:
+
+- If `--topic` is provided, use it as the paper category first; otherwise infer the category from title, abstract, tags, and arXiv metadata.
+- Use the paper's method short name for `method_slug`: prefer the title prefix before `:`/`：`, otherwise use the first method phrase before markers such as `in`, `using`, `via`, or `for`.
+- Do not prefix standalone paper-trace reports with dates or arXiv IDs. If a method-name collision occurs for a different paper, append a short stable hash.
+- Explicit `--output-json` or `--output-html` paths override these defaults.
 
 ## Trace content
 

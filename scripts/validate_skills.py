@@ -64,6 +64,26 @@ def load_collector_module():
     return module
 
 
+def load_paper_trace_module():
+    path = ROOT / "scripts" / "paper_trace_common.py"
+    spec = importlib.util.spec_from_file_location("paper_trace_common", path)
+    if spec is None or spec.loader is None:
+        fail(f"cannot load paper trace module: {path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def load_trace_single_module():
+    sys.path.insert(0, str(ROOT / "scripts"))
+    spec = importlib.util.spec_from_file_location("trace_single_paper", TRACE_SINGLE_PATH)
+    if spec is None or spec.loader is None:
+        fail(f"cannot load trace single module: {TRACE_SINGLE_PATH}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def validate_collected_sources_fixture() -> None:
     if not COLLECTOR_PATH.exists():
         fail(f"missing {COLLECTOR_PATH}")
@@ -94,6 +114,34 @@ def validate_collected_sources_fixture() -> None:
     sid_b = collector.stable_source_id("arxiv", "2601.00001", "https://arxiv.org/abs/2601.00001", "Other")
     if sid_a != sid_b:
         fail("stable source IDs differ for same provider/external_id")
+
+
+def validate_paper_trace_naming() -> None:
+    trace = load_paper_trace_module()
+    spatial = {
+        "title": "Spatial-Omni: Spatial Audio Understanding Integration in Multimodal LLMs via FOA Encoding",
+        "summary": "First-Order Ambisonics FOA spatial audio for Omni LLMs.",
+        "tags": ["arxiv", "eess.AS"],
+    }
+    if trace.infer_method_slug(spatial) != "spatial-omni":
+        fail("Spatial-Omni method slug inference failed")
+    if trace.infer_paper_category(spatial, "")["slug"] != "spatial-audio-llm":
+        fail("spatial audio category inference failed")
+    diarization = {
+        "title": "Tight Boundary Prediction in Speaker Diarization Using Causal-Anticausal Consistency",
+        "summary": "speaker diarization with tight speech intervals",
+        "tags": ["arxiv", "eess.AS"],
+    }
+    if trace.infer_method_slug(diarization) != "tight-boundary-prediction":
+        fail("Tight Boundary method slug inference failed")
+    if trace.infer_paper_category(diarization, "")["slug"] != "speaker-diarization":
+        fail("speaker diarization category inference failed")
+    if trace.infer_paper_category(spatial, "空间音频大模型")["slug"] != "spatial-audio-llm":
+        fail("topic-priority category alias failed")
+    trace_single = load_trace_single_module()
+    output_json, output_html = trace_single.default_output_paths(spatial, "validation-category", "spatial-omni")
+    if output_json.name != "spatial-omni.json" or output_html.name != "spatial-omni.html":
+        fail("paper-trace default output should use method slug without date prefix")
 
 
 def main() -> int:
@@ -130,6 +178,7 @@ def main() -> int:
             fail(f"missing {openai_yaml}")
     json.loads((ROOT / "examples" / "minimal_report.json").read_text(encoding="utf-8"))
     validate_collected_sources_fixture()
+    validate_paper_trace_naming()
     for path in (TRACE_REPORT_PATH, TRACE_SINGLE_PATH):
         if not path.exists():
             fail(f"missing {path}")

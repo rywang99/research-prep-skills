@@ -1,35 +1,144 @@
 {
+  "schema_version": "1.0",
   "topic": "Cross-Format Spatial Token Alignment",
   "topic_slug": "cross-format-spatial-token-alignment",
   "mode": "experiment-roadmap",
   "snapshot_date": "2026-06-16",
-  "time_window": {"label": "单个 idea 的实验规划"},
+  "time_window": {
+    "label": "单个 idea 的实验规划"
+  },
   "summary_judgments": [
-    {"title": "先验证跨格式迁移，再扩展到复杂推理", "body": "路线图优先证明统一空间 token 能提升 FOA↔binaural 迁移，而不是一开始覆盖所有空间推理任务。", "tone": "blue", "sources": ["src-idea"]}
+    {
+      "title": "先验证跨格式迁移，再扩展到复杂推理",
+      "body": "路线图优先证明统一空间 token 能提升 FOA↔binaural 迁移，而不是一开始覆盖所有空间推理任务。",
+      "tone": "blue",
+      "sources": [
+        "src-idea"
+      ]
+    }
   ],
   "metrics": [
-    {"label": "核心 claims", "value": "2", "note": "主 claim + anti-claim"},
-    {"label": "实验块", "value": "3", "note": "必须先跑的小闭环"}
+    {
+      "label": "核心 claims",
+      "value": "2",
+      "note": "主 claim + anti-claim"
+    },
+    {
+      "label": "实验块",
+      "value": "3",
+      "note": "必须先跑的小闭环"
+    }
   ],
   "experiment_roadmap": {
     "claims": [
-      {"id": "C1", "claim": "跨格式空间 token 对齐提升 FOA↔binaural 迁移。", "minimum_evidence": "在相同语义底座下，少样本迁移优于格式独立 encoder。", "blocks": ["B1", "B2"]},
-      {"id": "A1", "claim": "收益不是来自更多参数或格式转换捷径。", "minimum_evidence": "参数匹配 adapter 和转换-only baseline 不达到同等效果。", "blocks": ["B3"]}
+      {
+        "id": "C1",
+        "claim": "跨格式空间 token 对齐提升 FOA↔binaural 迁移。",
+        "minimum_evidence": "在相同语义底座下，少样本迁移优于格式独立 encoder。",
+        "blocks": [
+          "B1",
+          "B2"
+        ]
+      },
+      {
+        "id": "A1",
+        "claim": "收益不是来自更多参数或格式转换捷径。",
+        "minimum_evidence": "参数匹配 adapter 和转换-only baseline 不达到同等效果。",
+        "blocks": [
+          "B3"
+        ]
+      }
     ],
     "blocks": [
-      {"name": "B1 小规模迁移主结果", "question": "统一 token 是否提升跨格式迁移？", "dataset": "同源 FOA/binaural 子集", "systems": ["format-specific encoder", "shared token alignment"], "metrics": ["azimuth error", "location accuracy"], "success_criterion": "少样本设置下定位误差稳定下降。", "failure_interpretation": "格式差异可能需要显式几何建模。", "figure_target": "main table"},
-      {"name": "B2 关系推理扩展", "question": "迁移收益是否延伸到空间关系任务？", "dataset": "relative left-right / distance comparison", "systems": ["baseline", "aligned tokens"], "metrics": ["accuracy"], "success_criterion": "关系任务也有正向增益。", "failure_interpretation": "对齐只改善低层定位，不足以支持高层推理。", "figure_target": "appendix table"},
-      {"name": "B3 参数与转换消融", "question": "收益是否来自参数量或格式转换？", "dataset": "B1 子集", "systems": ["parameter-matched adapter", "conversion-only baseline"], "metrics": ["azimuth error"], "success_criterion": "aligned tokens 优于两个混淆 baseline。", "failure_interpretation": "机制贡献不足，需要重构方法。", "figure_target": "ablation table"}
+      {
+        "name": "B1 小规模迁移主结果",
+        "question": "统一 token 是否提升跨格式迁移？",
+        "dataset": "同源 FOA/binaural 子集",
+        "systems": [
+          "format-specific encoder",
+          "shared token alignment"
+        ],
+        "metrics": [
+          "azimuth error",
+          "location accuracy"
+        ],
+        "success_criterion": "少样本设置下定位误差稳定下降。",
+        "failure_interpretation": "格式差异可能需要显式几何建模。",
+        "figure_target": "main table"
+      },
+      {
+        "name": "B2 关系推理扩展",
+        "question": "迁移收益是否延伸到空间关系任务？",
+        "dataset": "relative left-right / distance comparison",
+        "systems": [
+          "baseline",
+          "aligned tokens"
+        ],
+        "metrics": [
+          "accuracy"
+        ],
+        "success_criterion": "关系任务也有正向增益。",
+        "failure_interpretation": "对齐只改善低层定位，不足以支持高层推理。",
+        "figure_target": "appendix table"
+      },
+      {
+        "name": "B3 参数与转换消融",
+        "question": "收益是否来自参数量或格式转换？",
+        "dataset": "B1 子集",
+        "systems": [
+          "parameter-matched adapter",
+          "conversion-only baseline"
+        ],
+        "metrics": [
+          "azimuth error"
+        ],
+        "success_criterion": "aligned tokens 优于两个混淆 baseline。",
+        "failure_interpretation": "机制贡献不足，需要重构方法。",
+        "figure_target": "ablation table"
+      }
     ],
     "milestones": [
-      {"name": "Sanity", "goal": "确认格式读取、坐标和指标一致", "estimated_cost": "0.5-1 天", "gate": "单样本可视化和指标单测通过"},
-      {"name": "Main", "goal": "完成 B1 主结果", "estimated_cost": "2-4 天", "gate": "主指标有稳定正向信号"},
-      {"name": "Decision", "goal": "完成 B3 消融", "estimated_cost": "1-2 天", "gate": "排除参数量和转换捷径解释"}
+      {
+        "name": "Sanity",
+        "goal": "确认格式读取、坐标和指标一致",
+        "estimated_cost": "0.5-1 天",
+        "gate": "单样本可视化和指标单测通过"
+      },
+      {
+        "name": "Main",
+        "goal": "完成 B1 主结果",
+        "estimated_cost": "2-4 天",
+        "gate": "主指标有稳定正向信号"
+      },
+      {
+        "name": "Decision",
+        "goal": "完成 B3 消融",
+        "estimated_cost": "1-2 天",
+        "gate": "排除参数量和转换捷径解释"
+      }
     ]
   },
-  "risks": ["路线图不包含任何实际运行命令；需要人类确认数据许可和实现细节后再执行。"],
-  "next_queries": ["FOA binaural paired dataset", "spatial audio coordinate conversion evaluation"],
+  "risks": [
+    "路线图不包含任何实际运行命令；需要人类确认数据许可和实现细节后再执行。"
+  ],
+  "next_queries": [
+    "FOA binaural paired dataset",
+    "spatial audio coordinate conversion evaluation"
+  ],
   "sources": [
-    {"id": "src-idea", "title": "Cross-Format Spatial Token Alignment idea card", "url": "reports/spatial-audio-llm/idea-planning.html", "source_type": "signal", "published_at": "2026-06-16", "accessed_at": "2026-06-16", "summary": "Idea card generated from spatial audio LLM gap analysis.", "confidence": "medium", "provider": "local", "query": "local idea report", "external_id": "idea-cross-format", "collected_at": "2026-06-16T00:00:00+08:00"}
+    {
+      "id": "src-idea",
+      "title": "Cross-Format Spatial Token Alignment idea card",
+      "url": "reports/spatial-audio-llm/idea-planning.html",
+      "source_type": "signal",
+      "published_at": "2026-06-16",
+      "accessed_at": "2026-06-16",
+      "summary": "Idea card generated from spatial audio LLM gap analysis.",
+      "confidence": "medium",
+      "provider": "local",
+      "query": "local idea report",
+      "external_id": "idea-cross-format",
+      "collected_at": "2026-06-16T00:00:00+08:00"
+    }
   ]
 }

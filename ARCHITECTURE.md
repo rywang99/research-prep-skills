@@ -1,17 +1,20 @@
 # Architecture Notes
 
-This repository is designed as a small, config-driven skills library rather than a single hard-coded research script.
+This repository is a config-driven Codex skills library for research preparation before humans run experiments. It is not an autonomous training, experiment execution, paper-writing, or submission system.
 
 ## Current extensibility status
 
-The design is now extensible for common research workflow changes:
+The design is extensible for common research workflow changes:
 
 - New modes are registered in `.agents/skills/auto-research-common/config/research_modes.json`.
-- Each mode owns its instructions in `.agents/skills/research-<mode>/SKILL.md`.
-- Shared policy, schema, renderer, and template live in `.agents/skills/auto-research-common/`.
+- Each mode owns concise instructions in `.agents/skills/<skill-name>/SKILL.md`; shared behavior stays in `auto-research-common`.
+- Shared policy, report schema, knowledge-base schema, renderer, and HTML template live in `.agents/skills/auto-research-common/`.
 - Candidate source collection starts with `scripts/collect_sources.py`, which queries no-key public APIs and emits normalized JSONL.
-- Report content uses a generic JSON schema, with a dedicated `paper_traces` field for collapsible paper lineage analysis; daily/weekly modes suppress hotword and trend sections by default.
-- Knowledge-base storage is append-oriented, which keeps old run data readable as the schema evolves.
+- Report content uses a generic JSON schema with `schema_version: "1.0"`; missing versions remain readable for older local artifacts.
+- Daily/weekly reports can embed collapsible `paper_traces`; lightweight update modes suppress hotword and trend sections by default.
+- Preparation modes cover `gap-analysis`, `idea-planning`, `experiment-roadmap`, and optional `formula-derivation`.
+- Novelty checking is an evaluation dimension inside `research-idea-planning`, not a parallel skill.
+- Research-wiki/wiki-enrich style persistence is folded into `knowledge_base/` as lightweight graph files.
 - Paper trace is HTML-first: helpers may use temporary PDF extraction, but do not create persistent PDF caches or PDF annotations.
 
 ## Extension points
@@ -20,23 +23,33 @@ The design is now extensible for common research workflow changes:
 - Add a prompt: update `PROMPTS.md` with one or two user-facing examples.
 - Add a source category: update `source_types` in `research_modes.json`; unknown types still render safely.
 - Add a source provider: add a collector function in `scripts/collect_sources.py`, map it to the report source fields, and add an offline fixture row.
+- Add a report section: extend `report_schema.md`, add a focused `render_<section>()`, add a fixture, and update `scripts/validate_skills.py`.
+- Add knowledge-base fields: update `references/knowledge_base_schema.md`, keep JSONL append-only, and make readers tolerate absent fields.
 - Add a paper trace field: extend `paper_traces` only when the renderer can still show old trace records safely.
-- Add a custom layout: add a new `render_<section>()` function only when generic `sections` cannot express the report.
 
 ## Data flow
 
-1. Build topic profile and search queries from a user request.
-2. Collect candidate sources with `scripts/collect_sources.py`.
+1. Build a topic profile and bilingual search queries from a user request.
+2. Collect candidate sources with `scripts/collect_sources.py` when useful.
 3. Review, cluster, and convert the strongest evidence into the report JSON schema.
-4. For daily/weekly reports, embed all in-window paper traces with `scripts/trace_report_papers.py`; default concurrency is `--jobs 8`.
+4. For daily/weekly reports, embed in-window paper traces with `scripts/trace_report_papers.py`; default concurrency is `--jobs 8`.
 5. Render HTML with `.agents/skills/auto-research-common/scripts/render_report.py`.
-6. Append source/run/keyword records into `knowledge_base/<topic_slug>/` when `--update-kb` is used.
+6. When `--update-kb` is used, append sources, runs, keywords, and graph rows under `knowledge_base/<topic_slug>/`.
+7. Query local graph snapshots with `scripts/query_knowledge_base.py` when a future workflow needs prior context.
+
+## Knowledge-base compatibility
+
+- Current schema version is `1.0`.
+- `sources.jsonl`, `runs.jsonl`, `entities.jsonl`, and `links.jsonl` are append-oriented; do not rewrite historical rows for routine migrations.
+- `keywords.json` and `graph_latest.json` are latest snapshots for quick reuse.
+- Readers must tolerate missing `schema_version` and unknown extra fields.
+- Generated knowledge-base data remains local and ignored by Git except for `.gitkeep`.
 
 ## Constraints
 
 - Keep scripts dependency-free unless the benefit clearly outweighs installation friction.
-- Preserve backward compatibility for `knowledge_base/*/*.jsonl`.
+- Preserve backward compatibility for `knowledge_base/*/*.jsonl` and older report JSON fixtures.
 - Do not make network access part of the default validation path; use fixtures for deterministic checks.
-- Prefer configuration and schema additions over branching logic in `render_report.py`.
+- Prefer configuration and schema additions over broad branching logic in `render_report.py`.
 - Do not introduce persistent `paper_cache/` outputs unless the privacy model is revisited.
 - Validate after changes with `python3 scripts/validate_skills.py`.

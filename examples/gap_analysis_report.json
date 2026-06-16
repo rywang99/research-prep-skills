@@ -1,14 +1,30 @@
 {
+  "schema_version": "1.0",
   "topic": "空间音频大模型",
   "topic_slug": "spatial-audio-llm",
   "mode": "gap-analysis",
   "snapshot_date": "2026-06-16",
-  "time_window": {"label": "近一年准备性缺口分析", "start": "2025-06-17", "end": "2026-06-16"},
+  "time_window": {
+    "label": "近一年准备性缺口分析",
+    "start": "2025-06-17",
+    "end": "2026-06-16"
+  },
   "summary_judgments": [
-    {"title": "评测从定位走向推理，但数据覆盖仍不足", "body": "现有空间音频任务逐步覆盖关系理解和时序推理，但真实多声源、跨设备和隐私合规数据仍是主要瓶颈。", "tone": "amber", "sources": ["src-spatial-omni"]}
+    {
+      "title": "评测从定位走向推理，但数据覆盖仍不足",
+      "body": "现有空间音频任务逐步覆盖关系理解和时序推理，但真实多声源、跨设备和隐私合规数据仍是主要瓶颈。",
+      "tone": "amber",
+      "sources": [
+        "src-spatial-omni"
+      ]
+    }
   ],
   "metrics": [
-    {"label": "缺口", "value": "2", "note": "准备阶段候选缺口"}
+    {
+      "label": "缺口",
+      "value": "2",
+      "note": "准备阶段候选缺口"
+    }
   ],
   "gaps": [
     {
@@ -20,7 +36,9 @@
       "actionable_opportunity": "设计跨 FOA、binaural、SALSA-Lite 的统一评测，并验证空间 token 是否可迁移。",
       "confidence": "high",
       "risk": "不同格式的坐标和 RIR 管线对齐成本较高。",
-      "source_ids": ["src-spatial-omni"]
+      "source_ids": [
+        "src-spatial-omni"
+      ]
     },
     {
       "name": "通用音频能力与空间能力的权衡不清晰",
@@ -31,15 +49,43 @@
       "actionable_opportunity": "建立 monaural-spatial 混合训练比例与能力退化曲线。",
       "confidence": "medium",
       "risk": "需要可公开复现的通用音频训练数据。",
-      "source_ids": ["src-spatial-omni"]
+      "source_ids": [
+        "src-spatial-omni"
+      ]
     }
   ],
-  "risks": ["该示例仅展示 schema 与渲染结构，不代表完整领域结论。"],
-  "next_queries": ["spatial audio LLM general audio forgetting", "FOA binaural SALSA-Lite benchmark"],
+  "risks": [
+    "该示例仅展示 schema 与渲染结构，不代表完整领域结论。"
+  ],
+  "next_queries": [
+    "spatial audio LLM general audio forgetting",
+    "FOA binaural SALSA-Lite benchmark"
+  ],
   "queries": [
-    {"query": "spatial audio LLM FOA benchmark", "purpose": "查找空间音频大模型评测", "source": "web"}
+    {
+      "query": "spatial audio LLM FOA benchmark",
+      "purpose": "查找空间音频大模型评测",
+      "source": "web"
+    }
   ],
   "sources": [
-    {"id": "src-spatial-omni", "title": "Spatial-Omni: Spatial Audio Understanding Integration in Multimodal LLMs via FOA Encoding", "url": "https://arxiv.org/abs/2606.10738", "source_type": "paper", "published_at": "2026-06-09", "accessed_at": "2026-06-16", "authors_or_org": "Zhiyuan Zhu et al.", "summary": "Introduces Spatial-Omni, SO-Dataset, SO-QA, and SO-Bench for FOA spatial audio understanding.", "tags": ["arxiv"], "confidence": "high", "provider": "arxiv", "query": "spatial audio LLM", "external_id": "2606.10738", "collected_at": "2026-06-16T00:00:00+08:00"}
+    {
+      "id": "src-spatial-omni",
+      "title": "Spatial-Omni: Spatial Audio Understanding Integration in Multimodal LLMs via FOA Encoding",
+      "url": "https://arxiv.org/abs/2606.10738",
+      "source_type": "paper",
+      "published_at": "2026-06-09",
+      "accessed_at": "2026-06-16",
+      "authors_or_org": "Zhiyuan Zhu et al.",
+      "summary": "Introduces Spatial-Omni, SO-Dataset, SO-QA, and SO-Bench for FOA spatial audio understanding.",
+      "tags": [
+        "arxiv"
+      ],
+      "confidence": "high",
+      "provider": "arxiv",
+      "query": "spatial audio LLM",
+      "external_id": "2606.10738",
+      "collected_at": "2026-06-16T00:00:00+08:00"
+    }
   ]
 }

@@ -22,6 +22,8 @@ COLLECTED_FIXTURE = ROOT / "examples" / "collected_sources.jsonl"
 COLLECTOR_PATH = ROOT / "scripts" / "collect_sources.py"
 TRACE_REPORT_PATH = ROOT / "scripts" / "trace_report_papers.py"
 TRACE_SINGLE_PATH = ROOT / "scripts" / "trace_single_paper.py"
+QUERY_KB_PATH = ROOT / "scripts" / "query_knowledge_base.py"
+SCHEMA_VERSION = "1.0"
 PREPARATION_FIXTURES = [
     (ROOT / "examples" / "gap_analysis_report.json", "gaps", 'id="gaps"'),
     (ROOT / "examples" / "idea_planning_report.json", "ideas", 'id="ideas"'),
@@ -182,16 +184,26 @@ def main() -> int:
         openai_yaml = SKILLS / name / "agents" / "openai.yaml"
         if not openai_yaml.exists():
             fail(f"missing {openai_yaml}")
-    json.loads((ROOT / "examples" / "minimal_report.json").read_text(encoding="utf-8"))
+    nav_anchors = {str(item.get("anchor")) for item in config.get("nav_sections", []) if isinstance(item, dict)}
+    for anchor in {"overview", "findings", "refs", "gaps", "ideas", "roadmap", "derivation"}:
+        if anchor not in nav_anchors:
+            fail(f"config nav_sections missing anchor: {anchor}")
+    minimal = json.loads((ROOT / "examples" / "minimal_report.json").read_text(encoding="utf-8"))
+    if minimal.get("schema_version") != SCHEMA_VERSION:
+        fail("minimal report fixture missing current schema_version")
     for fixture, field, _ in PREPARATION_FIXTURES:
         data = json.loads(fixture.read_text(encoding="utf-8"))
+        if data.get("schema_version") != SCHEMA_VERSION:
+            fail(f"preparation fixture missing current schema_version: {fixture}")
+        if data.get("mode") not in modes:
+            fail(f"preparation fixture mode is not registered: {fixture}")
         if not data.get(field):
             fail(f"preparation fixture missing {field}: {fixture}")
         if field == "ideas" and not any(isinstance(item, dict) and item.get("novelty_verdict") for item in data.get("ideas", [])):
             fail(f"idea fixture missing novelty_verdict: {fixture}")
     validate_collected_sources_fixture()
     validate_paper_trace_naming()
-    for path in (TRACE_REPORT_PATH, TRACE_SINGLE_PATH):
+    for path in (TRACE_REPORT_PATH, TRACE_SINGLE_PATH, QUERY_KB_PATH):
         if not path.exists():
             fail(f"missing {path}")
     with tempfile.TemporaryDirectory(prefix="auto-research-validate-") as tmp:
@@ -240,6 +252,17 @@ def main() -> int:
             fail("renderer did not create temporary knowledge-base graph links")
         if not any((tmpdir / "knowledge_base").rglob("graph_latest.json")):
             fail("renderer did not create temporary knowledge-base graph snapshot")
+        run_rows = [
+            json.loads(line)
+            for path in (tmpdir / "knowledge_base").rglob("runs.jsonl")
+            for line in path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        if not run_rows or run_rows[-1].get("schema_version") != SCHEMA_VERSION:
+            fail("knowledge-base run record missing current schema_version")
+        graph_docs = [json.loads(path.read_text(encoding="utf-8")) for path in (tmpdir / "knowledge_base").rglob("graph_latest.json")]
+        if not graph_docs or graph_docs[-1].get("schema_version") != SCHEMA_VERSION:
+            fail("knowledge-base graph snapshot missing current schema_version")
         subprocess.run(
             [
                 sys.executable,
@@ -283,6 +306,25 @@ def main() -> int:
                 fail(f"renderer did not create expected preparation section {expected_anchor} for {fixture.name}")
         if not any((tmpdir / "preparation_kb").rglob("graph_latest.json")):
             fail("preparation fixture rendering did not create graph snapshots")
+        query_result = subprocess.run(
+            [
+                sys.executable,
+                str(QUERY_KB_PATH),
+                "--kb-root",
+                str(tmpdir / "preparation_kb"),
+                "--type",
+                "idea",
+                "--limit",
+                "5",
+            ],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        query_data = json.loads(query_result.stdout)
+        if query_data.get("count", 0) < 1:
+            fail("knowledge-base query did not return idea entities")
     print("skills validation passed")
     return 0
 

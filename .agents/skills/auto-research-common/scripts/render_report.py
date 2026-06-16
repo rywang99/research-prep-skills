@@ -21,6 +21,7 @@ COMMON_DIR = SCRIPT_DIR.parent
 DEFAULT_TEMPLATE = COMMON_DIR / "assets" / "report_template.html"
 DEFAULT_CONFIG = COMMON_DIR / "config" / "research_modes.json"
 DEFAULT_KB_ROOT = Path("knowledge_base")
+SCHEMA_VERSION = "1.0"
 
 FALLBACK_CONFIG = {
     "modes": {
@@ -612,6 +613,7 @@ def render_sources(data: dict[str, Any], config: dict[str, Any]) -> str:
 
 
 def render_report(data: dict[str, Any], template: str, config: dict[str, Any] | None = None) -> str:
+    data.setdefault("schema_version", SCHEMA_VERSION)
     data.setdefault("generated_at", now_iso())
     data.setdefault("snapshot_date", today())
     config = config or load_config()
@@ -679,6 +681,7 @@ def entity_id(entity_type: str, key: Any) -> str:
 
 def build_graph_rows(data: dict[str, Any], run_id: str) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     recorded_at = now_iso()
+    schema_version = text(data.get("schema_version") or SCHEMA_VERSION)
     topic = data.get("topic")
     mode = data.get("mode")
     entities: dict[str, dict[str, Any]] = {}
@@ -694,6 +697,7 @@ def build_graph_rows(data: dict[str, Any], run_id: str) -> tuple[list[dict[str, 
             "mode": mode,
             "run_id": run_id,
             "recorded_at": recorded_at,
+            "schema_version": schema_version,
         }
         row.update({k: v for k, v in extra.items() if v not in (None, "", [])})
         entities[eid] = row
@@ -710,6 +714,7 @@ def build_graph_rows(data: dict[str, Any], run_id: str) -> tuple[list[dict[str, 
             "mode": mode,
             "run_id": run_id,
             "recorded_at": recorded_at,
+            "schema_version": schema_version,
         }
         row.update({k: v for k, v in extra.items() if v not in (None, "", [])})
         links[lid] = row
@@ -823,6 +828,8 @@ def build_graph_rows(data: dict[str, Any], run_id: str) -> tuple[list[dict[str, 
 
 
 def update_kb(data: dict[str, Any], output: Path, kb_root: Path) -> None:
+    data.setdefault("schema_version", SCHEMA_VERSION)
+    schema_version = text(data.get("schema_version") or SCHEMA_VERSION)
     topic_slug = text(data.get("topic_slug") or slugify(text(data.get("topic"))))
     run_id = hashlib.sha1(f"{topic_slug}:{data.get('mode')}:{data.get('generated_at')}".encode("utf-8")).hexdigest()[:12]
     topic_dir = kb_root / "paper-trace" / topic_slug if text(data.get("mode")) == "paper-trace" else kb_root / topic_slug
@@ -832,7 +839,7 @@ def update_kb(data: dict[str, Any], output: Path, kb_root: Path) -> None:
     for src in as_list(data.get("sources")):
         if isinstance(src, dict):
             row = dict(src)
-            row.update({"topic": data.get("topic"), "mode": data.get("mode"), "run_id": run_id, "recorded_at": now_iso()})
+            row.update({"topic": data.get("topic"), "mode": data.get("mode"), "run_id": run_id, "recorded_at": now_iso(), "schema_version": schema_version})
             source_rows.append(row)
     append_jsonl(topic_dir / "sources.jsonl", source_rows)
 
@@ -842,6 +849,7 @@ def update_kb(data: dict[str, Any], output: Path, kb_root: Path) -> None:
     effective_gaps = as_list(data.get("gaps"))
     effective_ideas = as_list(data.get("ideas"))
     keywords_doc = {
+        "schema_version": schema_version,
         "topic": data.get("topic"),
         "topic_slug": topic_slug,
         "updated_at": now_iso(),
@@ -856,6 +864,7 @@ def update_kb(data: dict[str, Any], output: Path, kb_root: Path) -> None:
     graph_entities, graph_links = build_graph_rows(data, run_id)
     run_row = {
         "run_id": run_id,
+        "schema_version": schema_version,
         "topic": data.get("topic"),
         "topic_slug": topic_slug,
         "mode": data.get("mode"),
@@ -877,6 +886,7 @@ def update_kb(data: dict[str, Any], output: Path, kb_root: Path) -> None:
     append_jsonl(topic_dir / "entities.jsonl", graph_entities)
     append_jsonl(topic_dir / "links.jsonl", graph_links)
     graph_doc = {
+        "schema_version": schema_version,
         "topic": data.get("topic"),
         "topic_slug": topic_slug,
         "updated_at": now_iso(),

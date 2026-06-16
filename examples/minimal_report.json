@@ -1,4 +1,5 @@
 {
+  "schema_version": "1.0",
   "topic": "自动化调研 Agent",
   "topic_slug": "auto-research-agent",
   "mode": "weekly",

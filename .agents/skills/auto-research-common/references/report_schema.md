@@ -4,6 +4,7 @@ The renderer expects one JSON object. Required fields are marked with `required`
 
 ```json
 {
+  "schema_version": "optional, default 1.0; emitted to knowledge-base artifacts",
   "topic": "required: human-readable topic",
   "topic_slug": "optional: filesystem-safe slug; renderer can derive one",
   "mode": "required: registered mode id from config/research_modes.json, e.g. daily | weekly | monthly | yearly-hotwords | yearly-trends | gap-analysis | idea-planning | experiment-roadmap | formula-derivation | paper-trace",
@@ -196,5 +197,5 @@ The renderer expects one JSON object. Required fields are marked with `required`
 - `gaps`, `ideas`, and `experiment_roadmap` are preparation-stage sections; they should not claim experiments were run unless source evidence already exists.
 - `topic_slug` is sanitized if omitted.
 - `--update-kb` appends source records and run metadata under `knowledge_base/<topic_slug>/`; standalone `paper-trace` reports use `knowledge_base/paper-trace/<topic_slug>/`.
-- `--update-kb` also writes lightweight graph artifacts: `entities.jsonl`, `links.jsonl`, and `graph_latest.json`. These cover source, keyword, trend, gap, idea, claim, and formula-derivation entities plus relations such as `supports`, `mentions`, `addresses`, `derived_from`, and `validates`.
+- `--update-kb` also writes lightweight graph artifacts: `entities.jsonl`, `links.jsonl`, and `graph_latest.json`. These cover source, keyword, trend, gap, idea, claim, and formula-derivation entities plus relations such as `supports`, `mentions`, `addresses`, `derived_from`, and `validates`; see `knowledge_base_schema.md` for compatibility rules.
 - Extra source provenance fields from `scripts/collect_sources.py` are preserved in the knowledge base and ignored by the HTML renderer unless explicitly displayed.

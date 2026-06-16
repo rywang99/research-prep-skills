@@ -52,5 +52,6 @@ Knowledge-base files are append-friendly and should remain backward compatible:
 - `sources.jsonl`: append source records; never rewrite historical rows unless repairing invalid JSON.
 - `runs.jsonl`: append one run summary per rendered report.
 - `keywords.json`: latest keyword snapshot for quick reuse; daily/weekly lightweight reports intentionally write an empty keyword list.
+- `entities.jsonl`, `links.jsonl`, and `graph_latest.json`: lightweight research graph artifacts; follow `knowledge_base_schema.md` and keep readers tolerant of missing `schema_version`.
 
 If a future migration is required, write a new script under `scripts/` and keep old files readable.

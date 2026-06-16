@@ -12,12 +12,14 @@ This skill provides shared resources for the auto-research skill family.
 - `config/research_modes.json`: registry for modes, labels, default windows, nav sections, and source type labels.
 - `references/source_policy.md`: source priority, citation, deduplication, and confidence rules.
 - `references/report_schema.md`: JSON shape expected by the renderer and knowledge-base updater.
+- `references/knowledge_base_schema.md`: local persistence, graph artifacts, versioning, and compatibility rules.
 - `references/extension_guide.md`: steps for adding modes, report sections, source types, and migrations.
 - `assets/report_template.html`: self-contained HTML/CSS template inspired by the local spatial-audio planning document.
 - `scripts/render_report.py`: render a report JSON into HTML and optionally update `knowledge_base/`.
 - Repository-level `scripts/collect_sources.py`: collect candidate sources from arXiv, OpenAlex, and GitHub into normalized JSONL.
 - Repository-level `scripts/trace_report_papers.py`: embed collapsible HTML paper traces into daily/weekly report JSON with default `--jobs 8` concurrency.
 - Repository-level `scripts/trace_single_paper.py`: generate standalone single-paper trace JSON/HTML without caching PDFs.
+- Repository-level `scripts/query_knowledge_base.py`: query local `entities.jsonl` and `links.jsonl` graph artifacts.
 - Preparation modes such as `gap-analysis`, `idea-planning`, and `experiment-roadmap` use the same renderer and schema but do not run experiments.
 - `--update-kb` also writes lightweight graph files under `knowledge_base/<topic_slug>/` (`entities.jsonl`, `links.jsonl`, `graph_latest.json`) so research-wiki/wiki-enrich style persistence is folded into the existing knowledge base rather than exposed as a parallel skill.
 

@@ -1,4 +1,5 @@
 {
+  "schema_version": "1.0",
   "topic": "空间音频大模型",
   "topic_slug": "spatial-audio-llm",
   "mode": "idea-planning",

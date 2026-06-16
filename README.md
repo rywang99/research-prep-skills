@@ -51,6 +51,7 @@
 - `paper-trace`：针对单篇论文生成技术溯源、重点阅读信号和复现风险 HTML。
 - `scripts/collect_sources.py`：从无密钥公共 API 采集候选来源，生成可复用 JSONL。
 - `scripts/trace_report_papers.py`：为日/周调研自动嵌入所有区间内文献的折叠 trace。
+- `scripts/query_knowledge_base.py`：查询本地 `knowledge_base/` 中的实体和关系图谱。
 
 ## 目录结构
 
@@ -61,7 +62,7 @@
 .agents/skills/paper-trace/                # 单篇论文技术溯源 skill
 .agents/skills/auto-research-common/       # 共享配置、模板、schema、渲染脚本
 examples/                                  # 示例报告和采集结果 fixture
-scripts/                                   # 仓库级校验和脚手架工具
+scripts/                                   # 仓库级采集、查询、校验和脚手架工具
 reports/                                   # 本地生成的 HTML/JSON 报告，默认不入库
 knowledge_base/                            # 本地调研知识库与轻量图谱，默认不入库
 ```
@@ -114,6 +115,15 @@ python3 scripts/trace_report_papers.py \
 
 论文 trace 会以默认 `--jobs 8` 并发执行，并嵌入 HTML 的可折叠区块；不会缓存 PDF，也不会写回 PDF 注释。
 
+查询本地知识库图谱：
+
+```bash
+python3 scripts/query_knowledge_base.py \
+  --topic spatial-audio-llm \
+  --type idea \
+  --limit 5
+```
+
 新增调研模式示例：
 
 ```bash
@@ -127,7 +137,7 @@ python3 scripts/new_research_mode.py quarterly \
 
 - 默认报告路径：`reports/<topic_slug>/YYYY-MM-DD_<mode>.html`。
 - 单篇论文 trace 默认路径：`reports/paper-trace/<category_slug>/<method_slug>.html`。
-- 默认知识库路径：`knowledge_base/<topic_slug>/`，其中 `entities.jsonl`、`links.jsonl`、`graph_latest.json` 是 research-wiki/wiki-enrich 风格的轻量图谱增强。
+- 默认知识库路径：`knowledge_base/<topic_slug>/`，其中 `entities.jsonl`、`links.jsonl`、`graph_latest.json` 是 research-wiki/wiki-enrich 风格的轻量图谱增强；当前 schema version 为 `1.0`。
 - `reports/*` 和 `knowledge_base/*` 已在 `.gitignore` 中忽略，只保留 `.gitkeep` 占位文件，避免把个人调研报告、来源列表、运行记录提交到 Git。
 - 不要提交 API Key、浏览器 Cookie、私有源导出或其他敏感材料。
 

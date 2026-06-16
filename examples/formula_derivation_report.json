@@ -1,0 +1,46 @@
+{
+  "topic": "空间音频 token 对齐理论准备",
+  "topic_slug": "spatial-token-derivation",
+  "mode": "formula-derivation",
+  "snapshot_date": "2026-06-16",
+  "time_window": {"label": "理论准备示例"},
+  "summary_judgments": [
+    {"title": "先定义跨格式不变性，再规划实验验证", "body": "该推导准备把不同音频格式的空间 token 映射到共享潜变量，并明确哪些假设需要后续实验确认。", "tone": "blue", "sources": ["src-idea"]}
+  ],
+  "formula_derivation": {
+    "title": "Cross-Format Spatial Token Alignment Objective",
+    "problem_setup": "给定不同空间音频格式的观测，希望学习共享空间表示 z，使同一声源几何在不同格式下的 token 距离小于不同几何的 token 距离。",
+    "assumptions": [
+      "不同格式观测可由同一潜在空间几何变量 g 生成。",
+      "格式特定 adapter 只补偿观测通道差异，不应编码任务标签。"
+    ],
+    "symbols": [
+      {"symbol": "x_f", "meaning": "格式 f 下的音频观测", "domain": "f ∈ {FOA, binaural, SALSA-Lite}"},
+      {"symbol": "z_f", "meaning": "格式 f 经 encoder 与 adapter 后的空间 token", "domain": "R^d"},
+      {"symbol": "g", "meaning": "共享声源几何潜变量", "domain": "方位、距离、声源关系"}
+    ],
+    "derivation_steps": [
+      {"id": "D1", "statement": "z_f = A_f(E(x_f))", "justification": "用共享 encoder E 与格式 adapter A_f 分离语义抽取和格式校准。", "depends_on": "Assumption 1"},
+      {"id": "D2", "statement": "L_align = ||z_f - z_h||_2^2 for paired geometry", "justification": "同一几何在不同格式下应映射到邻近 token。", "depends_on": "D1"},
+      {"id": "D3", "statement": "L = L_task + λ L_align + μ L_sep", "justification": "同时保留任务性能、跨格式一致性和不同几何可分性。", "depends_on": "D1,D2"}
+    ],
+    "sanity_checks": [
+      "当 f=h 时，L_align 应退化为同格式增强一致性。",
+      "若 λ 过大导致所有 z 坍缩，L_sep 应上升并触发失败。"
+    ],
+    "failure_modes": [
+      "配对几何标签噪声会让对齐损失学习错误不变性。",
+      "adapter 容量过大可能绕过共享表示。"
+    ],
+    "next_validation": [
+      "先用合成 RIR 构造小规模 paired geometry sanity set。",
+      "比较无 adapter、共享 adapter、格式特定 adapter 三种设置。"
+    ],
+    "source_ids": ["src-idea"]
+  },
+  "risks": ["该示例只用于 schema 与渲染校验，不代表完整理论证明。"],
+  "next_queries": ["cross format spatial audio representation alignment", "spatial audio token invariance"],
+  "sources": [
+    {"id": "src-idea", "title": "Cross-Format Spatial Token Alignment idea", "url": "reports/spatial-audio-llm/idea-planning.html", "source_type": "signal", "published_at": "2026-06-16", "accessed_at": "2026-06-16", "summary": "Local idea planning report proposing cross-format spatial token alignment.", "confidence": "medium", "provider": "local", "query": "local idea report", "external_id": "idea-planning", "collected_at": "2026-06-16T00:00:00+08:00"}
+  ]
+}

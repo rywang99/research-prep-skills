@@ -32,6 +32,7 @@ FALLBACK_CONFIG = {
         "gap-analysis": {"label": "研究缺口分析"},
         "idea-planning": {"label": "研究 idea 规划"},
         "experiment-roadmap": {"label": "实验路线图"},
+        "formula-derivation": {"label": "公式推导准备"},
         "paper-trace": {"label": "论文溯源"},
     },
     "nav_sections": [
@@ -43,6 +44,7 @@ FALLBACK_CONFIG = {
         {"anchor": "gaps", "label": "研究缺口"},
         {"anchor": "ideas", "label": "Idea 规划"},
         {"anchor": "roadmap", "label": "实验路线"},
+        {"anchor": "derivation", "label": "公式推导"},
         {"anchor": "analysis", "label": "补充分析"},
         {"anchor": "risks", "label": "风险与限制"},
         {"anchor": "next", "label": "后续追踪"},
@@ -406,12 +408,22 @@ def render_ideas(data: dict[str, Any], sources: dict[str, dict[str, Any]]) -> st
     for item in as_list(data.get("ideas")):
         if not isinstance(item, dict):
             continue
+        novelty_parts = []
+        if item.get("novelty_verdict"):
+            novelty_parts.append("查新: " + text(item.get("novelty_verdict")))
+        if item.get("closest_prior_work"):
+            novelty_parts.append("最近工作: " + text(item.get("closest_prior_work")))
+        if item.get("novelty_evidence"):
+            novelty_parts.append("证据: " + "；".join(map(str, as_list(item.get("novelty_evidence")))))
+        if item.get("novelty_risk"):
+            novelty_parts.append("风险: " + text(item.get("novelty_risk")))
+        novelty_html = "<br>".join(esc(part) for part in novelty_parts) or esc(item.get("novelty_delta", ""))
         rows.append(
             "<tr>"
             f"<td><strong>{esc(item.get('name', 'Idea'))}</strong><br>{tags_html(as_list(item.get('tags')))}</td>"
             f"<td>{esc(item.get('problem_anchor', ''))}</td>"
             f"<td>{esc(item.get('core_mechanism', ''))}</td>"
-            f"<td>{esc(item.get('novelty_delta', ''))}</td>"
+            f"<td>{novelty_html}</td>"
             f"<td>{esc(item.get('validation_path', ''))}</td>"
             f"<td>{tags_html([text(item.get('priority'), 'medium'), '风险: ' + text(item.get('risk'), 'unknown')])}</td>"
             f"<td>{source_links(as_list(item.get('source_ids')), sources)}</td>"
@@ -425,6 +437,54 @@ def render_ideas(data: dict[str, Any], sources: dict[str, dict[str, Any]]) -> st
         + "\n".join(rows)
         + '</tbody></table>'
     )
+
+
+def render_formula_derivation(data: dict[str, Any]) -> str:
+    derivation = data.get("formula_derivation")
+    if not isinstance(derivation, dict):
+        return ""
+    chunks = ['<h2 id="derivation">公式推导准备</h2>']
+    if derivation.get("problem_setup"):
+        chunks.append(f'<p>{esc(derivation.get("problem_setup"))}</p>')
+    assumptions = as_list(derivation.get("assumptions"))
+    if assumptions:
+        chunks.append('<h3>假设边界</h3><ul>' + "\n".join(f"<li>{esc(item)}</li>" for item in assumptions) + '</ul>')
+    symbol_rows = []
+    for item in as_list(derivation.get("symbols")):
+        if not isinstance(item, dict):
+            continue
+        symbol_rows.append(
+            "<tr>"
+            f"<td><code>{esc(item.get('symbol', ''))}</code></td>"
+            f"<td>{esc(item.get('meaning', ''))}</td>"
+            f"<td>{esc(item.get('domain', ''))}</td>"
+            "</tr>"
+        )
+    if symbol_rows:
+        chunks.append('<h3>符号表</h3><table><thead><tr><th>符号</th><th>含义</th><th>定义域/约束</th></tr></thead><tbody>' + "\n".join(symbol_rows) + '</tbody></table>')
+    step_rows = []
+    for item in as_list(derivation.get("derivation_steps")):
+        if not isinstance(item, dict):
+            continue
+        step_rows.append(
+            "<tr>"
+            f"<td><strong>{esc(item.get('id', ''))}</strong></td>"
+            f"<td>{esc(item.get('statement', ''))}</td>"
+            f"<td>{esc(item.get('justification', ''))}</td>"
+            f"<td>{esc(item.get('depends_on', ''))}</td>"
+            "</tr>"
+        )
+    if step_rows:
+        chunks.append('<h3>推导步骤</h3><table><thead><tr><th>步骤</th><th>表达/结论</th><th>依据</th><th>依赖</th></tr></thead><tbody>' + "\n".join(step_rows) + '</tbody></table>')
+    for label, key in [
+        ("Sanity Checks", "sanity_checks"),
+        ("失败模式", "failure_modes"),
+        ("下一步验证", "next_validation"),
+    ]:
+        items = as_list(derivation.get(key))
+        if items:
+            chunks.append(f'<h3>{esc(label)}</h3><ul>' + "\n".join(f"<li>{esc(item)}</li>" for item in items) + '</ul>')
+    return "\n".join(chunks)
 
 
 def render_experiment_roadmap(data: dict[str, Any]) -> str:
@@ -587,6 +647,7 @@ def render_report(data: dict[str, Any], template: str, config: dict[str, Any] | 
         ("gaps", render_gaps(data, sources)),
         ("ideas", render_ideas(data, sources)),
         ("roadmap", render_experiment_roadmap(data)),
+        ("derivation", render_formula_derivation(data)),
         ("analysis", render_extra_sections(data, config)),
         ("risks", render_list_section("risks", "风险与限制", as_list(data.get("risks")))),
         ("next", render_list_section("next", "后续追踪", as_list(data.get("next_queries")))),
@@ -609,6 +670,156 @@ def append_jsonl(path: Path, rows: Iterable[dict[str, Any]]) -> None:
     with path.open("a", encoding="utf-8") as f:
         for row in rows:
             f.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+
+
+def entity_id(entity_type: str, key: Any) -> str:
+    raw = f"{entity_type}:{text(key)}"
+    return f"{entity_type}:{slugify(text(key)) or hashlib.sha1(raw.encode('utf-8')).hexdigest()[:10]}"
+
+
+def build_graph_rows(data: dict[str, Any], run_id: str) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    recorded_at = now_iso()
+    topic = data.get("topic")
+    mode = data.get("mode")
+    entities: dict[str, dict[str, Any]] = {}
+    links: dict[str, dict[str, Any]] = {}
+
+    def add_entity(entity_type: str, key: Any, name: Any, **extra: Any) -> str:
+        eid = entity_id(entity_type, key)
+        row = {
+            "id": eid,
+            "type": entity_type,
+            "name": text(name),
+            "topic": topic,
+            "mode": mode,
+            "run_id": run_id,
+            "recorded_at": recorded_at,
+        }
+        row.update({k: v for k, v in extra.items() if v not in (None, "", [])})
+        entities[eid] = row
+        return eid
+
+    def add_link(src: str, relation: str, dst: str, **extra: Any) -> None:
+        lid = hashlib.sha1(f"{src}:{relation}:{dst}:{run_id}".encode("utf-8")).hexdigest()[:16]
+        row = {
+            "id": lid,
+            "source": src,
+            "relation": relation,
+            "target": dst,
+            "topic": topic,
+            "mode": mode,
+            "run_id": run_id,
+            "recorded_at": recorded_at,
+        }
+        row.update({k: v for k, v in extra.items() if v not in (None, "", [])})
+        links[lid] = row
+
+    source_entities: dict[str, str] = {}
+    for idx, src in enumerate(as_list(data.get("sources")), 1):
+        if not isinstance(src, dict):
+            continue
+        sid = text(src.get("id") or f"src-{idx}")
+        source_entities[sid] = add_entity(
+            "source",
+            sid,
+            src.get("title") or sid,
+            url=src.get("url"),
+            source_type=src.get("source_type"),
+            confidence=src.get("confidence"),
+        )
+
+    keyword_entities: dict[str, str] = {}
+    for item in as_list(data.get("keywords")):
+        if not isinstance(item, dict):
+            continue
+        term = text(item.get("term"))
+        if not term:
+            continue
+        eid = add_entity("keyword", term, term, aliases=as_list(item.get("aliases")), evidence_count=item.get("evidence_count"))
+        keyword_entities[term.lower()] = eid
+        for sid in as_list(item.get("source_ids")):
+            if text(sid) in source_entities:
+                add_link(source_entities[text(sid)], "supports", eid)
+
+    trend_entities = []
+    for item in as_list(data.get("trend_clusters")):
+        if not isinstance(item, dict):
+            continue
+        name = text(item.get("name"))
+        if not name:
+            continue
+        eid = add_entity("trend", name, name, evidence_strength=item.get("evidence_strength"), maturity=item.get("maturity"))
+        trend_entities.append((eid, item))
+        for sid in as_list(item.get("source_ids")):
+            if text(sid) in source_entities:
+                add_link(source_entities[text(sid)], "supports", eid)
+        haystack = " ".join([name, text(item.get("thesis")), " ".join(map(str, as_list(item.get("drivers"))))]).lower()
+        for term, kid in keyword_entities.items():
+            if term and term in haystack:
+                add_link(eid, "mentions", kid)
+
+    gap_entities = []
+    for item in as_list(data.get("gaps")):
+        if not isinstance(item, dict):
+            continue
+        name = text(item.get("name"))
+        if not name:
+            continue
+        eid = add_entity("gap", name, name, gap_type=item.get("gap_type"), confidence=item.get("confidence"), source_ids=as_list(item.get("source_ids")))
+        gap_entities.append((eid, item))
+        for sid in as_list(item.get("source_ids")):
+            if text(sid) in source_entities:
+                add_link(source_entities[text(sid)], "supports", eid)
+        for trend_id, trend in trend_entities:
+            if set(map(text, as_list(item.get("source_ids")))) & set(map(text, as_list(trend.get("source_ids")))):
+                add_link(eid, "derived_from", trend_id)
+
+    idea_entities = []
+    for item in as_list(data.get("ideas")):
+        if not isinstance(item, dict):
+            continue
+        name = text(item.get("name"))
+        if not name:
+            continue
+        eid = add_entity(
+            "idea",
+            name,
+            name,
+            priority=item.get("priority"),
+            novelty_verdict=item.get("novelty_verdict"),
+            source_ids=as_list(item.get("source_ids")),
+        )
+        idea_entities.append((eid, item))
+        for sid in as_list(item.get("source_ids")):
+            if text(sid) in source_entities:
+                add_link(source_entities[text(sid)], "supports", eid)
+        anchor = text(item.get("problem_anchor")).lower()
+        idea_sources = set(map(text, as_list(item.get("source_ids"))))
+        for gap_id, gap in gap_entities:
+            if text(gap.get("name")).lower() in anchor or idea_sources & set(map(text, as_list(gap.get("source_ids")))):
+                add_link(eid, "addresses", gap_id)
+
+    roadmap = data.get("experiment_roadmap") if isinstance(data.get("experiment_roadmap"), dict) else {}
+    for claim in as_list(roadmap.get("claims") if roadmap else []):
+        if not isinstance(claim, dict):
+            continue
+        key = claim.get("id") or claim.get("claim")
+        if not key:
+            continue
+        cid = add_entity("claim", key, claim.get("claim") or key, blocks=as_list(claim.get("blocks")))
+        for idea_id, _ in idea_entities:
+            add_link(cid, "validates", idea_id)
+
+    derivation = data.get("formula_derivation") if isinstance(data.get("formula_derivation"), dict) else {}
+    if derivation:
+        fid = add_entity("formula_derivation", topic or "formula-derivation", derivation.get("title") or topic or "formula derivation")
+        for sid in as_list(derivation.get("source_ids")):
+            if text(sid) in source_entities:
+                add_link(fid, "derived_from", source_entities[text(sid)])
+        for idea_id, _ in idea_entities:
+            add_link(fid, "validates", idea_id)
+
+    return list(entities.values()), list(links.values())
 
 
 def update_kb(data: dict[str, Any], output: Path, kb_root: Path) -> None:
@@ -642,6 +853,7 @@ def update_kb(data: dict[str, Any], output: Path, kb_root: Path) -> None:
     }
     (topic_dir / "keywords.json").write_text(json.dumps(keywords_doc, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
+    graph_entities, graph_links = build_graph_rows(data, run_id)
     run_row = {
         "run_id": run_id,
         "topic": data.get("topic"),
@@ -657,8 +869,23 @@ def update_kb(data: dict[str, Any], output: Path, kb_root: Path) -> None:
         "trend_count": len(effective_trends),
         "gap_count": len(effective_gaps),
         "idea_count": len(effective_ideas),
+        "graph_entity_count": len(graph_entities),
+        "graph_link_count": len(graph_links),
     }
     append_jsonl(topic_dir / "runs.jsonl", [run_row])
+
+    append_jsonl(topic_dir / "entities.jsonl", graph_entities)
+    append_jsonl(topic_dir / "links.jsonl", graph_links)
+    graph_doc = {
+        "topic": data.get("topic"),
+        "topic_slug": topic_slug,
+        "updated_at": now_iso(),
+        "mode": data.get("mode"),
+        "run_id": run_id,
+        "entities": graph_entities,
+        "links": graph_links,
+    }
+    (topic_dir / "graph_latest.json").write_text(json.dumps(graph_doc, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def main() -> int:

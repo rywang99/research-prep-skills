@@ -1,0 +1,7 @@
+interface:
+  display_name: "Formula Derivation"
+  short_description: "为理论型研究方向整理变量、假设和推导路线"
+  brand_color: "#7C3AED"
+  default_prompt: "Use $formula-derivation to structure assumptions, symbols, derivation steps, and validation checks for a theory-oriented research idea."
+policy:
+  allow_implicit_invocation: true

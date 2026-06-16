@@ -26,6 +26,7 @@ PREPARATION_FIXTURES = [
     (ROOT / "examples" / "gap_analysis_report.json", "gaps", 'id="gaps"'),
     (ROOT / "examples" / "idea_planning_report.json", "ideas", 'id="ideas"'),
     (ROOT / "examples" / "experiment_roadmap_report.json", "experiment_roadmap", 'id="roadmap"'),
+    (ROOT / "examples" / "formula_derivation_report.json", "formula_derivation", 'id="derivation"'),
 ]
 REQUIRED_SOURCE_FIELDS = {
     "id",
@@ -186,6 +187,8 @@ def main() -> int:
         data = json.loads(fixture.read_text(encoding="utf-8"))
         if not data.get(field):
             fail(f"preparation fixture missing {field}: {fixture}")
+        if field == "ideas" and not any(isinstance(item, dict) and item.get("novelty_verdict") for item in data.get("ideas", [])):
+            fail(f"idea fixture missing novelty_verdict: {fixture}")
     validate_collected_sources_fixture()
     validate_paper_trace_naming()
     for path in (TRACE_REPORT_PATH, TRACE_SINGLE_PATH):
@@ -231,6 +234,12 @@ def main() -> int:
             fail("renderer did not create collapsible paper trace section")
         if not any((tmpdir / "knowledge_base").rglob("runs.jsonl")):
             fail("renderer did not create temporary knowledge-base run records")
+        if not any((tmpdir / "knowledge_base").rglob("entities.jsonl")):
+            fail("renderer did not create temporary knowledge-base graph entities")
+        if not any((tmpdir / "knowledge_base").rglob("links.jsonl")):
+            fail("renderer did not create temporary knowledge-base graph links")
+        if not any((tmpdir / "knowledge_base").rglob("graph_latest.json")):
+            fail("renderer did not create temporary knowledge-base graph snapshot")
         subprocess.run(
             [
                 sys.executable,
@@ -262,6 +271,9 @@ def main() -> int:
                     str(fixture),
                     "--output",
                     str(output),
+                    "--update-kb",
+                    "--kb-root",
+                    str(tmpdir / "preparation_kb"),
                 ],
                 cwd=ROOT,
                 check=True,
@@ -269,6 +281,8 @@ def main() -> int:
             rendered = output.read_text(encoding="utf-8")
             if expected_anchor not in rendered:
                 fail(f"renderer did not create expected preparation section {expected_anchor} for {fixture.name}")
+        if not any((tmpdir / "preparation_kb").rglob("graph_latest.json")):
+            fail("preparation fixture rendering did not create graph snapshots")
     print("skills validation passed")
     return 0
 

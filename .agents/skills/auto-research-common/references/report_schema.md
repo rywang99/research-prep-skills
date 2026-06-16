@@ -6,7 +6,7 @@ The renderer expects one JSON object. Required fields are marked with `required`
 {
   "topic": "required: human-readable topic",
   "topic_slug": "optional: filesystem-safe slug; renderer can derive one",
-  "mode": "required: registered mode id from config/research_modes.json, e.g. daily | weekly | monthly | yearly-hotwords | yearly-trends | gap-analysis | idea-planning | experiment-roadmap | paper-trace",
+  "mode": "required: registered mode id from config/research_modes.json, e.g. daily | weekly | monthly | yearly-hotwords | yearly-trends | gap-analysis | idea-planning | experiment-roadmap | formula-derivation | paper-trace",
   "generated_at": "optional ISO datetime",
   "snapshot_date": "optional YYYY-MM-DD",
   "time_window": {
@@ -91,6 +91,10 @@ The renderer expects one JSON object. Required fields are marked with `required`
       "problem_anchor": "gap or pain point",
       "core_mechanism": "proposed mechanism",
       "novelty_delta": "difference from closest prior work",
+      "closest_prior_work": "nearest paper, benchmark, repo, or method family",
+      "novelty_verdict": "likely_new|incremental|overlap|uncertain",
+      "novelty_evidence": ["source-backed reason or comparison"],
+      "novelty_risk": "what could invalidate the novelty claim",
       "validation_path": "minimum evidence before implementation",
       "priority": "high|medium|low",
       "risk": "main failure risk",
@@ -117,6 +121,21 @@ The renderer expects one JSON object. Required fields are marked with `required`
     "milestones": [
       {"name": "stage name", "goal": "what to finish", "estimated_cost": "compute/time estimate", "gate": "stop/go condition"}
     ]
+  },
+  "formula_derivation": {
+    "title": "optional derivation title",
+    "problem_setup": "what the derivation tries to explain or predict",
+    "assumptions": ["explicit modeling assumptions and boundaries"],
+    "symbols": [
+      {"symbol": "x", "meaning": "what it denotes", "domain": "domain, units, or constraints"}
+    ],
+    "derivation_steps": [
+      {"id": "D1", "statement": "equation or intermediate claim", "justification": "why this step is allowed", "depends_on": "previous steps or assumptions"}
+    ],
+    "sanity_checks": ["limiting case, dimensional check, monotonicity check, or counterexample"],
+    "failure_modes": ["where the derivation may break"],
+    "next_validation": ["minimal analytical or empirical validation for humans"],
+    "source_ids": ["source-id"]
   },
   "paper_traces": [
     {
@@ -177,4 +196,5 @@ The renderer expects one JSON object. Required fields are marked with `required`
 - `gaps`, `ideas`, and `experiment_roadmap` are preparation-stage sections; they should not claim experiments were run unless source evidence already exists.
 - `topic_slug` is sanitized if omitted.
 - `--update-kb` appends source records and run metadata under `knowledge_base/<topic_slug>/`; standalone `paper-trace` reports use `knowledge_base/paper-trace/<topic_slug>/`.
+- `--update-kb` also writes lightweight graph artifacts: `entities.jsonl`, `links.jsonl`, and `graph_latest.json`. These cover source, keyword, trend, gap, idea, claim, and formula-derivation entities plus relations such as `supports`, `mentions`, `addresses`, `derived_from`, and `validates`.
 - Extra source provenance fields from `scripts/collect_sources.py` are preserved in the knowledge base and ignored by the HTML renderer unless explicitly displayed.

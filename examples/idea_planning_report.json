@@ -3,12 +3,25 @@
   "topic_slug": "spatial-audio-llm",
   "mode": "idea-planning",
   "snapshot_date": "2026-06-16",
-  "time_window": {"label": "基于缺口的 idea 规划"},
+  "time_window": {
+    "label": "基于缺口的 idea 规划"
+  },
   "summary_judgments": [
-    {"title": "优先探索跨格式空间 token 对齐", "body": "最有潜力的 idea 是把 FOA、binaural 和 SALSA-Lite 映射到统一空间 token 空间，并用小规模诊断任务验证迁移。", "tone": "green", "sources": ["src-gap"]}
+    {
+      "title": "优先探索跨格式空间 token 对齐",
+      "body": "最有潜力的 idea 是把 FOA、binaural 和 SALSA-Lite 映射到统一空间 token 空间，并用小规模诊断任务验证迁移。",
+      "tone": "green",
+      "sources": [
+        "src-gap"
+      ]
+    }
   ],
   "metrics": [
-    {"label": "候选 idea", "value": "2", "note": "按准备价值排序"}
+    {
+      "label": "候选 idea",
+      "value": "2",
+      "note": "按准备价值排序"
+    }
   ],
   "ideas": [
     {
@@ -19,8 +32,19 @@
       "validation_path": "先在小规模 FOA↔binaural 转换评测上比较零样本和少样本迁移。",
       "priority": "high",
       "risk": "格式转换误差可能掩盖模型机制收益。",
-      "tags": ["spatial-token", "alignment"],
-      "source_ids": ["src-gap"]
+      "tags": [
+        "spatial-token",
+        "alignment"
+      ],
+      "source_ids": [
+        "src-gap"
+      ],
+      "closest_prior_work": "Spatial-Omni 的 FOA encoder 与 SO-Bench 设置",
+      "novelty_verdict": "likely_new",
+      "novelty_evidence": [
+        "现有示例聚焦 FOA 空间理解，未系统验证 FOA、binaural、SALSA-Lite 间 token 对齐迁移。"
+      ],
+      "novelty_risk": "可能已有跨格式空间表示工作但未被本地缺口报告覆盖。"
     },
     {
       "name": "Monaural-Spatial Mixture Curriculum",
@@ -30,13 +54,42 @@
       "validation_path": "在通用音频 benchmark 与空间 benchmark 上画混合比例 Pareto 曲线。",
       "priority": "medium",
       "risk": "训练数据不可完全公开会影响复现。",
-      "tags": ["curriculum", "forgetting"],
-      "source_ids": ["src-gap"]
+      "tags": [
+        "curriculum",
+        "forgetting"
+      ],
+      "source_ids": [
+        "src-gap"
+      ],
+      "closest_prior_work": "mixed data tuning 与通用音频能力恢复策略",
+      "novelty_verdict": "incremental",
+      "novelty_evidence": [
+        "课程学习本身不是新机制，但将混合比例 Pareto 曲线用于空间/通用音频权衡诊断有准备价值。"
+      ],
+      "novelty_risk": "如果已有完整 ability retention benchmark，该 idea 会退化为实验设计补充。"
     }
   ],
-  "risks": ["idea 仍需后续 novelty check 和最小实验路线规划。"],
-  "next_queries": ["cross format spatial audio representation", "monaural spatial audio instruction tuning"],
+  "risks": [
+    "idea 仍需后续 novelty check 和最小实验路线规划。"
+  ],
+  "next_queries": [
+    "cross format spatial audio representation",
+    "monaural spatial audio instruction tuning"
+  ],
   "sources": [
-    {"id": "src-gap", "title": "空间音频大模型缺口分析", "url": "reports/spatial-audio-llm/gap-analysis.html", "source_type": "signal", "published_at": "2026-06-16", "accessed_at": "2026-06-16", "summary": "Preparation-stage gap analysis identifying cross-format generalization and capability tradeoff issues.", "confidence": "medium", "provider": "local", "query": "local gap report", "external_id": "gap-analysis", "collected_at": "2026-06-16T00:00:00+08:00"}
+    {
+      "id": "src-gap",
+      "title": "空间音频大模型缺口分析",
+      "url": "reports/spatial-audio-llm/gap-analysis.html",
+      "source_type": "signal",
+      "published_at": "2026-06-16",
+      "accessed_at": "2026-06-16",
+      "summary": "Preparation-stage gap analysis identifying cross-format generalization and capability tradeoff issues.",
+      "confidence": "medium",
+      "provider": "local",
+      "query": "local gap report",
+      "external_id": "gap-analysis",
+      "collected_at": "2026-06-16T00:00:00+08:00"
+    }
   ]
 }

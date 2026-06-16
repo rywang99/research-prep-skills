@@ -24,6 +24,10 @@ Use this skill when the user asks for 找 idea, 课题构思, idea planning, res
    - `problem_anchor`: the gap or pain point it solves.
    - `core_mechanism`: the proposed mechanism, not just a buzzword.
    - `novelty_delta`: how it differs from closest prior work.
+   - `closest_prior_work`: nearest paper, benchmark, repo, or method family.
+   - `novelty_verdict`: one of `likely_new`, `incremental`, `overlap`, or `uncertain`.
+   - `novelty_evidence`: short evidence bullets or source-backed reasons.
+   - `novelty_risk`: what could invalidate the novelty claim.
    - `validation_path`: minimum evidence needed before implementation.
    - `priority`: high, medium, or low.
    - `risk`: main reason it may fail.
@@ -35,5 +39,6 @@ Use this skill when the user asks for 找 idea, 课题构思, idea planning, res
 ## Quality bar
 
 - Every idea has a clear problem anchor and minimum validation path.
+- Treat novelty check as an evaluation dimension inside this skill; do not invoke a separate novelty-check workflow.
 - The report states which ideas are cut and why when relevant.
 - Output can feed `$experiment-roadmap` for one selected idea.

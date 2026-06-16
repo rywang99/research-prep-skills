@@ -14,6 +14,7 @@ auto-research
 ├── 长周期判断：research-yearly-hotwords / research-yearly-trends
 ├── 单篇深读：paper-trace
 └── 研究准备层：research-gap-analysis → research-idea-planning → experiment-roadmap
+    └── 可选理论准备：formula-derivation
 ```
 
 常用模板：
@@ -144,10 +145,10 @@ auto-research
 
 ### 研究 idea 规划：research-idea-planning
 
-用于生成、筛选和排序 idea。外部 `idea-creator`、`idea-discovery`、`novelty-check` 的能力在本仓库中优先折叠到这个 skill：既要发散，也要做证据约束和初步查新。
+用于生成、筛选和排序 idea。外部 `idea-creator`、`idea-discovery`、`novelty-check` 的能力在本仓库中优先折叠到这个 skill：既要发散，也要做证据约束、closest prior work 对比和初步查新 verdict。
 
 ```text
-使用 $research-idea-planning 针对“多模态智能体评测”生成 5 个研究 idea。每个 idea 需要包含核心假设、相关证据、可能创新点、初步 novelty check、最小验证实验和风险。
+使用 $research-idea-planning 针对“多模态智能体评测”生成 5 个研究 idea。每个 idea 需要包含核心假设、相关证据、closest prior work、novelty verdict、novelty risk、最小验证实验和风险。
 ```
 
 ```text
@@ -164,6 +165,18 @@ auto-research
 
 ```text
 使用 $experiment-roadmap 基于上一份 idea-planning 报告中排名第一的 idea，规划人类接下来两周可以执行的最小实验闭环，不要运行实验。
+```
+
+### 公式推导准备：formula-derivation
+
+用于理论型方向，把研究想法整理成变量、假设、推导步骤、sanity checks 和后续验证条件；它是准备层，不自动证明，也不运行实验。
+
+```text
+使用 $formula-derivation 为“跨格式空间 audio token 对齐”整理理论准备：定义变量、假设、目标函数、推导步骤、sanity checks、失败模式和下一步验证。
+```
+
+```text
+使用 $formula-derivation 基于上一份 idea-planning 报告中排名第一的理论型 idea，输出中文 HTML 推导准备报告，不要声称已有定理证明。
 ```
 
 ## 6. 推荐组合流程
@@ -190,7 +203,7 @@ auto-research
 2. 总结关键热词和代表来源；
 3. 做研究缺口分析；
 4. 生成并排序研究 idea；
-5. 为排名第一的 idea 生成实验路线图。
+5. 如 idea 偏理论，先生成 formula-derivation；否则直接生成实验路线图。
 所有阶段都生成中文 HTML，不要运行实验。
 ```
 
@@ -200,6 +213,14 @@ auto-research
 
 ```text
 使用 $auto-research 围绕 arXiv:xxxx.xxxxx 做论文驱动选题：先调用 paper-trace 做技术溯源，再围绕它的限制调用 research-gap-analysis，最后调用 research-idea-planning 生成 3 个可验证 idea。
+```
+
+### Idea → 理论准备 → 实验路线
+
+适合偏理论或方法假设较强的方向，先把数学对象讲清楚，再决定实验验证。
+
+```text
+使用 $auto-research 基于上一份 idea-planning 报告执行两阶段准备：先对排名第一的理论型 idea 调用 formula-derivation 整理假设和推导路线，再调用 experiment-roadmap 规划验证这些假设的最小实验。
 ```
 
 ### 热词 → 检索式 → 周期追踪
@@ -242,14 +263,14 @@ auto-research
 
 可以未来增强但暂不新增独立 skill 的方向：
 
-- `research-wiki` / `wiki-enrich`：更适合作为现有 `knowledge_base/` 的持久化图谱增强，而不是新增平行入口。
+- `research-wiki` / `wiki-enrich`：已折叠为现有 `knowledge_base/` 的持久化图谱增强，而不是新增平行入口。
 - `novelty-check`：当前放入 `research-idea-planning` 的 idea 评估维度。
-- `formula-derivation`：适合理论型方向，未来可作为可选准备层补充。
+- `formula-derivation`：已作为可选理论准备层纳入；仅整理公式推导路线、假设和验证条件，不做自动证明或实验执行。
 - `paper-plan` / `grant-proposal`：偏写作与申请书，不属于当前实操前实验准备主链路。
 
 ## 9. 共享支撑层：auto-research-common
 
-通常不需要直接调用 `auto-research-common`。它负责统一来源策略、报告 schema、HTML 模板、渲染脚本、导航区块和 knowledge_base 更新。
+通常不需要直接调用 `auto-research-common`。它负责统一来源策略、报告 schema、HTML 模板、渲染脚本、导航区块和 knowledge_base 更新。`research-wiki` / `wiki-enrich` 风格的持久化能力以 `entities.jsonl`、`links.jsonl`、`graph_latest.json` 的形式折叠进现有 `knowledge_base/`，不新增平行入口。
 
 只有在调试或校验时直接使用：
 

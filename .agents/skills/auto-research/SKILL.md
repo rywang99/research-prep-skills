@@ -1,11 +1,11 @@
 ---
 name: auto-research
-description: Orchestrate automated research for a user-provided domain by expanding the topic, choosing daily/weekly/monthly/yearly-hotword/yearly-trend/gap-analysis/idea-planning/experiment-roadmap workflows, collecting current web evidence, updating the local knowledge base, and producing a self-contained Chinese HTML report.
+description: Orchestrate automated research for a user-provided domain by expanding the topic, choosing daily/weekly/monthly/yearly-hotword/yearly-trend/gap-analysis/idea-planning/experiment-roadmap/formula-derivation workflows, collecting current web evidence, updating the local knowledge base, and producing a self-contained Chinese HTML report.
 ---
 
 # Auto Research
 
-Use this skill when the user asks for automated research, domain monitoring, literature/industry updates, hotword mining, trend analysis, research gap analysis, idea planning, experiment roadmaps, or an HTML research report for a topic.
+Use this skill when the user asks for automated research, domain monitoring, literature/industry updates, hotword mining, trend analysis, research gap analysis, idea planning, formula derivation preparation, experiment roadmaps, or an HTML research report for a topic.
 
 ## Operating rules
 
@@ -30,6 +30,7 @@ Use this skill when the user asks for automated research, domain monitoring, lit
    - 不足/瓶颈/缺口/机会/open problem -> `research-gap-analysis`
    - 找 idea/课题构思/选题/可做什么 -> `research-idea-planning`
    - 实验规划/验证路线/ablation/怎么证明 -> `experiment-roadmap`
+   - 理论推导/公式/assumption/数学建模/derive -> `formula-derivation`
 4. If multiple modes are requested, run them independently but reuse the same topic profile and knowledge base.
 5. If the user only gives a topic, default to `research-weekly` unless they ask for long-range strategy, then use `research-yearly-trends`.
 6. For newly added modes, follow `../auto-research-common/references/extension_guide.md` and route by the registry entry.
@@ -67,13 +68,14 @@ Use the profile to generate bilingual search queries. Record the final query lis
 - Hotwords: term, aliases, evidence count, growth signal, source spread, representative sources, and research implication.
 - Trends: cluster, timeline signal, drivers, evidence strength, maturity, open questions, and actionable opportunities.
 - Gap analysis: evidence-backed missing pieces, closest work, why each gap matters, and actionable opportunities.
-- Idea planning: ranked idea cards grounded in gaps, trends, or paper traces; no pilots or experiment execution.
+- Idea planning: ranked idea cards grounded in gaps, trends, or paper traces; include closest prior work and preliminary novelty verdict; no pilots or experiment execution.
 - Experiment roadmap: claim map, must-run experiment blocks, ablations, metrics, run order, and stop/go gates; no job launch or code generation.
+- Formula derivation: theory-preparation package with variables, assumptions, derivation steps, sanity checks, and validation conditions; no final proof claims unless supplied and checkable.
 
 ## Minimum quality bar
 
 - HTML report opens standalone in a browser.
 - Report includes snapshot date, time window, source count, source links, query list, and next queries.
 - Daily/weekly reports include collapsible HTML paper traces for all traceable in-window paper sources, or state why no source was traced.
-- Knowledge base receives source, keyword, and run entries for later reuse.
+- Knowledge base receives source, keyword, run, and lightweight graph entries for later reuse.
 - If less than 5 credible sources are found for a broad topic, state the limitation and suggest narrower follow-up queries.

@@ -18,6 +18,7 @@ This skill provides shared resources for the auto-research skill family.
 - Repository-level `scripts/collect_sources.py`: collect candidate sources from arXiv, OpenAlex, and GitHub into normalized JSONL.
 - Repository-level `scripts/trace_report_papers.py`: embed collapsible HTML paper traces into daily/weekly report JSON with default `--jobs 8` concurrency.
 - Repository-level `scripts/trace_single_paper.py`: generate standalone single-paper trace JSON/HTML without caching PDFs.
+- Preparation modes such as `gap-analysis`, `idea-planning`, and `experiment-roadmap` use the same renderer and schema but do not run experiments.
 
 ## Standard command
 

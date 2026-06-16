@@ -1,6 +1,6 @@
 # Auto Research Skills
 
-面向 Codex 的自动化调研 skills 库，用于把一个研究主题转换为可追踪的日/周/月报、近一年热词分析或趋势分析，并输出自包含中文 HTML 报告。
+面向 Codex 的自动化调研 skills 库，用于把一个研究主题转换为可追踪的日/周/月报、近一年热词/趋势分析、研究缺口、idea 规划或实验路线图，并输出自包含中文 HTML 报告。
 
 ## 能力概览
 
@@ -10,6 +10,9 @@
 - `research-monthly`：最近 30 天阶段性综述。
 - `research-yearly-hotwords`：近一年研究热词、增长信号和代表证据分析。
 - `research-yearly-trends`：近一年趋势聚类、驱动因素、机会和风险分析。
+- `research-gap-analysis`：总结领域现有不足、评价瓶颈、数据缺口和可验证机会。
+- `research-idea-planning`：基于调研证据生成和排序研究 idea，不运行实验。
+- `experiment-roadmap`：把选定 idea 转成 claim-driven 实验路线图，不创建或提交实验任务。
 - `paper-trace`：针对单篇论文生成技术溯源、重点阅读信号和复现风险 HTML。
 - `scripts/collect_sources.py`：从无密钥公共 API 采集候选来源，生成可复用 JSONL。
 - `scripts/trace_report_papers.py`：为日/周调研自动嵌入所有区间内文献的折叠 trace。
@@ -100,12 +103,24 @@ python3 scripts/new_research_mode.py quarterly \
 使用 $paper-trace 分析论文 arXiv:2606.13095 的技术脉络、实验协议和复现风险，生成中文 HTML。
 ```
 
+```text
+使用 $research-gap-analysis 分析“空间音频大模型”的现有不足和可验证机会，生成中文 HTML。
+```
+
+```text
+使用 $research-idea-planning 基于“空间音频大模型”的缺口报告构思 5 个可发表 idea，并排序。
+```
+
+```text
+使用 $experiment-roadmap 为 Cross-Format Spatial Token Alignment 规划实验验证路线，不运行实验。
+```
+
 更多提示词示例见 `PROMPTS.md`。
 
 ## 输出与隐私
 
 - 默认报告路径：`reports/<topic_slug>/YYYY-MM-DD_<mode>.html`。
-- 单篇论文 trace 默认路径：`reports/paper-trace/<YYYY-MM-DD>_<paper_slug>.html`。
+- 单篇论文 trace 默认路径：`reports/paper-trace/<category_slug>/<method_slug>.html`。
 - 默认知识库路径：`knowledge_base/<topic_slug>/`。
 - `reports/*` 和 `knowledge_base/*` 已在 `.gitignore` 中忽略，只保留 `.gitkeep` 占位文件，避免把个人调研报告、来源列表、运行记录提交到 Git。
 - 不要提交 API Key、浏览器 Cookie、私有源导出或其他敏感材料。

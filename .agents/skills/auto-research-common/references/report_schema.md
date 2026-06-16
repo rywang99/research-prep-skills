@@ -6,7 +6,7 @@ The renderer expects one JSON object. Required fields are marked with `required`
 {
   "topic": "required: human-readable topic",
   "topic_slug": "optional: filesystem-safe slug; renderer can derive one",
-  "mode": "required: registered mode id from config/research_modes.json, e.g. daily | weekly | monthly | yearly-hotwords | yearly-trends",
+  "mode": "required: registered mode id from config/research_modes.json, e.g. daily | weekly | monthly | yearly-hotwords | yearly-trends | gap-analysis | idea-planning | experiment-roadmap | paper-trace",
   "generated_at": "optional ISO datetime",
   "snapshot_date": "optional YYYY-MM-DD",
   "time_window": {
@@ -72,6 +72,52 @@ The renderer expects one JSON object. Required fields are marked with `required`
       "source_ids": ["source-id"]
     }
   ],
+  "gaps": [
+    {
+      "name": "gap name",
+      "gap_type": "method|data|evaluation|deployment|theory|tooling|product|other",
+      "description": "what is missing or weak",
+      "why_it_matters": "why this blocks progress",
+      "closest_work": "closest prior work or baseline",
+      "actionable_opportunity": "what could be tested next",
+      "confidence": "high|medium|low",
+      "risk": "why this gap may be hard or already partially solved",
+      "source_ids": ["source-id"]
+    }
+  ],
+  "ideas": [
+    {
+      "name": "idea title",
+      "problem_anchor": "gap or pain point",
+      "core_mechanism": "proposed mechanism",
+      "novelty_delta": "difference from closest prior work",
+      "validation_path": "minimum evidence before implementation",
+      "priority": "high|medium|low",
+      "risk": "main failure risk",
+      "tags": ["tag"],
+      "source_ids": ["source-id"]
+    }
+  ],
+  "experiment_roadmap": {
+    "claims": [
+      {"id": "C1", "claim": "claim to defend", "minimum_evidence": "what would convince a reviewer", "blocks": ["B1"]}
+    ],
+    "blocks": [
+      {
+        "name": "experiment block",
+        "question": "reviewer question it answers",
+        "dataset": "dataset/task/split",
+        "systems": ["baseline or variant"],
+        "metrics": ["metric"],
+        "success_criterion": "positive outcome",
+        "failure_interpretation": "what a negative result means",
+        "figure_target": "main paper table/figure or appendix"
+      }
+    ],
+    "milestones": [
+      {"name": "stage name", "goal": "what to finish", "estimated_cost": "compute/time estimate", "gate": "stop/go condition"}
+    ]
+  },
   "paper_traces": [
     {
       "source_id": "source-id for the traced paper",
@@ -128,6 +174,7 @@ The renderer expects one JSON object. Required fields are marked with `required`
 - For `mode: "daily"` and `mode: "weekly"`, renderers ignore `keywords` and `trend_clusters` by default because these are lightweight update reports.
 - `summary_judgments`, `findings`, and `sources` should normally be non-empty for real reports.
 - `paper_traces` renders as collapsible HTML cards and is used by daily/weekly paper trace automation.
+- `gaps`, `ideas`, and `experiment_roadmap` are preparation-stage sections; they should not claim experiments were run unless source evidence already exists.
 - `topic_slug` is sanitized if omitted.
-- `--update-kb` appends source records and run metadata under `knowledge_base/<topic_slug>/`.
+- `--update-kb` appends source records and run metadata under `knowledge_base/<topic_slug>/`; standalone `paper-trace` reports use `knowledge_base/paper-trace/<topic_slug>/`.
 - Extra source provenance fields from `scripts/collect_sources.py` are preserved in the knowledge base and ignored by the HTML renderer unless explicitly displayed.

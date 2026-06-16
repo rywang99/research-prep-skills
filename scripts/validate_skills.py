@@ -22,6 +22,11 @@ COLLECTED_FIXTURE = ROOT / "examples" / "collected_sources.jsonl"
 COLLECTOR_PATH = ROOT / "scripts" / "collect_sources.py"
 TRACE_REPORT_PATH = ROOT / "scripts" / "trace_report_papers.py"
 TRACE_SINGLE_PATH = ROOT / "scripts" / "trace_single_paper.py"
+PREPARATION_FIXTURES = [
+    (ROOT / "examples" / "gap_analysis_report.json", "gaps", 'id="gaps"'),
+    (ROOT / "examples" / "idea_planning_report.json", "ideas", 'id="ideas"'),
+    (ROOT / "examples" / "experiment_roadmap_report.json", "experiment_roadmap", 'id="roadmap"'),
+]
 REQUIRED_SOURCE_FIELDS = {
     "id",
     "title",
@@ -177,6 +182,10 @@ def main() -> int:
         if not openai_yaml.exists():
             fail(f"missing {openai_yaml}")
     json.loads((ROOT / "examples" / "minimal_report.json").read_text(encoding="utf-8"))
+    for fixture, field, _ in PREPARATION_FIXTURES:
+        data = json.loads(fixture.read_text(encoding="utf-8"))
+        if not data.get(field):
+            fail(f"preparation fixture missing {field}: {fixture}")
     validate_collected_sources_fixture()
     validate_paper_trace_naming()
     for path in (TRACE_REPORT_PATH, TRACE_SINGLE_PATH):
@@ -242,6 +251,24 @@ def main() -> int:
             fail("trace_single_paper did not create HTML output")
         if not any((tmpdir / "paper_trace_kb").rglob("runs.jsonl")):
             fail("trace_single_paper did not update temporary knowledge base")
+        renderer = SKILLS / "auto-research-common" / "scripts" / "render_report.py"
+        for fixture, _, expected_anchor in PREPARATION_FIXTURES:
+            output = tmpdir / f"{fixture.stem}.html"
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(renderer),
+                    "--input",
+                    str(fixture),
+                    "--output",
+                    str(output),
+                ],
+                cwd=ROOT,
+                check=True,
+            )
+            rendered = output.read_text(encoding="utf-8")
+            if expected_anchor not in rendered:
+                fail(f"renderer did not create expected preparation section {expected_anchor} for {fixture.name}")
     print("skills validation passed")
     return 0
 

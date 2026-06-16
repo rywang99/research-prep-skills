@@ -29,6 +29,9 @@ FALLBACK_CONFIG = {
         "monthly": {"label": "月调研"},
         "yearly-hotwords": {"label": "近一年热词分析"},
         "yearly-trends": {"label": "近一年趋势分析"},
+        "gap-analysis": {"label": "研究缺口分析"},
+        "idea-planning": {"label": "研究 idea 规划"},
+        "experiment-roadmap": {"label": "实验路线图"},
         "paper-trace": {"label": "论文溯源"},
     },
     "nav_sections": [
@@ -37,6 +40,9 @@ FALLBACK_CONFIG = {
         {"anchor": "paper-traces", "label": "论文溯源"},
         {"anchor": "keywords", "label": "研究热词"},
         {"anchor": "trends", "label": "趋势聚类"},
+        {"anchor": "gaps", "label": "研究缺口"},
+        {"anchor": "ideas", "label": "Idea 规划"},
+        {"anchor": "roadmap", "label": "实验路线"},
         {"anchor": "analysis", "label": "补充分析"},
         {"anchor": "risks", "label": "风险与限制"},
         {"anchor": "next", "label": "后续追踪"},
@@ -369,6 +375,115 @@ def render_trends(data: dict[str, Any], sources: dict[str, dict[str, Any]]) -> s
     return '<h2 id="trends">趋势聚类</h2>' + "\n".join(cards)
 
 
+def render_gaps(data: dict[str, Any], sources: dict[str, dict[str, Any]]) -> str:
+    cards = []
+    for idx, item in enumerate(as_list(data.get("gaps")), 1):
+        if not isinstance(item, dict):
+            continue
+        confidence = text(item.get("confidence") or "medium")
+        tone = {"high": "red", "medium": "amber", "low": "blue"}.get(confidence, "amber")
+        body = [
+            f'<p>{esc(item.get("description", ""))}</p>',
+            f'<p>{tags_html([text(item.get("gap_type"), "gap"), "可信度: " + confidence])}</p>',
+        ]
+        for label, key in [
+            ("为什么重要", "why_it_matters"),
+            ("最接近工作", "closest_work"),
+            ("可验证机会", "actionable_opportunity"),
+            ("风险", "risk"),
+        ]:
+            if item.get(key):
+                body.append(f'<p><strong>{esc(label)}：</strong>{esc(item.get(key))}</p>')
+        body.append(f'<p class="section-desc">证据：{source_links(as_list(item.get("source_ids")), sources)}</p>')
+        cards.append(f'<div class="card {tone}"><h3>{idx}. {esc(item.get("name", "研究缺口"))}</h3>' + "\n".join(body) + '</div>')
+    if not cards:
+        return ""
+    return '<h2 id="gaps">研究缺口</h2>' + "\n".join(cards)
+
+
+def render_ideas(data: dict[str, Any], sources: dict[str, dict[str, Any]]) -> str:
+    rows = []
+    for item in as_list(data.get("ideas")):
+        if not isinstance(item, dict):
+            continue
+        rows.append(
+            "<tr>"
+            f"<td><strong>{esc(item.get('name', 'Idea'))}</strong><br>{tags_html(as_list(item.get('tags')))}</td>"
+            f"<td>{esc(item.get('problem_anchor', ''))}</td>"
+            f"<td>{esc(item.get('core_mechanism', ''))}</td>"
+            f"<td>{esc(item.get('novelty_delta', ''))}</td>"
+            f"<td>{esc(item.get('validation_path', ''))}</td>"
+            f"<td>{tags_html([text(item.get('priority'), 'medium'), '风险: ' + text(item.get('risk'), 'unknown')])}</td>"
+            f"<td>{source_links(as_list(item.get('source_ids')), sources)}</td>"
+            "</tr>"
+        )
+    if not rows:
+        return ""
+    return (
+        '<h2 id="ideas">Idea 规划</h2>'
+        '<table><thead><tr><th>Idea</th><th>问题锚点</th><th>核心机制</th><th>创新差异</th><th>最小验证路径</th><th>优先级/风险</th><th>来源</th></tr></thead><tbody>'
+        + "\n".join(rows)
+        + '</tbody></table>'
+    )
+
+
+def render_experiment_roadmap(data: dict[str, Any]) -> str:
+    roadmap = data.get("experiment_roadmap")
+    if not isinstance(roadmap, dict):
+        return ""
+    chunks = ['<h2 id="roadmap">实验路线图</h2>']
+    claims = []
+    for claim in as_list(roadmap.get("claims")):
+        if not isinstance(claim, dict):
+            continue
+        claims.append(
+            "<tr>"
+            f"<td><strong>{esc(claim.get('id', '-'))}</strong></td>"
+            f"<td>{esc(claim.get('claim', ''))}</td>"
+            f"<td>{esc(claim.get('minimum_evidence', ''))}</td>"
+            f"<td>{esc(', '.join(map(str, as_list(claim.get('blocks')))))}</td>"
+            "</tr>"
+        )
+    if claims:
+        chunks.append('<table><thead><tr><th>Claim</th><th>内容</th><th>最低可信证据</th><th>实验块</th></tr></thead><tbody>' + "\n".join(claims) + '</tbody></table>')
+    blocks = []
+    for idx, block in enumerate(as_list(roadmap.get("blocks")), 1):
+        if not isinstance(block, dict):
+            continue
+        body = []
+        for label, key in [
+            ("验证问题", "question"),
+            ("数据/任务", "dataset"),
+            ("对比系统", "systems"),
+            ("指标", "metrics"),
+            ("成功标准", "success_criterion"),
+            ("失败解释", "failure_interpretation"),
+            ("图表目标", "figure_target"),
+        ]:
+            value = block.get(key)
+            if value:
+                rendered = "；".join(map(str, as_list(value))) if isinstance(value, list) else text(value)
+                body.append(f'<p><strong>{esc(label)}：</strong>{esc(rendered)}</p>')
+        blocks.append(f'<div class="card blue"><h3>{idx}. {esc(block.get("name", "实验块"))}</h3>' + "\n".join(body) + '</div>')
+    if blocks:
+        chunks.extend(blocks)
+    milestones = []
+    for item in as_list(roadmap.get("milestones")):
+        if not isinstance(item, dict):
+            continue
+        milestones.append(
+            "<tr>"
+            f"<td><strong>{esc(item.get('name', ''))}</strong></td>"
+            f"<td>{esc(item.get('goal', ''))}</td>"
+            f"<td>{esc(item.get('estimated_cost', ''))}</td>"
+            f"<td>{esc(item.get('gate', ''))}</td>"
+            "</tr>"
+        )
+    if milestones:
+        chunks.append('<table><thead><tr><th>阶段</th><th>目标</th><th>成本/时间</th><th>Stop/Go Gate</th></tr></thead><tbody>' + "\n".join(milestones) + '</tbody></table>')
+    return "\n".join(chunks)
+
+
 def render_extra_sections(data: dict[str, Any], config: dict[str, Any]) -> str:
     chunks = []
     for idx, section in enumerate(as_list(data.get("sections")), 1):
@@ -469,6 +584,9 @@ def render_report(data: dict[str, Any], template: str, config: dict[str, Any] | 
         ("paper-traces", render_paper_traces(data, sources)),
         ("keywords", keyword_html),
         ("trends", trend_html),
+        ("gaps", render_gaps(data, sources)),
+        ("ideas", render_ideas(data, sources)),
+        ("roadmap", render_experiment_roadmap(data)),
         ("analysis", render_extra_sections(data, config)),
         ("risks", render_list_section("risks", "风险与限制", as_list(data.get("risks")))),
         ("next", render_list_section("next", "后续追踪", as_list(data.get("next_queries")))),
@@ -510,6 +628,8 @@ def update_kb(data: dict[str, Any], output: Path, kb_root: Path) -> None:
     mode = text(data.get("mode"))
     effective_keywords = [] if light_update_mode(mode) else as_list(data.get("keywords"))
     effective_trends = [] if light_update_mode(mode) else as_list(data.get("trend_clusters"))
+    effective_gaps = as_list(data.get("gaps"))
+    effective_ideas = as_list(data.get("ideas"))
     keywords_doc = {
         "topic": data.get("topic"),
         "topic_slug": topic_slug,
@@ -517,6 +637,8 @@ def update_kb(data: dict[str, Any], output: Path, kb_root: Path) -> None:
         "mode": data.get("mode"),
         "time_window": data.get("time_window"),
         "keywords": effective_keywords,
+        "gaps": effective_gaps,
+        "ideas": effective_ideas,
     }
     (topic_dir / "keywords.json").write_text(json.dumps(keywords_doc, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
@@ -533,6 +655,8 @@ def update_kb(data: dict[str, Any], output: Path, kb_root: Path) -> None:
         "finding_count": len(as_list(data.get("findings"))),
         "keyword_count": len(effective_keywords),
         "trend_count": len(effective_trends),
+        "gap_count": len(effective_gaps),
+        "idea_count": len(effective_ideas),
     }
     append_jsonl(topic_dir / "runs.jsonl", [run_row])
 

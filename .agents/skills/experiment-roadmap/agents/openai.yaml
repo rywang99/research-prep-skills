@@ -1,0 +1,7 @@
+interface:
+  display_name: "Experiment Roadmap"
+  short_description: "把研究 idea 转成 claim-driven 实验路线图"
+  brand_color: "#4F46E5"
+  default_prompt: "Use $experiment-roadmap to plan validation experiments for a selected research idea without running them."
+policy:
+  allow_implicit_invocation: true

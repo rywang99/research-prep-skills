@@ -1,11 +1,11 @@
 ---
 name: auto-research
-description: Orchestrate automated research for a user-provided domain by expanding the topic, choosing daily/weekly/monthly/yearly-hotword/yearly-trend workflows, collecting current web evidence, updating the local knowledge base, and producing a self-contained Chinese HTML report.
+description: Orchestrate automated research for a user-provided domain by expanding the topic, choosing daily/weekly/monthly/yearly-hotword/yearly-trend/gap-analysis/idea-planning/experiment-roadmap workflows, collecting current web evidence, updating the local knowledge base, and producing a self-contained Chinese HTML report.
 ---
 
 # Auto Research
 
-Use this skill when the user asks for automated research, domain monitoring, literature/industry updates, hotword mining, trend analysis, or an HTML research report for a topic.
+Use this skill when the user asks for automated research, domain monitoring, literature/industry updates, hotword mining, trend analysis, research gap analysis, idea planning, experiment roadmaps, or an HTML research report for a topic.
 
 ## Operating rules
 
@@ -27,6 +27,9 @@ Use this skill when the user asks for automated research, domain monitoring, lit
    - 本月/月报/最近一个月 -> `research-monthly`
    - 热词/关键词/高频词/爆发词 -> `research-yearly-hotwords`
    - 趋势/方向/路线/未来机会 -> `research-yearly-trends`
+   - 不足/瓶颈/缺口/机会/open problem -> `research-gap-analysis`
+   - 找 idea/课题构思/选题/可做什么 -> `research-idea-planning`
+   - 实验规划/验证路线/ablation/怎么证明 -> `experiment-roadmap`
 4. If multiple modes are requested, run them independently but reuse the same topic profile and knowledge base.
 5. If the user only gives a topic, default to `research-weekly` unless they ask for long-range strategy, then use `research-yearly-trends`.
 6. For newly added modes, follow `../auto-research-common/references/extension_guide.md` and route by the registry entry.
@@ -63,6 +66,9 @@ Use the profile to generate bilingual search queries. Record the final query lis
 - Monthly: stage-level synthesis with optional clusters when useful.
 - Hotwords: term, aliases, evidence count, growth signal, source spread, representative sources, and research implication.
 - Trends: cluster, timeline signal, drivers, evidence strength, maturity, open questions, and actionable opportunities.
+- Gap analysis: evidence-backed missing pieces, closest work, why each gap matters, and actionable opportunities.
+- Idea planning: ranked idea cards grounded in gaps, trends, or paper traces; no pilots or experiment execution.
+- Experiment roadmap: claim map, must-run experiment blocks, ablations, metrics, run order, and stop/go gates; no job launch or code generation.
 
 ## Minimum quality bar
 

@@ -1,0 +1,42 @@
+{
+  "topic": "空间音频大模型",
+  "topic_slug": "spatial-audio-llm",
+  "mode": "idea-planning",
+  "snapshot_date": "2026-06-16",
+  "time_window": {"label": "基于缺口的 idea 规划"},
+  "summary_judgments": [
+    {"title": "优先探索跨格式空间 token 对齐", "body": "最有潜力的 idea 是把 FOA、binaural 和 SALSA-Lite 映射到统一空间 token 空间，并用小规模诊断任务验证迁移。", "tone": "green", "sources": ["src-gap"]}
+  ],
+  "metrics": [
+    {"label": "候选 idea", "value": "2", "note": "按准备价值排序"}
+  ],
+  "ideas": [
+    {
+      "name": "Cross-Format Spatial Token Alignment",
+      "problem_anchor": "空间音频模型在统一 FOA 设置下表现好，但跨麦克风格式迁移证据不足。",
+      "core_mechanism": "用共享 query 和格式特定 adapter 对齐不同空间音频格式的空间 token。",
+      "novelty_delta": "相对单一 FOA encoder，强调格式间表征对齐和迁移诊断。",
+      "validation_path": "先在小规模 FOA↔binaural 转换评测上比较零样本和少样本迁移。",
+      "priority": "high",
+      "risk": "格式转换误差可能掩盖模型机制收益。",
+      "tags": ["spatial-token", "alignment"],
+      "source_ids": ["src-gap"]
+    },
+    {
+      "name": "Monaural-Spatial Mixture Curriculum",
+      "problem_anchor": "空间适配可能降低通用音频能力。",
+      "core_mechanism": "按任务难度和音频格式调度单声道 QA 与空间 QA 的混合比例。",
+      "novelty_delta": "相对固定比例 mixed tuning，关注能力保持曲线和 curriculum。",
+      "validation_path": "在通用音频 benchmark 与空间 benchmark 上画混合比例 Pareto 曲线。",
+      "priority": "medium",
+      "risk": "训练数据不可完全公开会影响复现。",
+      "tags": ["curriculum", "forgetting"],
+      "source_ids": ["src-gap"]
+    }
+  ],
+  "risks": ["idea 仍需后续 novelty check 和最小实验路线规划。"],
+  "next_queries": ["cross format spatial audio representation", "monaural spatial audio instruction tuning"],
+  "sources": [
+    {"id": "src-gap", "title": "空间音频大模型缺口分析", "url": "reports/spatial-audio-llm/gap-analysis.html", "source_type": "signal", "published_at": "2026-06-16", "accessed_at": "2026-06-16", "summary": "Preparation-stage gap analysis identifying cross-format generalization and capability tradeoff issues.", "confidence": "medium", "provider": "local", "query": "local gap report", "external_id": "gap-analysis", "collected_at": "2026-06-16T00:00:00+08:00"}
+  ]
+}

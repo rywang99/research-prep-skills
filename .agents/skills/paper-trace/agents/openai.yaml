@@ -2,6 +2,6 @@ interface:
   display_name: "Paper Trace"
   short_description: "生成单篇论文技术溯源 HTML"
   brand_color: "#0F766E"
-  default_prompt: "Use $paper-trace to analyze a paper's technical lineage and generate a collapsible HTML trace."
+  default_prompt: "Use $paper-trace to analyze a paper's technical lineage and generate an expanded HTML trace."
 policy:
   allow_implicit_invocation: true

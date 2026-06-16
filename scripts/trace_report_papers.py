@@ -100,7 +100,7 @@ def update_report(data: dict[str, Any], timeout: int, jobs: int) -> dict[str, An
     topic = text(data.get("topic"))
     traces = trace_sources(selected, topic=topic, timeout=timeout, jobs=jobs)
     data["paper_traces"] = traces
-    upsert_metric(data, "论文溯源", str(len(traces)), f"区间内文献已嵌入 HTML 折叠分析；并发 jobs={max(1, jobs)}")
+    upsert_metric(data, "论文溯源", str(len(traces)), f"区间内文献已嵌入 HTML 展开分析；并发 jobs={max(1, jobs)}")
     if skipped:
         risks = data.setdefault("risks", [])
         if isinstance(risks, list):

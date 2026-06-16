@@ -315,16 +315,16 @@ def render_paper_traces(data: dict[str, Any], sources: dict[str, dict[str, Any]]
             render_value_list("后续追踪建议", as_list(trace.get("follow_up_queries"))),
         ]
         title = trace.get("display_title") or f"论文 {idx} 技术溯源"
-        summary_title = esc(title) if standalone_single else f"{idx}. {esc(title)}"
+        card_title = esc(title) if standalone_single else f"{idx}. {esc(title)}"
         cards.append(
-            '<details class="trace-card">'
-            f'<summary><span>{summary_title}</span>{tags_html(["展开技术溯源"], "paper")}</summary>'
+            '<section class="trace-card">'
+            f'<h3>{card_title}</h3>'
             + "\n".join(part for part in body if part)
-            + "</details>"
+            + "</section>"
         )
     if not cards:
         return ""
-    return '<h2 id="paper-traces">论文溯源</h2><p class="section-desc">以下分析默认折叠嵌入报告；未缓存原始文件，也未写入文件批注。</p>' + "\n".join(cards)
+    return '<h2 id="paper-traces">论文溯源</h2><p class="section-desc">以下分析默认展开展示；未缓存原始文件，也未写入文件批注。</p>' + "\n".join(cards)
 
 
 def render_keywords(data: dict[str, Any], sources: dict[str, dict[str, Any]]) -> str:

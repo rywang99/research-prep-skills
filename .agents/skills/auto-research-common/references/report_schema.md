@@ -142,7 +142,7 @@ The renderer expects one JSON object. Required fields are marked with `required`
     {
       "source_id": "source-id for the traced paper",
       "title": "paper title",
-      "display_title": "中文折叠卡片标题，例如 论文技术溯源",
+      "display_title": "中文卡片标题，例如 论文技术溯源",
       "url": "paper landing page",
       "published_at": "optional date",
       "authors_or_org": "optional authors",
@@ -193,7 +193,7 @@ The renderer expects one JSON object. Required fields are marked with `required`
 - Missing optional arrays render as empty sections.
 - For `mode: "daily"` and `mode: "weekly"`, renderers ignore `keywords` and `trend_clusters` by default because these are lightweight update reports.
 - `summary_judgments`, `findings`, and `sources` should normally be non-empty for real reports.
-- `paper_traces` renders as collapsible HTML cards and is used by daily/weekly paper trace automation.
+- `paper_traces` renders as expanded HTML cards and is used by daily/weekly paper trace automation.
 - `gaps`, `ideas`, and `experiment_roadmap` are preparation-stage sections; they should not claim experiments were run unless source evidence already exists.
 - `topic_slug` is sanitized if omitted.
 - `--update-kb` appends source records and run metadata under `knowledge_base/<topic_slug>/`; standalone `paper-trace` reports use `knowledge_base/paper-trace/<topic_slug>/`.

@@ -25,7 +25,7 @@ Use this skill for 今日动态, daily monitoring, today/latest updates, or last
 - Lead with 3-5 newest items and their importance; do not fill `keywords` or `trend_clusters` unless the user explicitly asks for them.
 - Separate "confirmed updates" from "signals to verify".
 - Include a compact timeline table: time/date, source, update, impact, link.
-- Automatically trace every traceable paper source in the daily window and embed the analysis as collapsible HTML.
+- Automatically trace every traceable paper source in the daily window and embed the analysis as expanded HTML.
 - End with watchlist queries for tomorrow.
 
 ## Output

@@ -72,7 +72,7 @@ Defaults:
 
 - Trace all report paper sources whose publication/finding date is inside the report `time_window`; report tracing runs concurrently with default `--jobs 8`.
 - Embed results into the report JSON as `paper_traces`.
-- Rendered HTML shows every trace as a collapsible section.
+- Rendered HTML shows every trace as an expanded section, not a collapsible block.
 - No `paper_cache/` directory or persistent PDF copy is created.
 
 ## Quality bar

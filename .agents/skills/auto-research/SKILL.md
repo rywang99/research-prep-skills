@@ -76,6 +76,6 @@ Use the profile to generate bilingual search queries. Record the final query lis
 
 - HTML report opens standalone in a browser.
 - Report includes snapshot date, time window, source count, source links, query list, and next queries.
-- Daily/weekly reports include collapsible HTML paper traces for all traceable in-window paper sources, or state why no source was traced.
+- Daily/weekly reports include expanded HTML paper traces for all traceable in-window paper sources, or state why no source was traced.
 - Knowledge base receives source, keyword, run, and lightweight graph entries for later reuse.
 - If less than 5 credible sources are found for a broad topic, state the limitation and suggest narrower follow-up queries.

@@ -1,4 +1,4 @@
-# Auto Research Skills
+# research-prep-skills
 
 面向 Codex 的自动化调研 skills 库，用于把一个研究主题转换为可追踪的日/周/月报、近一年热词/趋势分析、研究缺口、idea 规划或实验路线图，并输出自包含中文 HTML 报告。
 
@@ -50,7 +50,7 @@
 - `formula-derivation`：为理论型方向整理变量、假设、推导步骤和验证条件，不声称自动证明。
 - `paper-trace`：针对单篇论文生成技术溯源、重点阅读信号和复现风险 HTML。
 - `scripts/collect_sources.py`：从无密钥公共 API 采集候选来源，生成可复用 JSONL。
-- `scripts/trace_report_papers.py`：为日/周调研自动嵌入所有区间内文献的折叠 trace。
+- `scripts/trace_report_papers.py`：为日/周调研自动嵌入所有区间内文献的展开 trace。
 - `scripts/query_knowledge_base.py`：查询本地 `knowledge_base/` 中的实体和关系图谱。
 
 ## 目录结构
@@ -113,7 +113,7 @@ python3 scripts/trace_report_papers.py \
   --report reports/<topic_slug>/YYYY-MM-DD_weekly.json
 ```
 
-论文 trace 会以默认 `--jobs 8` 并发执行，并嵌入 HTML 的可折叠区块；不会缓存 PDF，也不会写回 PDF 注释。
+论文 trace 会以默认 `--jobs 8` 并发执行，并嵌入 HTML 的展开区块；不会缓存 PDF，也不会写回 PDF 注释。
 
 查询本地知识库图谱：
 

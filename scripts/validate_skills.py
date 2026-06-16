@@ -242,8 +242,10 @@ def main() -> int:
         if not (tmpdir / "demo_weekly.html").exists():
             fail("renderer did not create HTML output")
         html_text = (tmpdir / "demo_weekly.html").read_text(encoding="utf-8")
-        if 'id="paper-traces"' not in html_text or '<details class="trace-card">' not in html_text:
-            fail("renderer did not create collapsible paper trace section")
+        if 'id="paper-traces"' not in html_text or '<section class="trace-card">' not in html_text:
+            fail("renderer did not create expanded paper trace section")
+        if '<details class="trace-card">' in html_text or '<summary>' in html_text:
+            fail("renderer should not create collapsible paper trace sections")
         if not any((tmpdir / "knowledge_base").rglob("runs.jsonl")):
             fail("renderer did not create temporary knowledge-base run records")
         if not any((tmpdir / "knowledge_base").rglob("entities.jsonl")):

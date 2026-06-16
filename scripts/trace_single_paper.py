@@ -86,7 +86,7 @@ def main() -> int:
         "summary_judgments": [
             {
                 "title": f"{method_short_name} 技术溯源已生成",
-                "body": "分析内容以内嵌折叠区块呈现；未缓存 PDF，也未写入 PDF 批注。",
+                "body": "分析内容以内嵌展开区块呈现；未缓存 PDF，也未写入 PDF 批注。",
                 "tone": "green",
                 "sources": [source.get("id")],
             }

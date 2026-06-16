@@ -77,7 +77,7 @@
     {
       "label": "论文溯源",
       "value": "1",
-      "note": "样例折叠分析"
+      "note": "样例展开分析"
     }
   ],
   "findings": [
@@ -123,7 +123,7 @@
       "published_at": "2026-06-10",
       "accessed_at": "2026-06-15",
       "authors_or_org": "A. Researcher",
-      "summary": "用于验证 paper_traces 折叠渲染的样例论文来源。",
+      "summary": "用于验证 paper_traces 展开渲染的样例论文来源。",
       "tags": [
         "arxiv",
         "fixture"
@@ -169,7 +169,7 @@
       "authors_or_org": "A. Researcher",
       "trace_status": "ok",
       "extraction_status": "metadata_summary",
-      "one_sentence_position": "这是一条用于验证 HTML 折叠论文溯源的中文样例定位。",
+      "one_sentence_position": "这是一条用于验证 HTML 展开论文溯源的中文样例定位。",
       "core_problem": "验证自动调研报告能在不缓存 PDF 的前提下嵌入中文论文阅读辅助。",
       "technical_lineage": [
         "继承自动化调研中的来源追踪和结构化报告思路。"
@@ -186,7 +186,7 @@
       "reading_points": [
         {
           "category": "方法设计",
-          "statement": "确认可折叠结构能展示中文重点阅读建议。",
+          "statement": "确认展开卡片能展示中文重点阅读建议。",
           "why_read": "用于验证报告中不直接展示英文原文摘句。"
         }
       ],

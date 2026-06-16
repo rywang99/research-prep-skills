@@ -16,7 +16,7 @@ Use this guide when adding a new research mode, output section, source type, or 
 
 ## Add a report section
 
-Prefer using the generic `sections` array in `report_schema.md`. Use `paper_traces` for paper-level technical lineage that should render as collapsible HTML. Only change the renderer when the section needs a distinct layout, such as a timeline, heatmap, scorecard, or a new interactive block.
+Prefer using the generic `sections` array in `report_schema.md`. Use `paper_traces` for paper-level technical lineage that should render as expanded HTML cards. Only change the renderer when the section needs a distinct layout, such as a timeline, heatmap, scorecard, or a new interactive block.
 
 When adding a rendered section:
 

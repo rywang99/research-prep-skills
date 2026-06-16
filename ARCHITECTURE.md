@@ -11,7 +11,7 @@ The design is extensible for common research workflow changes:
 - Shared policy, report schema, knowledge-base schema, renderer, and HTML template live in `.agents/skills/auto-research-common/`.
 - Candidate source collection starts with `scripts/collect_sources.py`, which queries no-key public APIs and emits normalized JSONL.
 - Report content uses a generic JSON schema with `schema_version: "1.0"`; missing versions remain readable for older local artifacts.
-- Daily/weekly reports can embed collapsible `paper_traces`; lightweight update modes suppress hotword and trend sections by default.
+- Daily/weekly reports can embed expanded `paper_traces`; lightweight update modes suppress hotword and trend sections by default.
 - Preparation modes cover `gap-analysis`, `idea-planning`, `experiment-roadmap`, and optional `formula-derivation`.
 - Novelty checking is an evaluation dimension inside `research-idea-planning`, not a parallel skill.
 - Research-wiki/wiki-enrich style persistence is folded into `knowledge_base/` as lightweight graph files.

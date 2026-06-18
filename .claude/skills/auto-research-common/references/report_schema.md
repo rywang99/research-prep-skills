@@ -38,7 +38,7 @@ The renderer expects one JSON object. Required fields are marked with `required`
   ],
   "cycle_plan": {
     "snapshot_date": "YYYY-MM-DD for the full-cycle run",
-    "annual_window_label": "human-readable 365-day window",
+    "annual_window_label": "human-readable analysis window, default 365 days unless the user requested a different range",
     "stage_order": ["monthly", "yearly-hotwords", "yearly-trends", "gap-analysis", "idea-planning", "experiment-roadmap"],
     "goal_strategy": "how platform goal/status tracking is used, only when explicitly requested and available",
     "evaluation_strategy": "score gates and independent evaluator policy",
@@ -105,6 +105,7 @@ The renderer expects one JSON object. Required fields are marked with `required`
       "actionable_opportunity": "what could be tested next",
       "confidence": "high|medium|low",
       "risk": "why this gap may be hard or already partially solved",
+      "tags": ["optional role or cluster tags, e.g. core-gap|exploratory-gap|long-horizon|cross-domain"],
       "source_ids": ["source-id"]
     }
   ],

@@ -6,9 +6,13 @@ from __future__ import annotations
 import argparse
 import concurrent.futures
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
+sys.dont_write_bytecode = True
+
+from common_utils import load_json
 from paper_trace_common import (
     as_list,
     generate_trace,
@@ -18,13 +22,6 @@ from paper_trace_common import (
     source_to_trace_input,
     text,
 )
-
-
-def load_json(path: Path) -> dict[str, Any]:
-    data = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(data, dict):
-        raise ValueError("report JSON must be an object")
-    return data
 
 
 def source_index(data: dict[str, Any]) -> dict[str, dict[str, Any]]:

@@ -16,11 +16,13 @@ This repository is an automated research-preparation skill library. It turns a r
 - Check Claude Code sync only: `python3 scripts/sync_claude_skills.py --check`
 - Collect candidates: `python3 scripts/collect_sources.py --topic "AI Agent 评测" --query "AI agent evaluation" --sources arxiv,openalex,github --limit-per-source 5 --output /tmp/collected_sources.jsonl`
 - Render a report: `python3 .agents/skills/auto-research-common/scripts/render_report.py --input examples/minimal_report.json --output reports/demo/demo_weekly.html --update-kb`
+- Archive accumulated reports: `python3 scripts/archive_reports.py --topic <topic_slug> --dry-run` then rerun with `--apply`; add `--json` for full move details and `--repair-kb-paths` to resolve stale KB run paths
 - Trace one paper: `python3 scripts/trace_single_paper.py --paper "2606.13095" --topic "多说话人语音识别"`
 
 ## Repository Rules
 
 - Keep reports and reusable metadata under `reports/` and `knowledge_base/`; these are local generated outputs and are ignored except `.gitkeep` placeholders.
+- Use `--archive-output` or `scripts/archive_reports.py` for long-running topics so dated reports move under `reports/<topic_slug>/archive/YYYY/MM/<mode>/`.
 - Do not commit API keys, cookies, private source exports, private PDFs, or personal report data.
 - Use concise Markdown in `SKILL.md`; keep shared policy in `auto-research-common` instead of duplicating it across skills.
 - Register new modes in `.agents/skills/auto-research-common/config/research_modes.json`.

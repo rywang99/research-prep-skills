@@ -6,7 +6,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "39d81d54542f52bd00326e26eb37ae60b0abaaffbda529c98201165e1ee26b3c"
+          "sha256": "4e99457992659cdc429d0420507045bbdfc7c2367f5c10ae95053bbb97b6f33b"
         }
       ],
       "name": "auto-research"
@@ -15,11 +15,11 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "8c68b51e4aae81fa0d36a8a8980c104a6133b0bbde962f5f2fc41ce9405c132c"
+          "sha256": "a101602593ac5aeff8e9a567faf67a226ede281b74cf0da31fbb12e3b42408f9"
         },
         {
           "path": "assets/report_template.html",
-          "sha256": "bee10089dfeb0fe309f12760db62eb0991130f67eed7f8c781c64f9b87088153"
+          "sha256": "c73360c760c68c05a60a09d94d575bea1823ff651ae1bdfd940ef0d35598444d"
         },
         {
           "path": "config/research_modes.json",
@@ -35,7 +35,7 @@
         },
         {
           "path": "references/report_schema.md",
-          "sha256": "c904a3ced12f1aa4a40b7553ab0772609221fb8d54cc3a982ad58aed1eaf7c54"
+          "sha256": "49965eb5600a75f95abb173c4d6bdb7d08a55a9afeccd7f0427be07513bebae6"
         },
         {
           "path": "references/source_policy.md",
@@ -43,7 +43,11 @@
         },
         {
           "path": "scripts/render_report.py",
-          "sha256": "248e3f084aee1c25026c6ff50784bb8336935caf1c1420e483acdac27bd5dbda"
+          "sha256": "e0ad1769dc3eb7eb4ed96e30c6f403c81fe97d84c4249579981af73a3b4ca758"
+        },
+        {
+          "path": "scripts/report_archive.py",
+          "sha256": "82a7802ebaddb2a73f6b054c0e432f15f38264430dc068935d33915722ab8490"
         }
       ],
       "name": "auto-research-common"
@@ -88,7 +92,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "7cfedae1d850eea9d0c9dd36c9547f987caf99d7a40835fcab550fc085779343"
+          "sha256": "d866e93cac1a3c16d06892c96bf9c5d84ddfe3a701e0cd1b87ac3fcb625e14fd"
         }
       ],
       "name": "research-gap-analysis"
@@ -97,7 +101,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "2d9da9c98d5a5d1ca0d1947ad9a7e30cd6fdb083273662ea0e400a8023ee4c4a"
+          "sha256": "8b5661cab4a2659f39eae2eb40f303da3c27c3a7e3bb1456b0b493533085a47f"
         }
       ],
       "name": "research-idea-planning"
@@ -133,7 +137,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "4148f93e03040803c9744e32d418f00fc87ebb3f895968d4c66653f1b6b9cf75"
+          "sha256": "57eb990fc19f220c3d4f98352f21a42a82223faab9d7d49492b9d246947e8c18"
         }
       ],
       "name": "research-yearly-full-cycle"

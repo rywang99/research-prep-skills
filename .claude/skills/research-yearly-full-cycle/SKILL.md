@@ -11,24 +11,25 @@ Use this skill for long-running, full-year research preparation before humans ru
 
 - Keep the repository boundary: prepare research, do not run experiments, train models, write submissions, or claim empirical results.
 - Generate Chinese reports; preserve English method names, datasets, benchmarks, venues, repositories, and product names.
-- Treat freshness as critical. Use explicit dates for the rolling 365-day window and every monthly slice.
-- Save stage outputs under `reports/<topic_slug>/` and update `knowledge_base/<topic_slug>/` unless the user asks not to persist.
+- Treat freshness as critical. Use explicit dates for the requested rolling window; default to 365 days when the user does not specify a range.
+- Save stage outputs under `reports/<topic_slug>/` and update `knowledge_base/<topic_slug>/` unless the user asks not to persist; prefer renderer `--archive-output` for yearly workflows so stage reports are organized under `archive/YYYY/MM/<mode>/`.
 - Use platform goal/status tracking only when the user explicitly requests it and the current environment provides a goal tool; otherwise record progress in `stage_artifacts`, `evaluation_scorecards`, and `iteration_log`.
 
 ## Default yearly workflow
 
-1. Define the annual window as the 365 days ending at `snapshot_date`; split it into 12 continuous monthly slices.
+1. Define the analysis window as the user-requested duration ending at `snapshot_date`, or 365 days by default; split it into continuous monthly slices, using more than 12 slices when the requested window is longer than a year.
 2. Build a shared topic profile with aliases, subtopics, broader terms, exclusions, and likely sources.
 3. Produce or summarize monthly evidence slices using `research-monthly`; each slice records sources, findings, queries, and limitations.
 4. Run long-range synthesis from the same evidence base:
    - `research-yearly-hotwords` for keywords, aliases, growth signal, and reusable queries.
    - `research-yearly-trends` for 4-8 trend clusters, maturity, risks, and watchpoints.
 5. Run preparation stages:
-   - `research-gap-analysis` from trend, monthly, and paper evidence.
-   - `research-idea-planning` to generate and rank 3-7 evidence-anchored ideas.
+   - `research-gap-analysis` from trend, monthly, and paper evidence; default to 8-15 diverse gaps, not a 3-5 item shortlist.
+   - `research-idea-planning` to generate and rank 10-20 evidence-anchored ideas after a broader raw-candidate pass.
    - `experiment-roadmap` for empirical ideas, or `formula-derivation` before roadmap for theory-heavy ideas.
 6. Run `research-independent-evaluator` after each major stage and after any required iteration.
 7. Build a final `yearly-full-cycle` report with `cycle_plan`, `stage_artifacts`, `evaluation_scorecards`, `iteration_log`, sources, risks, and next queries.
+8. For topics with many stage files, archive dated outputs via renderer `--archive-output` or `python3 scripts/archive_reports.py --topic <topic_slug> --apply`; use `reports/<topic_slug>/index.json` to locate archived artifacts.
 
 ## Long-task tracking
 
@@ -59,10 +60,12 @@ Record every stage in `stage_artifacts`:
 - A severe citation or unsupported-claim issue blocks the stage even when the numeric score is high.
 - Targeted iterations should change only the weakest stage: add queries, replace weak sources, narrow claims, revise idea ranking, or clarify roadmap gates.
 - Record every iteration in `iteration_log` with trigger scorecard, action, changed artifact, and re-evaluation result.
+- Independent evaluation should not penalize larger gap/idea sets just for being larger; score coverage diversity, deduplication, evidence anchoring, and validation clarity.
 
 ## Final report quality bar
 
-- Includes annual window, 12 monthly slices, stage dependency map, source count, and query list.
+- Includes the explicit analysis window, all continuous monthly slices, stage dependency map, source count, and query list.
+- Includes enough divergent research opportunity coverage: normally at least 8 gaps and 10 ideas unless evidence is insufficient.
 - Shows independent scorecards separately from generated content.
 - Explains skipped stages and blockers explicitly.
-- Uses `--update-kb` so future weekly/monthly/idea workflows can reuse the yearly artifacts.
+- Uses `--update-kb` with archived final paths when `--archive-output` is enabled so future weekly/monthly/idea workflows can reuse the yearly artifacts.

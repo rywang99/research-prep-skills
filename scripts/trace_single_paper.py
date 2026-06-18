@@ -9,6 +9,8 @@ import json
 import sys
 from pathlib import Path
 
+sys.dont_write_bytecode = True
+
 from paper_trace_common import (
     generate_trace,
     infer_method_short_name,

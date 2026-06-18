@@ -154,12 +154,20 @@ Claude Code 等价写法：
 使用 $research-gap-analysis 基于已有“空间音频大模型”周报和 paper-trace，整理当前方法的不足、缺失评测和可落地改进机会。
 ```
 
+```text
+使用 $research-gap-analysis 分析“空间音频大模型”的研究缺口。请不要只给 3-5 个安全方向，默认保留 8-15 个多类型 gaps，并用 core-gap、exploratory-gap、long-horizon 等标签区分。
+```
+
 ### 研究 idea 规划：research-idea-planning
 
 用于生成、筛选和排序 idea。外部 `idea-creator`、`idea-discovery`、`novelty-check` 的能力在本仓库中优先折叠到这个 skill：既要发散，也要做证据约束、closest prior work 对比和初步查新 verdict。
 
 ```text
 使用 $research-idea-planning 针对“多模态智能体评测”生成 5 个研究 idea。每个 idea 需要包含核心假设、相关证据、closest prior work、novelty verdict、novelty risk、最小验证实验和风险。
+```
+
+```text
+使用 $research-idea-planning 针对“多模态智能体评测”做发散式选题规划：先生成 15-30 个 raw candidates，再合并筛选为 10-20 个 idea cards，覆盖 high-priority、exploratory 和 long-horizon 三类。
 ```
 
 ```text

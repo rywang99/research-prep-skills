@@ -12,7 +12,7 @@ Use this skill when the user asks for automated research, domain monitoring, lit
 - Always treat freshness as critical. For daily/weekly/monthly/yearly tasks, browse the web and use explicit date windows.
 - Default output language is Chinese; keep original English titles, acronyms, model names, venues, repositories, and product names.
 - Use the shared assets in `../auto-research-common/` for mode registry, source policy, report schema, rendering, and HTML style.
-- Save outputs under the current repo: `reports/<topic_slug>/YYYY-MM-DD_<mode>.html` and `knowledge_base/<topic_slug>/`.
+- Save outputs under the current repo: `reports/<topic_slug>/YYYY-MM-DD_<mode>.html` and `knowledge_base/<topic_slug>/`; for repeated or long-running topics, render with `--archive-output` so dated reports move under `reports/<topic_slug>/archive/YYYY/MM/<mode>/`.
 - For daily and weekly reports, automatically trace all in-window paper sources after the report JSON is ready and before rendering.
 - Do not depend on any external template path; the bundled template is the only style source.
 - When useful, start source discovery with `scripts/collect_sources.py` from the repository root; it collects arXiv, OpenAlex, and GitHub candidates without API keys.
@@ -60,7 +60,7 @@ Use the profile to generate bilingual search queries. Record the final query lis
 7. Mark weak evidence explicitly instead of overstating.
 8. Convert findings into the schema in `../auto-research-common/references/report_schema.md`.
 9. For `mode: "daily"` or `mode: "weekly"`, run `python3 scripts/trace_report_papers.py --report reports/<topic_slug>/YYYY-MM-DD_<mode>.json` (default `--jobs 8`).
-10. Render with `../auto-research-common/scripts/render_report.py`.
+10. Render with `../auto-research-common/scripts/render_report.py`; add `--archive-output` when the topic already has repeated reports or the workflow creates multiple stage artifacts.
 11. Use `--update-kb` unless the user asked not to persist data.
 
 ## Report emphasis
@@ -69,8 +69,8 @@ Use the profile to generate bilingual search queries. Record the final query lis
 - Monthly: stage-level synthesis with optional clusters when useful.
 - Hotwords: term, aliases, evidence count, growth signal, source spread, representative sources, and research implication.
 - Trends: cluster, timeline signal, drivers, evidence strength, maturity, open questions, and actionable opportunities.
-- Gap analysis: evidence-backed missing pieces, closest work, why each gap matters, and actionable opportunities.
-- Idea planning: ranked idea cards grounded in gaps, trends, or paper traces; include closest prior work and preliminary novelty verdict; no pilots or experiment execution.
+- Gap analysis: evidence-backed missing pieces, closest work, why each gap matters, and actionable opportunities; for broad/yearly requests default to 8-15 diverse gaps rather than a tiny shortlist.
+- Idea planning: ranked idea cards grounded in gaps, trends, or paper traces; for broad/yearly requests default to 10-20 ideas after raw candidate screening, include closest prior work and preliminary novelty verdict; no pilots or experiment execution.
 - Experiment roadmap: claim map, must-run experiment blocks, ablations, metrics, run order, and stop/go gates; no job launch or code generation.
 - Formula derivation: theory-preparation package with variables, assumptions, derivation steps, sanity checks, and validation conditions; no final proof claims unless supplied and checkable.
 - Yearly full cycle: monthly evidence slices, yearly hotwords/trends, gaps, ideas, roadmap or formula preparation, independent scorecards, and iteration logs; use platform goal/status tracking only when explicitly requested and available.

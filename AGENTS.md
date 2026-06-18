@@ -24,12 +24,13 @@
 - `python3 scripts/trace_single_paper.py --paper "2606.13095" --topic "多说话人语音识别"` generates a standalone paper trace HTML without caching PDFs.
 - `python3 scripts/trace_report_papers.py --report reports/<topic_slug>/YYYY-MM-DD_weekly.json` embeds all in-window paper traces into a report JSON before rendering; default concurrency is `--jobs 8`.
 - `python3 .agents/skills/auto-research-common/scripts/render_report.py --input examples/minimal_report.json --output reports/demo/demo_weekly.html --update-kb` renders the sample report.
+- `python3 scripts/archive_reports.py --topic <topic_slug> --dry-run` previews report cleanup; use `--apply` to move dated reports into `archive/YYYY/MM/<mode>/` and update the topic index; add `--json` for the full move plan and `--repair-kb-paths` to resolve stale KB run paths.
 - `find .agents/skills -name SKILL.md -print` lists all installed local skills.
 - `python3 scripts/new_research_mode.py quarterly --label 季度调研 --window-days 90 --description "最近 90 天阶段性趋势复盘"` scaffolds and registers a new mode.
 
 ## Coding Style & Naming Conventions
 
-Use concise Markdown in `SKILL.md`; keep instructions actionable and avoid duplicating shared policy. Skill directories use lowercase kebab-case, for example `research-yearly-trends`. Python scripts should prefer stdlib dependencies, 4-space indentation, type hints where helpful, and clear function names. JSON keys use snake_case and match `report_schema.md`. Register new modes in `research_modes.json` rather than hard-coding labels.
+Use concise Markdown in `SKILL.md`; keep instructions actionable and avoid duplicating shared policy. Skill directories use lowercase kebab-case, for example `research-yearly-trends`. Python scripts should prefer stdlib dependencies, 4-space indentation, type hints where helpful, and clear function names. Put reusable repository-level helpers in `scripts/common_utils.py`, while skill-internal scripts should remain portable. JSON keys use snake_case and match `report_schema.md`. Register new modes in `research_modes.json` rather than hard-coding labels.
 
 Treat `.agents/skills/` as the source of truth. After editing any skill, run `python3 scripts/sync_claude_skills.py` so Claude Code can discover the generated `.claude/skills/` copy.
 

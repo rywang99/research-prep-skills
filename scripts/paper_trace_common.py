@@ -9,6 +9,7 @@ import json
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 import urllib.parse
 import urllib.request
@@ -16,16 +17,16 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any
 
+sys.dont_write_bytecode = True
+
+from common_utils import now_iso, slugify as common_slugify, today_iso
+
 ARXIV_RE = re.compile(r"(?:arxiv:)?(\d{4}\.\d{4,5})(?:v\d+)?", re.I)
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def now_iso() -> str:
-    return dt.datetime.now().astimezone().isoformat(timespec="seconds")
-
-
 def today() -> str:
-    return dt.date.today().isoformat()
+    return today_iso()
 
 
 def text(value: Any, default: str = "") -> str:
@@ -39,10 +40,7 @@ def as_list(value: Any) -> list[Any]:
 
 
 def slugify(value: str) -> str:
-    slug = re.sub(r"[^a-zA-Z0-9]+", "-", value.strip().lower()).strip("-")
-    if slug:
-        return slug[:80]
-    return "paper-" + hashlib.sha1(value.encode("utf-8")).hexdigest()[:10]
+    return common_slugify(value, fallback_prefix="paper")
 
 
 def compact_slug(value: str, prefix: str = "item") -> str:

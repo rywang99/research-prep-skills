@@ -11,10 +11,14 @@ import argparse
 import datetime as dt
 import hashlib
 import html
+import importlib.util
 import json
 import re
+import sys
 from pathlib import Path
 from typing import Any, Iterable
+
+sys.dont_write_bytecode = True
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 COMMON_DIR = SCRIPT_DIR.parent
@@ -22,6 +26,7 @@ DEFAULT_TEMPLATE = COMMON_DIR / "assets" / "report_template.html"
 DEFAULT_CONFIG = COMMON_DIR / "config" / "research_modes.json"
 DEFAULT_KB_ROOT = Path("knowledge_base")
 SCHEMA_VERSION = "1.0"
+REPORT_ARCHIVE = SCRIPT_DIR / "report_archive.py"
 
 FALLBACK_CONFIG = {
     "modes": {
@@ -143,6 +148,15 @@ def load_json(path: Path) -> dict[str, Any]:
         if not data.get(field):
             raise ValueError(f"missing required field: {field}")
     return data
+
+
+def load_archive_module():
+    spec = importlib.util.spec_from_file_location("report_archive", REPORT_ARCHIVE)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"cannot load archive module: {REPORT_ARCHIVE}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def source_map(data: dict[str, Any]) -> dict[str, dict[str, Any]]:
@@ -392,7 +406,7 @@ def render_gaps(data: dict[str, Any], sources: dict[str, dict[str, Any]]) -> str
         tone = {"high": "red", "medium": "amber", "low": "blue"}.get(confidence, "amber")
         body = [
             f'<p>{esc(item.get("description", ""))}</p>',
-            f'<p>{tags_html([text(item.get("gap_type"), "gap"), "可信度: " + confidence])}</p>',
+            f'<p>{tags_html([text(item.get("gap_type"), "gap"), "可信度: " + confidence])} {tags_html(as_list(item.get("tags")))}</p>',
         ]
         for label, key in [
             ("为什么重要", "why_it_matters"),
@@ -584,7 +598,13 @@ def render_cycle(data: dict[str, Any]) -> str:
                     f"<td>{esc(item.get('artifact_path', ''))}</td>"
                     "</tr>"
                 )
-            chunks.append('<h3>月度切片</h3><table><thead><tr><th>ID</th><th>标签</th><th>窗口</th><th>状态</th><th>产物</th></tr></thead><tbody>' + "\n".join(slice_rows) + '</tbody></table>')
+            chunks.append(
+                '<details class="cycle-collapsible"><summary>月度切片'
+                f'（{len(slice_rows)} 条，点击展开）</summary>'
+                '<table><thead><tr><th>ID</th><th>标签</th><th>窗口</th><th>状态</th><th>产物</th></tr></thead><tbody>'
+                + "\n".join(slice_rows)
+                + '</tbody></table></details>'
+            )
     if stage_artifacts:
         rows = []
         for item in stage_artifacts:
@@ -600,7 +620,13 @@ def render_cycle(data: dict[str, Any]) -> str:
                 f"<td>{esc(item.get('notes', ''))}</td>"
                 "</tr>"
             )
-        chunks.append('<h3>阶段产物</h3><table><thead><tr><th>阶段</th><th>模式</th><th>状态</th><th>依赖</th><th>路径</th><th>备注</th></tr></thead><tbody>' + "\n".join(rows) + '</tbody></table>')
+        chunks.append(
+            '<details class="cycle-collapsible"><summary>阶段产物'
+            f'（{len(rows)} 条，点击展开）</summary>'
+            '<table><thead><tr><th>阶段</th><th>模式</th><th>状态</th><th>依赖</th><th>路径</th><th>备注</th></tr></thead><tbody>'
+            + "\n".join(rows)
+            + '</tbody></table></details>'
+        )
     return "\n".join(chunks)
 
 
@@ -1098,6 +1124,7 @@ def main() -> int:
     parser.add_argument("--config", default=DEFAULT_CONFIG, type=Path, help="Research mode/config registry path")
     parser.add_argument("--update-kb", action="store_true", help="Append sources/runs and keyword snapshot to knowledge_base")
     parser.add_argument("--kb-root", default=DEFAULT_KB_ROOT, type=Path, help="Knowledge base root")
+    parser.add_argument("--archive-output", action="store_true", help="Move dated report outputs into archive/YYYY/MM/<mode>/ before updating knowledge_base")
     args = parser.parse_args()
 
     data = load_json(args.input)
@@ -1108,9 +1135,14 @@ def main() -> int:
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(html_text, encoding="utf-8")
+    final_output = args.output
+    if args.archive_output:
+        archive = load_archive_module()
+        archive_result = archive.archive_rendered_report(args.input, args.output, apply=True)
+        final_output = Path(archive_result.get("html_path", str(args.output)))
     if args.update_kb:
-        update_kb(data, args.output, args.kb_root)
-    print(f"wrote {args.output}")
+        update_kb(data, final_output, args.kb_root)
+    print(f"wrote {final_output}")
     return 0
 
 

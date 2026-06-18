@@ -63,6 +63,16 @@
       "label": "阶段产物",
       "value": "7",
       "note": "包含评分与复评"
+    },
+    {
+      "label": "gaps",
+      "value": "8",
+      "note": "中等发散缺口数量"
+    },
+    {
+      "label": "ideas",
+      "value": "10",
+      "note": "中等发散 idea 数量"
     }
   ],
   "cycle_plan": {
@@ -278,41 +288,362 @@
   ],
   "gaps": [
     {
-      "name": "跨 benchmark 可比性不足",
+      "name": "跨格式空间对齐缺少统一基准",
       "gap_type": "evaluation",
-      "description": "不同 agent benchmark 的任务粒度、工具权限和成功标准差异较大。",
-      "why_it_matters": "影响方法改进是否能稳定迁移。",
-      "closest_work": "Example Long Horizon Agent Benchmark",
-      "actionable_opportunity": "设计归一化任务属性表和跨 benchmark replay protocol。",
-      "confidence": "medium",
-      "risk": "可能被新 benchmark 部分缓解。",
+      "description": "不同空间音频表示、坐标系和 token 格式之间缺少可比 benchmark。",
+      "why_it_matters": "无法判断模型是否真正学习空间一致性。",
+      "closest_work": "现有空间音频理解与生成评测",
+      "actionable_opportunity": "构建跨 FOA/binaural/metadata 的 alignment benchmark。",
+      "confidence": "high",
+      "risk": "数据采集和标注成本较高。",
+      "tags": [
+        "core-gap",
+        "evaluation"
+      ],
       "source_ids": [
-        "src-benchmark"
+        "src-spatial-omni"
+      ]
+    },
+    {
+      "name": "真实房间声学覆盖不足",
+      "gap_type": "data",
+      "description": "公开数据常集中在少数房间和麦克风配置。",
+      "why_it_matters": "模型可能只在合成或近场设置有效。",
+      "closest_work": "现有空间音频数据集",
+      "actionable_opportunity": "补充真实 RIR、设备和混响条件元数据。",
+      "confidence": "medium",
+      "risk": "版权和隐私限制可能阻碍开放。",
+      "tags": [
+        "core-gap",
+        "data"
+      ],
+      "source_ids": [
+        "src-spatial-omni"
+      ]
+    },
+    {
+      "name": "坐标系转换误差不可解释",
+      "gap_type": "method",
+      "description": "模型输出空间位置时，坐标系、角度和距离误差经常混在一起。",
+      "why_it_matters": "难以定位错误来自表示、推理还是后处理。",
+      "closest_work": "空间定位和声源分离方法",
+      "actionable_opportunity": "设计 coordinate error decomposition 和可视化诊断。",
+      "confidence": "medium",
+      "risk": "需要细粒度 ground truth。",
+      "tags": [
+        "exploratory-gap",
+        "method"
+      ],
+      "source_ids": [
+        "src-spatial-omni"
+      ]
+    },
+    {
+      "name": "多声源重叠场景缺少鲁棒评测",
+      "gap_type": "evaluation",
+      "description": "多数评测对单声源或弱重叠更友好。",
+      "why_it_matters": "真实环境常存在多个动态声源。",
+      "closest_work": "multi-source localization benchmark",
+      "actionable_opportunity": "加入 overlap ratio、source motion 和 occlusion 维度。",
+      "confidence": "high",
+      "risk": "评测复杂度增加。",
+      "tags": [
+        "core-gap",
+        "benchmark"
+      ],
+      "source_ids": [
+        "src-spatial-omni"
+      ]
+    },
+    {
+      "name": "空间 token 与语义 token 的耦合机制不清楚",
+      "gap_type": "theory",
+      "description": "尚不清楚空间 token 如何与语言/事件语义共同建模。",
+      "why_it_matters": "限制可解释架构设计。",
+      "closest_work": "audio-language model tokenization",
+      "actionable_opportunity": "分析 attention/representation 中的 spatial-semantic binding。",
+      "confidence": "low",
+      "risk": "理论解释可能难以验证。",
+      "tags": [
+        "long-horizon",
+        "theory",
+        "low-confidence"
+      ],
+      "source_ids": [
+        "src-spatial-omni"
+      ]
+    },
+    {
+      "name": "端侧部署缺少延迟-精度-能耗协议",
+      "gap_type": "deployment",
+      "description": "空间音频模型常报告离线指标，缺少端侧实时评测。",
+      "why_it_matters": "AR/VR 和机器人应用受实时约束。",
+      "closest_work": "edge audio inference benchmark",
+      "actionable_opportunity": "固定设备、延迟预算和能耗指标做部署 scorecard。",
+      "confidence": "medium",
+      "risk": "设备差异会影响可复现性。",
+      "tags": [
+        "exploratory-gap",
+        "deployment"
+      ],
+      "source_ids": [
+        "src-spatial-omni"
+      ]
+    },
+    {
+      "name": "数据生成工具链缺少质量审计",
+      "gap_type": "tooling",
+      "description": "合成空间音频常依赖渲染器，但渲染质量和 domain gap 不透明。",
+      "why_it_matters": "训练数据错误会被模型放大。",
+      "closest_work": "RIR simulation and acoustic rendering tools",
+      "actionable_opportunity": "建立 renderer audit suite 和真实/合成差异报告。",
+      "confidence": "medium",
+      "risk": "真实参考数据有限。",
+      "tags": [
+        "cross-domain",
+        "tooling"
+      ],
+      "source_ids": [
+        "src-spatial-omni"
+      ]
+    },
+    {
+      "name": "产品场景任务定义过粗",
+      "gap_type": "product",
+      "description": "会议、XR、机器人和辅助听觉需要不同空间能力，但研究任务常混用。",
+      "why_it_matters": "单一 benchmark 难以指导落地选择。",
+      "closest_work": "application-specific audio benchmarks",
+      "actionable_opportunity": "按产品场景拆分 task cards 和 success criteria。",
+      "confidence": "medium",
+      "risk": "产品需求变化快。",
+      "tags": [
+        "exploratory-gap",
+        "product"
+      ],
+      "source_ids": [
+        "src-spatial-omni"
       ]
     }
   ],
   "ideas": [
     {
-      "name": "Benchmark-Normalized Agent Replay",
-      "problem_anchor": "跨 benchmark 可比性不足",
-      "core_mechanism": "将任务、工具权限和状态转移抽象为统一 replay schema。",
-      "novelty_delta": "相对单一 benchmark 更强调跨集合可比性。",
-      "closest_prior_work": "Example Long Horizon Agent Benchmark",
-      "novelty_verdict": "uncertain",
+      "name": "Cross-Format Spatial Alignment Scorecard",
+      "problem_anchor": "发散缺口 1: 缺少可验证的系统化方案。",
+      "core_mechanism": "设计一个可复现模块或评测协议来隔离变量 1，并与现有 baseline 对比。",
+      "novelty_delta": "相对最近工作，强调可审计、可复现和跨场景比较。",
+      "closest_prior_work": "Existing spatial audio benchmark or model family",
+      "novelty_verdict": "likely_new",
       "novelty_evidence": [
-        "年度趋势显示 replay 和长程评测需求上升。"
+        "现有报告显示该方向存在评测或数据缺口。"
       ],
-      "novelty_risk": "已有内部 benchmark 可能覆盖类似 schema。",
-      "validation_path": "先在两个公开 benchmark 上做 schema 对齐试验。",
+      "novelty_risk": "可能已有未检索到的专门 benchmark 或内部系统覆盖类似机制。",
+      "validation_path": "先做小规模公开数据 pilot，验证指标能否区分 baseline 和 proposed variant。",
       "priority": "high",
-      "risk": "任务抽象可能损失细节。",
+      "risk": "数据和标注成本可能高于预期。",
       "tags": [
-        "benchmark",
-        "replay"
+        "high-priority",
+        "evaluation"
       ],
       "source_ids": [
-        "src-survey",
-        "src-benchmark"
+        "src-gap"
+      ]
+    },
+    {
+      "name": "Synthetic-to-Real RIR Gap Audit",
+      "problem_anchor": "发散缺口 2: 缺少可验证的系统化方案。",
+      "core_mechanism": "设计一个可复现模块或评测协议来隔离变量 2，并与现有 baseline 对比。",
+      "novelty_delta": "相对最近工作，强调可审计、可复现和跨场景比较。",
+      "closest_prior_work": "Existing spatial audio benchmark or model family",
+      "novelty_verdict": "likely_new",
+      "novelty_evidence": [
+        "现有报告显示该方向存在评测或数据缺口。"
+      ],
+      "novelty_risk": "可能已有未检索到的专门 benchmark 或内部系统覆盖类似机制。",
+      "validation_path": "先做小规模公开数据 pilot，验证指标能否区分 baseline 和 proposed variant。",
+      "priority": "high",
+      "risk": "数据和标注成本可能高于预期。",
+      "tags": [
+        "high-priority",
+        "data"
+      ],
+      "source_ids": [
+        "src-gap"
+      ]
+    },
+    {
+      "name": "Spatial-Semantic Binding Probe",
+      "problem_anchor": "发散缺口 3: 缺少可验证的系统化方案。",
+      "core_mechanism": "设计一个可复现模块或评测协议来隔离变量 3，并与现有 baseline 对比。",
+      "novelty_delta": "相对最近工作，强调可审计、可复现和跨场景比较。",
+      "closest_prior_work": "Existing spatial audio benchmark or model family",
+      "novelty_verdict": "uncertain",
+      "novelty_evidence": [
+        "现有报告显示该方向存在评测或数据缺口。"
+      ],
+      "novelty_risk": "可能已有未检索到的专门 benchmark 或内部系统覆盖类似机制。",
+      "validation_path": "先做小规模公开数据 pilot，验证指标能否区分 baseline 和 proposed variant。",
+      "priority": "medium",
+      "risk": "数据和标注成本可能高于预期。",
+      "tags": [
+        "exploratory",
+        "theory"
+      ],
+      "source_ids": [
+        "src-gap"
+      ]
+    },
+    {
+      "name": "Overlap-Aware Multi-Source Stress Test",
+      "problem_anchor": "发散缺口 4: 缺少可验证的系统化方案。",
+      "core_mechanism": "设计一个可复现模块或评测协议来隔离变量 4，并与现有 baseline 对比。",
+      "novelty_delta": "相对最近工作，强调可审计、可复现和跨场景比较。",
+      "closest_prior_work": "Existing spatial audio benchmark or model family",
+      "novelty_verdict": "incremental",
+      "novelty_evidence": [
+        "现有报告显示该方向存在评测或数据缺口。"
+      ],
+      "novelty_risk": "可能已有未检索到的专门 benchmark 或内部系统覆盖类似机制。",
+      "validation_path": "先做小规模公开数据 pilot，验证指标能否区分 baseline 和 proposed variant。",
+      "priority": "high",
+      "risk": "数据和标注成本可能高于预期。",
+      "tags": [
+        "high-priority",
+        "benchmark"
+      ],
+      "source_ids": [
+        "src-gap"
+      ]
+    },
+    {
+      "name": "Coordinate Error Decomposition Toolkit",
+      "problem_anchor": "发散缺口 5: 缺少可验证的系统化方案。",
+      "core_mechanism": "设计一个可复现模块或评测协议来隔离变量 5，并与现有 baseline 对比。",
+      "novelty_delta": "相对最近工作，强调可审计、可复现和跨场景比较。",
+      "closest_prior_work": "Existing spatial audio benchmark or model family",
+      "novelty_verdict": "likely_new",
+      "novelty_evidence": [
+        "现有报告显示该方向存在评测或数据缺口。"
+      ],
+      "novelty_risk": "可能已有未检索到的专门 benchmark 或内部系统覆盖类似机制。",
+      "validation_path": "先做小规模公开数据 pilot，验证指标能否区分 baseline 和 proposed variant。",
+      "priority": "medium",
+      "risk": "数据和标注成本可能高于预期。",
+      "tags": [
+        "exploratory",
+        "tooling"
+      ],
+      "source_ids": [
+        "src-gap"
+      ]
+    },
+    {
+      "name": "Edge Spatial Audio Latency Scorecard",
+      "problem_anchor": "发散缺口 6: 缺少可验证的系统化方案。",
+      "core_mechanism": "设计一个可复现模块或评测协议来隔离变量 6，并与现有 baseline 对比。",
+      "novelty_delta": "相对最近工作，强调可审计、可复现和跨场景比较。",
+      "closest_prior_work": "Existing spatial audio benchmark or model family",
+      "novelty_verdict": "incremental",
+      "novelty_evidence": [
+        "现有报告显示该方向存在评测或数据缺口。"
+      ],
+      "novelty_risk": "可能已有未检索到的专门 benchmark 或内部系统覆盖类似机制。",
+      "validation_path": "先做小规模公开数据 pilot，验证指标能否区分 baseline 和 proposed variant。",
+      "priority": "medium",
+      "risk": "数据和标注成本可能高于预期。",
+      "tags": [
+        "deployment",
+        "exploratory"
+      ],
+      "source_ids": [
+        "src-gap"
+      ]
+    },
+    {
+      "name": "Product-Scenario Task Cards for Spatial Audio",
+      "problem_anchor": "发散缺口 7: 缺少可验证的系统化方案。",
+      "core_mechanism": "设计一个可复现模块或评测协议来隔离变量 7，并与现有 baseline 对比。",
+      "novelty_delta": "相对最近工作，强调可审计、可复现和跨场景比较。",
+      "closest_prior_work": "Existing spatial audio benchmark or model family",
+      "novelty_verdict": "uncertain",
+      "novelty_evidence": [
+        "现有报告显示该方向存在评测或数据缺口。"
+      ],
+      "novelty_risk": "可能已有未检索到的专门 benchmark 或内部系统覆盖类似机制。",
+      "validation_path": "先做小规模公开数据 pilot，验证指标能否区分 baseline 和 proposed variant。",
+      "priority": "low",
+      "risk": "数据和标注成本可能高于预期。",
+      "tags": [
+        "product",
+        "long-horizon"
+      ],
+      "source_ids": [
+        "src-gap"
+      ]
+    },
+    {
+      "name": "Spatial Token Robustness Under Room Perturbation",
+      "problem_anchor": "发散缺口 8: 缺少可验证的系统化方案。",
+      "core_mechanism": "设计一个可复现模块或评测协议来隔离变量 8，并与现有 baseline 对比。",
+      "novelty_delta": "相对最近工作，强调可审计、可复现和跨场景比较。",
+      "closest_prior_work": "Existing spatial audio benchmark or model family",
+      "novelty_verdict": "uncertain",
+      "novelty_evidence": [
+        "现有报告显示该方向存在评测或数据缺口。"
+      ],
+      "novelty_risk": "可能已有未检索到的专门 benchmark 或内部系统覆盖类似机制。",
+      "validation_path": "先做小规模公开数据 pilot，验证指标能否区分 baseline 和 proposed variant。",
+      "priority": "medium",
+      "risk": "数据和标注成本可能高于预期。",
+      "tags": [
+        "exploratory",
+        "method"
+      ],
+      "source_ids": [
+        "src-gap"
+      ]
+    },
+    {
+      "name": "Human-Auditory Preference Calibration for Spatial Outputs",
+      "problem_anchor": "发散缺口 9: 缺少可验证的系统化方案。",
+      "core_mechanism": "设计一个可复现模块或评测协议来隔离变量 9，并与现有 baseline 对比。",
+      "novelty_delta": "相对最近工作，强调可审计、可复现和跨场景比较。",
+      "closest_prior_work": "Existing spatial audio benchmark or model family",
+      "novelty_verdict": "uncertain",
+      "novelty_evidence": [
+        "现有报告显示该方向存在评测或数据缺口。"
+      ],
+      "novelty_risk": "可能已有未检索到的专门 benchmark 或内部系统覆盖类似机制。",
+      "validation_path": "先做小规模公开数据 pilot，验证指标能否区分 baseline 和 proposed variant。",
+      "priority": "low",
+      "risk": "数据和标注成本可能高于预期。",
+      "tags": [
+        "long-horizon",
+        "evaluation"
+      ],
+      "source_ids": [
+        "src-gap"
+      ]
+    },
+    {
+      "name": "Cross-Domain Spatial Cue Transfer from Robotics to Audio LLMs",
+      "problem_anchor": "发散缺口 10: 缺少可验证的系统化方案。",
+      "core_mechanism": "设计一个可复现模块或评测协议来隔离变量 10，并与现有 baseline 对比。",
+      "novelty_delta": "相对最近工作，强调可审计、可复现和跨场景比较。",
+      "closest_prior_work": "Existing spatial audio benchmark or model family",
+      "novelty_verdict": "uncertain",
+      "novelty_evidence": [
+        "现有报告显示该方向存在评测或数据缺口。"
+      ],
+      "novelty_risk": "可能已有未检索到的专门 benchmark 或内部系统覆盖类似机制。",
+      "validation_path": "先做小规模公开数据 pilot，验证指标能否区分 baseline 和 proposed variant。",
+      "priority": "low",
+      "risk": "数据和标注成本可能高于预期。",
+      "tags": [
+        "cross-domain",
+        "long-horizon"
+      ],
+      "source_ids": [
+        "src-gap"
       ]
     }
   ],
@@ -483,6 +814,16 @@
         "benchmark"
       ],
       "confidence": "medium"
+    }
+  ],
+  "sections": [
+    {
+      "title": "发散策略",
+      "tone": "blue",
+      "items": [
+        "全年 full-cycle 默认保留更多 gaps 和 ideas：gaps 8-15，ideas 10-20。",
+        "低置信但有启发的方向通过 tags 和 confidence 标注，而不是直接删除。"
+      ]
     }
   ]
 }

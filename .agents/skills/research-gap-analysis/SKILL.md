@@ -19,7 +19,11 @@ Use this skill when the user asks for 研究缺口, 现有不足, open problems,
 
 1. Build or reuse a topic profile with bilingual aliases, subtopics, likely venues, datasets, and exclusion terms.
 2. Search recent and representative sources; use `scripts/collect_sources.py` as an initial arXiv/OpenAlex/GitHub pass when useful.
-3. Cluster evidence into 4-8 gaps. For each gap record:
+3. Build a broad candidate pool before narrowing:
+   - Generate 12-25 candidate gaps across method, data, evaluation, deployment, theory, tooling, and product angles.
+   - Merge duplicates and near-duplicates; keep speculative but useful opportunities only when clearly labeled.
+   - Default final output: 8-15 gaps. If fewer than 8 credible gaps remain, state the evidence limitation in `risks`.
+4. For each final gap record:
    - `name`: concise gap name.
    - `gap_type`: method, data, evaluation, deployment, theory, tooling, or product.
    - `description`: what is missing or weak.
@@ -28,12 +32,15 @@ Use this skill when the user asks for 研究缺口, 现有不足, open problems,
    - `actionable_opportunity`: what a researcher could test next.
    - `confidence`: high, medium, or low.
    - `risk`: why the gap may be hard or already partially solved.
+   - `tags`: use tags such as `core-gap`, `exploratory-gap`, `long-horizon`, `cross-domain`, or `low-confidence` to show the role of the gap.
    - `source_ids`: evidence links.
-4. Build report JSON with `mode: "gap-analysis"`, fill `gaps`, `summary_judgments`, `risks`, `next_queries`, `queries`, and `sources`.
-5. Render with `../auto-research-common/scripts/render_report.py --update-kb`.
+5. Build report JSON with `mode: "gap-analysis"`, fill `gaps`, `summary_judgments`, `risks`, `next_queries`, `queries`, and `sources`.
+6. Render with `../auto-research-common/scripts/render_report.py --update-kb`.
 
 ## Quality bar
 
 - Report distinguishes real evidence-backed gaps from speculative opportunities.
 - Each gap has at least one source and a concrete verification route.
+- The final gap set is diverse: cover at least 4 gap types when the source base supports it.
+- Do not collapse to only 3-5 safe gaps unless the user explicitly asks for a concise shortlist.
 - Output is suitable as input to `research-idea-planning`.

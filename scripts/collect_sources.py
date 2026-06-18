@@ -23,28 +23,15 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any, Iterable
 
+sys.dont_write_bytecode = True
+
+from common_utils import now_iso, slugify, today_date, write_jsonl
+
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SOURCES = ("arxiv", "openalex", "github")
 TRACKING_QUERY_PREFIXES = ("utm_",)
 TRACKING_QUERY_KEYS = {"fbclid", "gclid", "igshid", "mc_cid", "mc_eid", "ref", "source"}
 ARXIV_NS = {"atom": "http://www.w3.org/2005/Atom"}
-
-
-def now_iso() -> str:
-    return dt.datetime.now().astimezone().isoformat(timespec="seconds")
-
-
-def today() -> dt.date:
-    return dt.date.today()
-
-
-def slugify(value: str) -> str:
-    slug = re.sub(r"[^a-zA-Z0-9]+", "-", value.strip().lower()).strip("-")
-    if slug:
-        return slug[:80]
-    digest = hashlib.sha1(value.encode("utf-8")).hexdigest()[:10]
-    return f"topic-{digest}"
-
 
 def as_text(value: Any, default: str = "") -> str:
     if value is None:
@@ -73,7 +60,7 @@ def within_window(date_text: str | None, cutoff: dt.date | None) -> bool:
     if cutoff is None:
         return True
     parsed = parse_date(date_text)
-    return parsed is None or (cutoff <= parsed <= today())
+    return parsed is None or (cutoff <= parsed <= today_date())
 
 
 def normalize_space(value: str) -> str:
@@ -150,7 +137,7 @@ def make_record(
         "url": clean_url,
         "source_type": source_type,
         "published_at": published_at or "date_unknown",
-        "accessed_at": today().isoformat(),
+        "accessed_at": today_date().isoformat(),
         "authors_or_org": normalize_space(authors_or_org or ""),
         "summary": normalize_space(summary or ""),
         "tags": list(dict.fromkeys([tag for tag in tags if tag])),
@@ -228,7 +215,7 @@ def collect_openalex(query: str, limit: int, cutoff: dt.date | None, timeout: in
         "sort": "publication_date:desc",
     }
     if cutoff:
-        params["filter"] = f"from_publication_date:{cutoff.isoformat()},to_publication_date:{today().isoformat()}"
+        params["filter"] = f"from_publication_date:{cutoff.isoformat()},to_publication_date:{today_date().isoformat()}"
     url = f"https://api.openalex.org/works?{urllib.parse.urlencode(params)}"
     payload = http_json(url, timeout)
     records: list[dict[str, Any]] = []
@@ -341,13 +328,6 @@ def deduplicate(records: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
     return unique
 
 
-def write_jsonl(path: Path, rows: Iterable[dict[str, Any]]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8") as f:
-        for row in rows:
-            f.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
-
-
 def parse_sources(value: str) -> list[str]:
     sources = [part.strip().lower() for part in value.split(",") if part.strip()]
     unknown = sorted(set(sources) - set(COLLECTORS))
@@ -357,7 +337,7 @@ def parse_sources(value: str) -> list[str]:
 
 
 def collect_all(args: argparse.Namespace) -> list[dict[str, Any]]:
-    cutoff = today() - dt.timedelta(days=args.window_days) if args.window_days else None
+    cutoff = today_date() - dt.timedelta(days=args.window_days) if args.window_days else None
     records: list[dict[str, Any]] = []
     for query in args.query:
         for source in args.sources:

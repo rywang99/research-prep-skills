@@ -4,12 +4,16 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
 import sys
 import tempfile
 import importlib.util
 from pathlib import Path
+
+sys.dont_write_bytecode = True
+os.environ.setdefault("PYTHONDONTWRITEBYTECODE", "1")
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILLS = ROOT / ".agents" / "skills"
@@ -23,6 +27,8 @@ COLLECTOR_PATH = ROOT / "scripts" / "collect_sources.py"
 TRACE_REPORT_PATH = ROOT / "scripts" / "trace_report_papers.py"
 TRACE_SINGLE_PATH = ROOT / "scripts" / "trace_single_paper.py"
 QUERY_KB_PATH = ROOT / "scripts" / "query_knowledge_base.py"
+ARCHIVE_REPORTS_PATH = ROOT / "scripts" / "archive_reports.py"
+COMMON_UTILS_PATH = ROOT / "scripts" / "common_utils.py"
 CLAUDE_SKILLS = ROOT / ".claude" / "skills"
 CLAUDE_SYNC_PATH = ROOT / "scripts" / "sync_claude_skills.py"
 CLAUDE_MD_PATH = ROOT / "CLAUDE.md"
@@ -54,6 +60,13 @@ REQUIRED_SOURCE_FIELDS = {
 def fail(message: str) -> None:
     print(f"ERROR: {message}", file=sys.stderr)
     raise SystemExit(1)
+
+
+def validate_no_python_caches() -> None:
+    caches = [path for path in ROOT.rglob("__pycache__") if ".git" not in path.parts]
+    if caches:
+        listed = ", ".join(str(path.relative_to(ROOT)) for path in caches[:5])
+        fail(f"python cache directories should not be kept in the repo tree: {listed}")
 
 
 def validate_frontmatter(path: Path) -> None:
@@ -182,6 +195,7 @@ def validate_claude_skills(required: set[str]) -> None:
 
 
 def main() -> int:
+    validate_no_python_caches()
     if not SKILLS.is_dir():
         fail(f"skills dir missing: {SKILLS}")
     present = {p.name for p in SKILLS.iterdir() if p.is_dir()}
@@ -229,11 +243,18 @@ def main() -> int:
             fail(f"preparation fixture mode is not registered: {fixture}")
         if not data.get(field):
             fail(f"preparation fixture missing {field}: {fixture}")
+        if field == "gaps":
+            if len(data.get("gaps", [])) < 8:
+                fail(f"gap fixture should include at least 8 divergent gaps: {fixture}")
+            if not any(isinstance(item, dict) and item.get("tags") for item in data.get("gaps", [])):
+                fail(f"gap fixture should include tags for divergent gap roles: {fixture}")
         if field == "ideas" and not any(isinstance(item, dict) and item.get("novelty_verdict") for item in data.get("ideas", [])):
             fail(f"idea fixture missing novelty_verdict: {fixture}")
+        if field == "ideas" and len(data.get("ideas", [])) < 10:
+            fail(f"idea fixture should include at least 10 divergent ideas: {fixture}")
     validate_collected_sources_fixture()
     validate_paper_trace_naming()
-    for path in (TRACE_REPORT_PATH, TRACE_SINGLE_PATH, QUERY_KB_PATH):
+    for path in (TRACE_REPORT_PATH, TRACE_SINGLE_PATH, QUERY_KB_PATH, ARCHIVE_REPORTS_PATH, COMMON_UTILS_PATH):
         if not path.exists():
             fail(f"missing {path}")
     with tempfile.TemporaryDirectory(prefix="auto-research-validate-") as tmp:
@@ -295,6 +316,132 @@ def main() -> int:
         graph_docs = [json.loads(path.read_text(encoding="utf-8")) for path in (tmpdir / "knowledge_base").rglob("graph_latest.json")]
         if not graph_docs or graph_docs[-1].get("schema_version") != SCHEMA_VERSION:
             fail("knowledge-base graph snapshot missing current schema_version")
+        archive_reports_root = tmpdir / "reports"
+        archive_topic = archive_reports_root / "validation-topic"
+        archive_topic.mkdir(parents=True)
+        for name in ("2026-06-01_weekly.html", "2026-06-01_weekly.json", "2026-06-01_monthly.html"):
+            (archive_topic / name).write_text("{}", encoding="utf-8")
+        conflict = archive_topic / "archive" / "2026" / "06" / "weekly" / "2026-06-01_weekly.html"
+        conflict.parent.mkdir(parents=True)
+        conflict.write_text("existing", encoding="utf-8")
+        paper_trace_dir = archive_reports_root / "paper-trace" / "validation"
+        paper_trace_dir.mkdir(parents=True)
+        (paper_trace_dir / "2026-06-01_weekly.html").write_text("skip", encoding="utf-8")
+        dry_run = subprocess.run(
+            [
+                sys.executable,
+                str(ARCHIVE_REPORTS_PATH),
+                "--reports-root",
+                str(archive_reports_root),
+                "--topic",
+                "validation-topic",
+                "--dry-run",
+                "--json",
+            ],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        dry_data = json.loads(dry_run.stdout)
+        if not dry_data.get("dry_run") or not (archive_topic / "2026-06-01_weekly.html").exists():
+            fail("archive dry-run should not move report files")
+        subprocess.run(
+            [
+                sys.executable,
+                str(ARCHIVE_REPORTS_PATH),
+                "--reports-root",
+                str(archive_reports_root),
+                "--apply",
+                "--json",
+            ],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        if (archive_topic / "2026-06-01_weekly.html").exists():
+            fail("archive apply should move dated root report files")
+        if not (archive_topic / "archive" / "2026" / "06" / "monthly" / "2026-06-01_monthly.html").exists():
+            fail("archive apply did not create year/month/mode path")
+        if not list((archive_topic / "archive" / "2026" / "06" / "weekly").glob("2026-06-01_weekly-*.json")):
+            fail("archive apply did not avoid existing destination conflicts")
+        if not (archive_topic / "index.json").exists():
+            fail("archive apply did not write topic index")
+        if not (paper_trace_dir / "2026-06-01_weekly.html").exists():
+            fail("archive all-topics mode should skip paper-trace reports")
+        kb_topic = tmpdir / "knowledge_base" / "validation-topic"
+        kb_topic.mkdir(parents=True)
+        stale_run = {
+            "mode": "weekly",
+            "report_path": str(archive_topic / "2026-06-01_weekly.html"),
+            "run_id": "stale-validation",
+            "schema_version": SCHEMA_VERSION,
+        }
+        (kb_topic / "runs.jsonl").write_text(json.dumps(stale_run, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
+        repair_result = subprocess.run(
+            [
+                sys.executable,
+                str(ARCHIVE_REPORTS_PATH),
+                "--reports-root",
+                str(archive_reports_root),
+                "--kb-root",
+                str(tmpdir / "knowledge_base"),
+                "--topic",
+                "validation-topic",
+                "--repair-kb-paths",
+                "--apply",
+                "--json",
+            ],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        repair_data = json.loads(repair_result.stdout)
+        repair = repair_data["topics"][0].get("kb_report_path_repair", {})
+        if repair.get("repaired_paths") != 1:
+            fail("archive repair should update stale knowledge-base report_path values")
+        repaired_run = json.loads((kb_topic / "runs.jsonl").read_text(encoding="utf-8").strip())
+        if not Path(repaired_run.get("report_path", "")).exists() or "/archive/2026/06/weekly/" not in repaired_run.get("report_path", ""):
+            fail("repaired knowledge-base report_path should point to archived report")
+        render_topic = tmpdir / "render_reports" / "render-topic"
+        render_topic.mkdir(parents=True)
+        archived_input = render_topic / "2026-06-02_weekly.json"
+        traced_data["topic"] = "Render Validation"
+        traced_data["topic_slug"] = "render-topic"
+        archived_input.write_text(json.dumps(traced_data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        archived_output = render_topic / "2026-06-02_weekly.html"
+        subprocess.run(
+            [
+                sys.executable,
+                str(SKILLS / "auto-research-common" / "scripts" / "render_report.py"),
+                "--input",
+                str(archived_input),
+                "--output",
+                str(archived_output),
+                "--archive-output",
+                "--update-kb",
+                "--kb-root",
+                str(tmpdir / "archive_kb"),
+            ],
+            cwd=ROOT,
+            check=True,
+        )
+        if archived_output.exists():
+            fail("renderer --archive-output should move the HTML report out of the topic root")
+        final_html = render_topic / "archive" / "2026" / "06" / "weekly" / "2026-06-02_weekly.html"
+        final_json = render_topic / "archive" / "2026" / "06" / "weekly" / "2026-06-02_weekly.json"
+        if not final_html.exists() or not final_json.exists():
+            fail("renderer --archive-output did not archive both HTML and matching JSON")
+        archive_run_rows = [
+            json.loads(line)
+            for path in (tmpdir / "archive_kb").rglob("runs.jsonl")
+            for line in path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        if not archive_run_rows or "/archive/2026/06/weekly/" not in archive_run_rows[-1].get("report_path", ""):
+            fail("renderer --archive-output should record the archived report path in knowledge_base")
         subprocess.run(
             [
                 sys.executable,
@@ -316,7 +463,7 @@ def main() -> int:
         if not any((tmpdir / "paper_trace_kb").rglob("runs.jsonl")):
             fail("trace_single_paper did not update temporary knowledge base")
         renderer = SKILLS / "auto-research-common" / "scripts" / "render_report.py"
-        for fixture, _, expected_anchor in PREPARATION_FIXTURES:
+        for fixture, fixture_field, expected_anchor in PREPARATION_FIXTURES:
             output = tmpdir / f"{fixture.stem}.html"
             subprocess.run(
                 [
@@ -336,6 +483,8 @@ def main() -> int:
             rendered = output.read_text(encoding="utf-8")
             if expected_anchor not in rendered:
                 fail(f"renderer did not create expected preparation section {expected_anchor} for {fixture.name}")
+            if fixture_field == "gaps" and "core-gap" not in rendered:
+                fail("renderer did not display gap tags")
         if not any((tmpdir / "preparation_kb").rglob("graph_latest.json")):
             fail("preparation fixture rendering did not create graph snapshots")
         query_result = subprocess.run(

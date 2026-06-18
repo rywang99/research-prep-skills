@@ -28,34 +28,146 @@
   ],
   "gaps": [
     {
-      "name": "真实场景 FOA/双耳泛化不足",
-      "gap_type": "data",
-      "description": "模型常在模拟或统一坐标系统下训练，跨麦克风几何和真实环境泛化证据不足。",
-      "why_it_matters": "如果数据和设备分布固定，空间推理能力难以迁移到机器人、会议和 AR/VR 场景。",
-      "closest_work": "Spatial-Omni 构建 SO-Dataset/SO-Bench，但限制中仍指出 FOA-only 与麦克风几何泛化问题。",
-      "actionable_opportunity": "设计跨 FOA、binaural、SALSA-Lite 的统一评测，并验证空间 token 是否可迁移。",
+      "name": "跨格式空间对齐缺少统一基准",
+      "gap_type": "evaluation",
+      "description": "不同空间音频表示、坐标系和 token 格式之间缺少可比 benchmark。",
+      "why_it_matters": "无法判断模型是否真正学习空间一致性。",
+      "closest_work": "现有空间音频理解与生成评测",
+      "actionable_opportunity": "构建跨 FOA/binaural/metadata 的 alignment benchmark。",
       "confidence": "high",
-      "risk": "不同格式的坐标和 RIR 管线对齐成本较高。",
+      "risk": "数据采集和标注成本较高。",
+      "tags": [
+        "core-gap",
+        "evaluation"
+      ],
       "source_ids": [
         "src-spatial-omni"
       ]
     },
     {
-      "name": "通用音频能力与空间能力的权衡不清晰",
-      "gap_type": "evaluation",
-      "description": "空间适配提升定位和关系推理，但可能损伤通用音频理解能力。",
-      "why_it_matters": "真实 Omni assistant 需要同时处理单声道语义任务和空间任务。",
-      "closest_work": "Spatial-Omni 用 mixed data 部分恢复通用能力。",
-      "actionable_opportunity": "建立 monaural-spatial 混合训练比例与能力退化曲线。",
+      "name": "真实房间声学覆盖不足",
+      "gap_type": "data",
+      "description": "公开数据常集中在少数房间和麦克风配置。",
+      "why_it_matters": "模型可能只在合成或近场设置有效。",
+      "closest_work": "现有空间音频数据集",
+      "actionable_opportunity": "补充真实 RIR、设备和混响条件元数据。",
       "confidence": "medium",
-      "risk": "需要可公开复现的通用音频训练数据。",
+      "risk": "版权和隐私限制可能阻碍开放。",
+      "tags": [
+        "core-gap",
+        "data"
+      ],
+      "source_ids": [
+        "src-spatial-omni"
+      ]
+    },
+    {
+      "name": "坐标系转换误差不可解释",
+      "gap_type": "method",
+      "description": "模型输出空间位置时，坐标系、角度和距离误差经常混在一起。",
+      "why_it_matters": "难以定位错误来自表示、推理还是后处理。",
+      "closest_work": "空间定位和声源分离方法",
+      "actionable_opportunity": "设计 coordinate error decomposition 和可视化诊断。",
+      "confidence": "medium",
+      "risk": "需要细粒度 ground truth。",
+      "tags": [
+        "exploratory-gap",
+        "method"
+      ],
+      "source_ids": [
+        "src-spatial-omni"
+      ]
+    },
+    {
+      "name": "多声源重叠场景缺少鲁棒评测",
+      "gap_type": "evaluation",
+      "description": "多数评测对单声源或弱重叠更友好。",
+      "why_it_matters": "真实环境常存在多个动态声源。",
+      "closest_work": "multi-source localization benchmark",
+      "actionable_opportunity": "加入 overlap ratio、source motion 和 occlusion 维度。",
+      "confidence": "high",
+      "risk": "评测复杂度增加。",
+      "tags": [
+        "core-gap",
+        "benchmark"
+      ],
+      "source_ids": [
+        "src-spatial-omni"
+      ]
+    },
+    {
+      "name": "空间 token 与语义 token 的耦合机制不清楚",
+      "gap_type": "theory",
+      "description": "尚不清楚空间 token 如何与语言/事件语义共同建模。",
+      "why_it_matters": "限制可解释架构设计。",
+      "closest_work": "audio-language model tokenization",
+      "actionable_opportunity": "分析 attention/representation 中的 spatial-semantic binding。",
+      "confidence": "low",
+      "risk": "理论解释可能难以验证。",
+      "tags": [
+        "long-horizon",
+        "theory",
+        "low-confidence"
+      ],
+      "source_ids": [
+        "src-spatial-omni"
+      ]
+    },
+    {
+      "name": "端侧部署缺少延迟-精度-能耗协议",
+      "gap_type": "deployment",
+      "description": "空间音频模型常报告离线指标，缺少端侧实时评测。",
+      "why_it_matters": "AR/VR 和机器人应用受实时约束。",
+      "closest_work": "edge audio inference benchmark",
+      "actionable_opportunity": "固定设备、延迟预算和能耗指标做部署 scorecard。",
+      "confidence": "medium",
+      "risk": "设备差异会影响可复现性。",
+      "tags": [
+        "exploratory-gap",
+        "deployment"
+      ],
+      "source_ids": [
+        "src-spatial-omni"
+      ]
+    },
+    {
+      "name": "数据生成工具链缺少质量审计",
+      "gap_type": "tooling",
+      "description": "合成空间音频常依赖渲染器，但渲染质量和 domain gap 不透明。",
+      "why_it_matters": "训练数据错误会被模型放大。",
+      "closest_work": "RIR simulation and acoustic rendering tools",
+      "actionable_opportunity": "建立 renderer audit suite 和真实/合成差异报告。",
+      "confidence": "medium",
+      "risk": "真实参考数据有限。",
+      "tags": [
+        "cross-domain",
+        "tooling"
+      ],
+      "source_ids": [
+        "src-spatial-omni"
+      ]
+    },
+    {
+      "name": "产品场景任务定义过粗",
+      "gap_type": "product",
+      "description": "会议、XR、机器人和辅助听觉需要不同空间能力，但研究任务常混用。",
+      "why_it_matters": "单一 benchmark 难以指导落地选择。",
+      "closest_work": "application-specific audio benchmarks",
+      "actionable_opportunity": "按产品场景拆分 task cards 和 success criteria。",
+      "confidence": "medium",
+      "risk": "产品需求变化快。",
+      "tags": [
+        "exploratory-gap",
+        "product"
+      ],
       "source_ids": [
         "src-spatial-omni"
       ]
     }
   ],
   "risks": [
-    "该示例仅展示 schema 与渲染结构，不代表完整领域结论。"
+    "该示例仅展示 schema 与渲染结构，不代表完整领域结论。",
+    "示例 fixture 展示中等发散 gaps；真实报告仍需按来源强度去重和标注低置信机会。"
   ],
   "next_queries": [
     "spatial audio LLM general audio forgetting",

@@ -7,7 +7,7 @@ The renderer expects one JSON object. Required fields are marked with `required`
   "schema_version": "optional, default 1.0; emitted to knowledge-base artifacts",
   "topic": "required: human-readable topic",
   "topic_slug": "optional: filesystem-safe slug; renderer can derive one",
-  "mode": "required: registered mode id from config/research_modes.json, e.g. daily | weekly | monthly | yearly-hotwords | yearly-trends | gap-analysis | idea-planning | experiment-roadmap | formula-derivation | paper-trace",
+  "mode": "required: registered mode id from config/research_modes.json, e.g. daily | weekly | monthly | yearly-hotwords | yearly-trends | gap-analysis | idea-planning | experiment-roadmap | formula-derivation | paper-trace | yearly-full-cycle | independent-evaluation",
   "generated_at": "optional ISO datetime",
   "snapshot_date": "optional YYYY-MM-DD",
   "time_window": {
@@ -35,6 +35,28 @@ The renderer expects one JSON object. Required fields are marked with `required`
   ],
   "metrics": [
     {"label": "papers", "value": "12", "note": "within window"}
+  ],
+  "cycle_plan": {
+    "snapshot_date": "YYYY-MM-DD for the full-cycle run",
+    "annual_window_label": "human-readable 365-day window",
+    "stage_order": ["monthly", "yearly-hotwords", "yearly-trends", "gap-analysis", "idea-planning", "experiment-roadmap"],
+    "goal_strategy": "how Codex goal is used, only when explicitly requested",
+    "evaluation_strategy": "score gates and independent evaluator policy",
+    "monthly_slices": [
+      {"slice_id": "M01", "label": "month label", "start": "YYYY-MM-DD", "end": "YYYY-MM-DD", "status": "complete|needs_iteration|blocked|skipped", "artifact_path": "optional report path"}
+    ]
+  },
+  "stage_artifacts": [
+    {
+      "stage_id": "stable stage id, e.g. M01|hotwords|trends|gaps|ideas|roadmap",
+      "mode": "registered mode id",
+      "status": "planned|running|complete|needs_iteration|blocked|skipped",
+      "input_artifacts": ["report or knowledge-base paths used as inputs"],
+      "json_path": "optional output JSON path",
+      "html_path": "optional output HTML path",
+      "depends_on": ["stage-id"],
+      "notes": "short limitation, caveat, or scope decision"
+    }
   ],
   "findings": [
     {
@@ -138,6 +160,34 @@ The renderer expects one JSON object. Required fields are marked with `required`
     "next_validation": ["minimal analytical or empirical validation for humans"],
     "source_ids": ["source-id"]
   },
+  "evaluation_scorecards": [
+    {
+      "scorecard_id": "stable evaluation id, e.g. eval-ideas-v1",
+      "artifact_id": "stage id or report id being evaluated",
+      "artifact_path": "JSON/HTML path or KB reference",
+      "evaluator": "normally research-independent-evaluator",
+      "rubric_version": "research-quality-v1",
+      "scores": [
+        {"dimension": "Evidence quality", "score": 18, "max_score": 20, "rationale": "why this score was assigned", "source_ids": ["source-id"]}
+      ],
+      "total_score": 82,
+      "verdict": "pass|pass_with_improvements|needs_iteration|blocked",
+      "blocking_issues": ["issue that stops progression"],
+      "required_iterations": ["concrete next improvement"],
+      "evaluated_at": "ISO datetime"
+    }
+  ],
+  "iteration_log": [
+    {
+      "iteration_id": "stable iteration id",
+      "stage_id": "stage that was iterated",
+      "trigger_scorecard_id": "scorecard that triggered the iteration",
+      "trigger_reason": "why iteration was needed",
+      "action": "what changed in the next generation pass",
+      "changed_artifact": "path or id of updated artifact",
+      "result_scorecard_id": "scorecard after re-evaluation"
+    }
+  ],
   "paper_traces": [
     {
       "source_id": "source-id for the traced paper",
@@ -195,7 +245,9 @@ The renderer expects one JSON object. Required fields are marked with `required`
 - `summary_judgments`, `findings`, and `sources` should normally be non-empty for real reports.
 - `paper_traces` renders as expanded HTML cards and is used by daily/weekly paper trace automation.
 - `gaps`, `ideas`, and `experiment_roadmap` are preparation-stage sections; they should not claim experiments were run unless source evidence already exists.
+- `cycle_plan` and `stage_artifacts` render a yearly workflow map for `yearly-full-cycle`; they are optional for all other modes.
+- `evaluation_scorecards` and `iteration_log` render independent evaluation and targeted iteration sections; scorecards should be generated separately from the artifact being scored.
 - `topic_slug` is sanitized if omitted.
 - `--update-kb` appends source records and run metadata under `knowledge_base/<topic_slug>/`; standalone `paper-trace` reports use `knowledge_base/paper-trace/<topic_slug>/`.
-- `--update-kb` also writes lightweight graph artifacts: `entities.jsonl`, `links.jsonl`, and `graph_latest.json`. These cover source, keyword, trend, gap, idea, claim, and formula-derivation entities plus relations such as `supports`, `mentions`, `addresses`, `derived_from`, and `validates`; see `knowledge_base_schema.md` for compatibility rules.
+- `--update-kb` also writes lightweight graph artifacts: `entities.jsonl`, `links.jsonl`, and `graph_latest.json`. These cover source, keyword, trend, gap, idea, claim, formula-derivation, cycle-stage, and evaluation entities plus relations such as `supports`, `mentions`, `addresses`, `derived_from`, `validates`, `evaluates`, `improves`, and `blocks`; see `knowledge_base_schema.md` for compatibility rules.
 - Extra source provenance fields from `scripts/collect_sources.py` are preserved in the knowledge base and ignored by the HTML renderer unless explicitly displayed.

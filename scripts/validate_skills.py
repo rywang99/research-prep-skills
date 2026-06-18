@@ -29,6 +29,8 @@ PREPARATION_FIXTURES = [
     (ROOT / "examples" / "idea_planning_report.json", "ideas", 'id="ideas"'),
     (ROOT / "examples" / "experiment_roadmap_report.json", "experiment_roadmap", 'id="roadmap"'),
     (ROOT / "examples" / "formula_derivation_report.json", "formula_derivation", 'id="derivation"'),
+    (ROOT / "examples" / "yearly_full_cycle_report.json", "stage_artifacts", 'id="cycle"'),
+    (ROOT / "examples" / "independent_evaluation_report.json", "evaluation_scorecards", 'id="evaluation"'),
 ]
 REQUIRED_SOURCE_FIELDS = {
     "id",
@@ -185,7 +187,7 @@ def main() -> int:
         if not openai_yaml.exists():
             fail(f"missing {openai_yaml}")
     nav_anchors = {str(item.get("anchor")) for item in config.get("nav_sections", []) if isinstance(item, dict)}
-    for anchor in {"overview", "findings", "refs", "gaps", "ideas", "roadmap", "derivation"}:
+    for anchor in {"overview", "findings", "refs", "gaps", "ideas", "roadmap", "derivation", "cycle", "evaluation", "iterations"}:
         if anchor not in nav_anchors:
             fail(f"config nav_sections missing anchor: {anchor}")
     minimal = json.loads((ROOT / "examples" / "minimal_report.json").read_text(encoding="utf-8"))
@@ -327,6 +329,26 @@ def main() -> int:
         query_data = json.loads(query_result.stdout)
         if query_data.get("count", 0) < 1:
             fail("knowledge-base query did not return idea entities")
+        for entity_type in ("cycle_stage", "evaluation"):
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(QUERY_KB_PATH),
+                    "--kb-root",
+                    str(tmpdir / "preparation_kb"),
+                    "--type",
+                    entity_type,
+                    "--limit",
+                    "5",
+                ],
+                cwd=ROOT,
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            data = json.loads(result.stdout)
+            if data.get("count", 0) < 1:
+                fail(f"knowledge-base query did not return {entity_type} entities")
     print("skills validation passed")
     return 0
 

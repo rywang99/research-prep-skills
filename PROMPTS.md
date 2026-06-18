@@ -13,6 +13,7 @@ auto-research
 ├── 信息获取层：research-daily / research-weekly / research-monthly
 ├── 长周期判断：research-yearly-hotwords / research-yearly-trends
 ├── 单篇深读：paper-trace
+├── 长时全流程：research-yearly-full-cycle → research-independent-evaluator
 └── 研究准备层：research-gap-analysis → research-idea-planning → experiment-roadmap
     └── 可选理论准备：formula-derivation
 ```
@@ -29,6 +30,10 @@ auto-research
 
 ```text
 使用 $auto-research 调研“多模态推理模型”，目标是为人类后续实验做准备。请覆盖热点、现有不足、可验证机会和下一步实验规划，不要运行实验。
+```
+
+```text
+使用 $auto-research 对“AI Agent 评测”做一整年全流程技能调研：按月度切片建立事实底座，再做全年热词、趋势、缺口、idea、实验路线图，并用独立评分机制触发必要迭代。请创建一个 Codex goal 跟踪总任务状态。
 ```
 
 ## 2. 信息获取层：先建立事实底座
@@ -180,6 +185,24 @@ auto-research
 ```
 
 ## 6. 推荐组合流程
+
+### 全年全流程 → 独立评分 → 定向迭代
+
+适合长时维护一个领域的系统认知，把事实底座、选题准备和质量门控串成一个闭环。
+
+```text
+使用 $research-yearly-full-cycle 对“AI Agent 评测”执行全年全流程调研：
+1. 将最近 365 天拆成 12 个连续月度切片；
+2. 生成全年热词和趋势；
+3. 做研究缺口、idea 规划和实验路线图；
+4. 每个关键阶段调用 $research-independent-evaluator 独立评分；
+5. 低于 80 分时记录必要改进，低于 70 分时先定向迭代再继续。
+请使用 Codex goal 跟踪总任务状态，所有产物生成中文 HTML 并更新 knowledge_base，不运行实验。
+```
+
+```text
+使用 $research-independent-evaluator 独立评分 reports/ai-agent-evaluation/idea_planning_v1.json，按科研选题质量 rubric 给出总分、阻塞问题和必要迭代建议，不要改写原报告。
+```
 
 ### 周期巡检 → 重点深读 → 缺口
 

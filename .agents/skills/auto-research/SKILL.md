@@ -5,7 +5,7 @@ description: Orchestrate automated research for a user-provided domain by expand
 
 # Auto Research
 
-Use this skill when the user asks for automated research, domain monitoring, literature/industry updates, hotword mining, trend analysis, research gap analysis, idea planning, formula derivation preparation, experiment roadmaps, or an HTML research report for a topic.
+Use this skill when the user asks for automated research, domain monitoring, literature/industry updates, hotword mining, trend analysis, research gap analysis, idea planning, formula derivation preparation, experiment roadmaps, full-year iterative research workflows, independent scoring, or an HTML research report for a topic.
 
 ## Operating rules
 
@@ -31,6 +31,8 @@ Use this skill when the user asks for automated research, domain monitoring, lit
    - 找 idea/课题构思/选题/可做什么 -> `research-idea-planning`
    - 实验规划/验证路线/ablation/怎么证明 -> `experiment-roadmap`
    - 理论推导/公式/assumption/数学建模/derive -> `formula-derivation`
+   - 全年全流程/一整年/长时自动化/迭代优化/独立评分/full-cycle -> `research-yearly-full-cycle`
+   - 独立评分/独立评审/rubric/evaluate/scorecard/复评 -> `research-independent-evaluator`
 4. If multiple modes are requested, run them independently but reuse the same topic profile and knowledge base.
 5. If the user only gives a topic, default to `research-weekly` unless they ask for long-range strategy, then use `research-yearly-trends`.
 6. For newly added modes, follow `../auto-research-common/references/extension_guide.md` and route by the registry entry.
@@ -71,6 +73,8 @@ Use the profile to generate bilingual search queries. Record the final query lis
 - Idea planning: ranked idea cards grounded in gaps, trends, or paper traces; include closest prior work and preliminary novelty verdict; no pilots or experiment execution.
 - Experiment roadmap: claim map, must-run experiment blocks, ablations, metrics, run order, and stop/go gates; no job launch or code generation.
 - Formula derivation: theory-preparation package with variables, assumptions, derivation steps, sanity checks, and validation conditions; no final proof claims unless supplied and checkable.
+- Yearly full cycle: monthly evidence slices, yearly hotwords/trends, gaps, ideas, roadmap or formula preparation, independent scorecards, and iteration logs; use Codex goal only when explicitly requested.
+- Independent evaluation: score saved artifacts separately from generation; do not revise the artifact in the same pass.
 
 ## Minimum quality bar
 

@@ -27,6 +27,8 @@ The knowledge base is a local, append-oriented store under `knowledge_base/<topi
 - `idea`: ranked research idea with novelty metadata when available.
 - `claim`: experiment-roadmap claim.
 - `formula_derivation`: theory-preparation package from formula-derivation mode.
+- `cycle_stage`: yearly full-cycle stage or monthly slice artifact.
+- `evaluation`: independent evaluator scorecard for a saved artifact or stage.
 
 ## Link Relations
 
@@ -35,6 +37,9 @@ The knowledge base is a local, append-oriented store under `knowledge_base/<topi
 - `addresses`: an idea addresses a gap.
 - `derived_from`: a gap or derivation is derived from a trend/source.
 - `validates`: a claim or derivation points to an idea it helps validate.
+- `evaluates`: an evaluation scorecard evaluates a cycle stage or artifact.
+- `improves`: a post-iteration scorecard records improvement to a stage.
+- `blocks`: an evaluation scorecard identifies blockers for a stage.
 
 ## Compatibility Rules
 

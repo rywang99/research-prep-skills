@@ -1,0 +1,155 @@
+{
+  "schema_version": "1.0",
+  "topic": "AI Agent 评测",
+  "topic_slug": "ai-agent-evaluation",
+  "mode": "independent-evaluation",
+  "generated_at": "2026-06-16T13:00:00+08:00",
+  "snapshot_date": "2026-06-16",
+  "time_window": {
+    "label": "评分对象：idea planning v1",
+    "start": "2026-06-16",
+    "end": "2026-06-16"
+  },
+  "summary_judgments": [
+    {
+      "title": "Idea 阶段达到进入路线图门槛",
+      "body": "总分 82，证据与可验证性可接受，但仍需补充产业 benchmark 覆盖。",
+      "tone": "green",
+      "sources": [
+        "src-survey",
+        "src-benchmark"
+      ]
+    }
+  ],
+  "stage_artifacts": [
+    {
+      "stage_id": "ideas",
+      "mode": "idea-planning",
+      "status": "complete",
+      "input_artifacts": [
+        "gaps"
+      ],
+      "json_path": "reports/ai-agent-evaluation/idea_planning_v1.json",
+      "html_path": "reports/ai-agent-evaluation/idea_planning_v1.html",
+      "depends_on": [
+        "gaps"
+      ],
+      "notes": "被评分对象。"
+    }
+  ],
+  "evaluation_scorecards": [
+    {
+      "scorecard_id": "eval-ideas-v1",
+      "artifact_id": "ideas",
+      "artifact_path": "reports/ai-agent-evaluation/idea_planning_v1.json",
+      "evaluator": "research-independent-evaluator",
+      "rubric_version": "research-quality-v1",
+      "scores": [
+        {
+          "dimension": "Evidence quality",
+          "score": 18,
+          "max_score": 20,
+          "rationale": "Representative sources are primary or benchmark-like fixtures and key claims are attached to source ids.",
+          "source_ids": [
+            "src-survey"
+          ]
+        },
+        {
+          "dimension": "Coverage completeness",
+          "score": 12,
+          "max_score": 15,
+          "rationale": "Academic and benchmark evidence are present; product signals are intentionally sparse in this fixture.",
+          "source_ids": [
+            "src-survey",
+            "src-benchmark"
+          ]
+        },
+        {
+          "dimension": "Freshness and deduplication",
+          "score": 8,
+          "max_score": 10,
+          "rationale": "The annual window uses explicit dates and monthly slices; deduplication is only documented at fixture level.",
+          "source_ids": [
+            "src-benchmark"
+          ]
+        },
+        {
+          "dimension": "Trend and gap judgment",
+          "score": 13,
+          "max_score": 15,
+          "rationale": "Trend and gap stages are connected through stage artifacts and source-backed findings.",
+          "source_ids": [
+            "src-survey"
+          ]
+        },
+        {
+          "dimension": "Idea novelty",
+          "score": 11,
+          "max_score": 15,
+          "rationale": "The idea stage names closest work but still needs deeper prior-work checking.",
+          "source_ids": [
+            "src-survey"
+          ]
+        },
+        {
+          "dimension": "Verifiability",
+          "score": 12,
+          "max_score": 15,
+          "rationale": "The roadmap has validation gates, but compute estimates are coarse.",
+          "source_ids": [
+            "src-benchmark"
+          ]
+        },
+        {
+          "dimension": "Risk calibration",
+          "score": 8,
+          "max_score": 10,
+          "rationale": "Limitations are stated and weak areas are not overclaimed.",
+          "source_ids": [
+            "src-survey"
+          ]
+        }
+      ],
+      "total_score": 82,
+      "verdict": "pass",
+      "blocking_issues": [],
+      "required_iterations": [
+        "补充 product/industry 侧 benchmark 来源以增强覆盖。"
+      ],
+      "evaluated_at": "2026-06-16T13:00:00+08:00"
+    }
+  ],
+  "risks": [
+    "评分报告不修改原 idea 产物。"
+  ],
+  "sources": [
+    {
+      "id": "src-survey",
+      "title": "Example Survey on AI Agent Evaluation",
+      "url": "https://example.com/agent-eval-survey",
+      "source_type": "paper",
+      "published_at": "2026-02-10",
+      "accessed_at": "2026-06-16",
+      "authors_or_org": "Example Lab",
+      "summary": "Survey fixture covering evaluation protocols for long-horizon agents.",
+      "tags": [
+        "agent-evaluation"
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "src-benchmark",
+      "title": "Example Long Horizon Agent Benchmark",
+      "url": "https://example.com/long-horizon-benchmark",
+      "source_type": "benchmark",
+      "published_at": "2026-04-12",
+      "accessed_at": "2026-06-16",
+      "authors_or_org": "Benchmark Org",
+      "summary": "Benchmark fixture for multi-step tool-use tasks.",
+      "tags": [
+        "benchmark"
+      ],
+      "confidence": "medium"
+    }
+  ]
+}

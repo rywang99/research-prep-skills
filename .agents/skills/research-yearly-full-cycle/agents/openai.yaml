@@ -1,0 +1,7 @@
+interface:
+  display_name: "Yearly Full Cycle"
+  short_description: "Orchestrate annual research with scoring"
+  brand_color: "#0F766E"
+  default_prompt: "Use $research-yearly-full-cycle to run a year-long full-cycle research workflow for a domain with independent evaluation and Codex goal tracking."
+policy:
+  allow_implicit_invocation: true

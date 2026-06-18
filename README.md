@@ -34,6 +34,14 @@
 使用 $formula-derivation 为 Cross-Format Spatial Token Alignment 整理变量、假设、推导步骤和 sanity checks，不运行实验。
 ```
 
+```text
+使用 $research-yearly-full-cycle 对“AI Agent 评测”做最近 365 天的全流程调研，按月度切片、全年趋势、缺口、idea、路线图和独立评分输出中文 HTML，并使用 Codex goal 跟踪总任务。
+```
+
+```text
+使用 $research-independent-evaluator 独立评分 reports/ai-agent-evaluation/idea_planning_v1.json，给出 rubric 分数、阻塞问题和必要迭代建议，不改写原报告。
+```
+
 更多提示词示例见 `PROMPTS.md`。
 
 ## 能力概览
@@ -49,6 +57,8 @@
 - `experiment-roadmap`：把选定 idea 转成 claim-driven 实验路线图，不创建或提交实验任务。
 - `formula-derivation`：为理论型方向整理变量、假设、推导步骤和验证条件，不声称自动证明。
 - `paper-trace`：针对单篇论文生成技术溯源、重点阅读信号和复现风险 HTML。
+- `research-yearly-full-cycle`：编排全年月度切片、热词/趋势、缺口、idea、实验路线/公式准备、独立评分和必要迭代。
+- `research-independent-evaluator`：独立读取已保存产物并按 rubric 评分，不在同一 pass 中改写被评报告。
 - `scripts/collect_sources.py`：从无密钥公共 API 采集候选来源，生成可复用 JSONL。
 - `scripts/trace_report_papers.py`：为日/周调研自动嵌入所有区间内文献的展开 trace。
 - `scripts/query_knowledge_base.py`：查询本地 `knowledge_base/` 中的实体和关系图谱。
@@ -60,6 +70,8 @@
 .agents/skills/research-*/                 # 各调研模式的 skill 指令
 .agents/skills/formula-derivation/         # 理论准备与公式推导规划 skill
 .agents/skills/paper-trace/                # 单篇论文技术溯源 skill
+.agents/skills/research-yearly-full-cycle/ # 全年全流程调研、评分和迭代编排 skill
+.agents/skills/research-independent-evaluator/ # 独立评分与质量门控 skill
 .agents/skills/auto-research-common/       # 共享配置、模板、schema、渲染脚本
 examples/                                  # 示例报告和采集结果 fixture
 scripts/                                   # 仓库级采集、查询、校验和脚手架工具

@@ -13,6 +13,8 @@ The design is extensible for common research workflow changes:
 - Report content uses a generic JSON schema with `schema_version: "1.0"`; missing versions remain readable for older local artifacts.
 - Daily/weekly reports can embed expanded `paper_traces`; lightweight update modes suppress hotword and trend sections by default.
 - Preparation modes cover `gap-analysis`, `idea-planning`, `experiment-roadmap`, and optional `formula-derivation`.
+- Long-running orchestration uses `research-yearly-full-cycle`, which composes monthly slices, yearly synthesis, preparation stages, independent evaluation, and iteration logs without expanding into experiment execution.
+- Independent scoring uses `research-independent-evaluator` as a separate mode so generated reports and rubric judgments remain distinct artifacts.
 - Novelty checking is an evaluation dimension inside `research-idea-planning`, not a parallel skill.
 - Research-wiki/wiki-enrich style persistence is folded into `knowledge_base/` as lightweight graph files.
 - Paper trace is HTML-first: helpers may use temporary PDF extraction, but do not create persistent PDF caches or PDF annotations.
@@ -36,12 +38,14 @@ The design is extensible for common research workflow changes:
 5. Render HTML with `.agents/skills/auto-research-common/scripts/render_report.py`.
 6. When `--update-kb` is used, append sources, runs, keywords, and graph rows under `knowledge_base/<topic_slug>/`.
 7. Query local graph snapshots with `scripts/query_knowledge_base.py` when a future workflow needs prior context.
+8. For yearly full-cycle runs, append stage artifacts, scorecards, and iteration logs as normal report fields and graph entities.
 
 ## Knowledge-base compatibility
 
 - Current schema version is `1.0`.
 - `sources.jsonl`, `runs.jsonl`, `entities.jsonl`, and `links.jsonl` are append-oriented; do not rewrite historical rows for routine migrations.
 - `keywords.json` and `graph_latest.json` are latest snapshots for quick reuse.
+- Full-cycle runs may add `cycle_stage` and `evaluation` entities plus `evaluates`, `improves`, and `blocks` links; readers must ignore these fields when unsupported.
 - Readers must tolerate missing `schema_version` and unknown extra fields.
 - Generated knowledge-base data remains local and ignored by Git except for `.gitkeep`.
 

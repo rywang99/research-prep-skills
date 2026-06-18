@@ -35,9 +35,12 @@ FALLBACK_CONFIG = {
         "experiment-roadmap": {"label": "实验路线图"},
         "formula-derivation": {"label": "公式推导准备"},
         "paper-trace": {"label": "论文溯源"},
+        "yearly-full-cycle": {"label": "全年全流程调研"},
+        "independent-evaluation": {"label": "独立评分"},
     },
     "nav_sections": [
         {"anchor": "overview", "label": "总览"},
+        {"anchor": "cycle", "label": "全年流程"},
         {"anchor": "findings", "label": "核心发现"},
         {"anchor": "paper-traces", "label": "论文溯源"},
         {"anchor": "keywords", "label": "研究热词"},
@@ -45,6 +48,8 @@ FALLBACK_CONFIG = {
         {"anchor": "gaps", "label": "研究缺口"},
         {"anchor": "ideas", "label": "Idea 规划"},
         {"anchor": "roadmap", "label": "实验路线"},
+        {"anchor": "evaluation", "label": "独立评分"},
+        {"anchor": "iterations", "label": "迭代记录"},
         {"anchor": "derivation", "label": "公式推导"},
         {"anchor": "analysis", "label": "补充分析"},
         {"anchor": "risks", "label": "风险与限制"},
@@ -545,6 +550,133 @@ def render_experiment_roadmap(data: dict[str, Any]) -> str:
     return "\n".join(chunks)
 
 
+def render_cycle(data: dict[str, Any]) -> str:
+    cycle_plan = data.get("cycle_plan") if isinstance(data.get("cycle_plan"), dict) else {}
+    stage_artifacts = [item for item in as_list(data.get("stage_artifacts")) if isinstance(item, dict)]
+    if not cycle_plan and not stage_artifacts:
+        return ""
+    chunks = ['<h2 id="cycle">全年流程</h2>']
+    if cycle_plan:
+        rows = []
+        for label, key in [
+            ("快照日期", "snapshot_date"),
+            ("年度窗口", "annual_window_label"),
+            ("Goal 策略", "goal_strategy"),
+            ("评分策略", "evaluation_strategy"),
+        ]:
+            if cycle_plan.get(key):
+                rows.append(f"<tr><th>{esc(label)}</th><td>{esc(cycle_plan.get(key))}</td></tr>")
+        stages = as_list(cycle_plan.get("stage_order"))
+        if stages:
+            rows.append(f"<tr><th>阶段顺序</th><td>{tags_html(stages)}</td></tr>")
+        if rows:
+            chunks.append('<div class="card blue"><h3>编排计划</h3><table><tbody>' + "\n".join(rows) + '</tbody></table></div>')
+        slices = [item for item in as_list(cycle_plan.get("monthly_slices")) if isinstance(item, dict)]
+        if slices:
+            slice_rows = []
+            for item in slices:
+                slice_rows.append(
+                    "<tr>"
+                    f"<td><strong>{esc(item.get('slice_id', ''))}</strong></td>"
+                    f"<td>{esc(item.get('label', ''))}</td>"
+                    f"<td>{esc(item.get('start', ''))} 至 {esc(item.get('end', ''))}</td>"
+                    f"<td>{esc(item.get('status', ''))}</td>"
+                    f"<td>{esc(item.get('artifact_path', ''))}</td>"
+                    "</tr>"
+                )
+            chunks.append('<h3>月度切片</h3><table><thead><tr><th>ID</th><th>标签</th><th>窗口</th><th>状态</th><th>产物</th></tr></thead><tbody>' + "\n".join(slice_rows) + '</tbody></table>')
+    if stage_artifacts:
+        rows = []
+        for item in stage_artifacts:
+            path_bits = [text(item.get("json_path")), text(item.get("html_path"))]
+            paths = "<br>".join(esc(p) for p in path_bits if p)
+            rows.append(
+                "<tr>"
+                f"<td><strong>{esc(item.get('stage_id', ''))}</strong></td>"
+                f"<td>{esc(item.get('mode', ''))}</td>"
+                f"<td>{tags_html([text(item.get('status'), 'planned')], text(item.get('status'), 'planned'))}</td>"
+                f"<td>{esc(', '.join(map(str, as_list(item.get('depends_on')))))}</td>"
+                f"<td>{paths}</td>"
+                f"<td>{esc(item.get('notes', ''))}</td>"
+                "</tr>"
+            )
+        chunks.append('<h3>阶段产物</h3><table><thead><tr><th>阶段</th><th>模式</th><th>状态</th><th>依赖</th><th>路径</th><th>备注</th></tr></thead><tbody>' + "\n".join(rows) + '</tbody></table>')
+    return "\n".join(chunks)
+
+
+def render_evaluation_scorecards(data: dict[str, Any], sources: dict[str, dict[str, Any]]) -> str:
+    scorecards = [item for item in as_list(data.get("evaluation_scorecards")) if isinstance(item, dict)]
+    if not scorecards:
+        return ""
+    chunks = ['<h2 id="evaluation">独立评分</h2><p class="section-desc">评分结果与生成阶段分离；低分项用于触发后续定向迭代。</p>']
+    tone_by_verdict = {
+        "pass": "green",
+        "pass_with_improvements": "amber",
+        "needs_iteration": "red",
+        "blocked": "red",
+    }
+    for idx, card in enumerate(scorecards, 1):
+        verdict = text(card.get("verdict") or "needs_iteration")
+        tone = tone_by_verdict.get(verdict, "blue")
+        header = (
+            f'<div class="card {tone}"><h3>{idx}. {esc(card.get("scorecard_id", "scorecard"))} '
+            f'· {esc(card.get("total_score", "-"))}/100</h3>'
+        )
+        body = [
+            f'<p>{tags_html([verdict, text(card.get("rubric_version"), "rubric")])}</p>',
+            f'<p><strong>评估对象：</strong>{esc(card.get("artifact_id", ""))} · {esc(card.get("artifact_path", ""))}</p>',
+            f'<p><strong>评审器：</strong>{esc(card.get("evaluator", "research-independent-evaluator"))}</p>',
+        ]
+        score_rows = []
+        for score in as_list(card.get("scores")):
+            if not isinstance(score, dict):
+                continue
+            score_rows.append(
+                "<tr>"
+                f"<td>{esc(score.get('dimension', ''))}</td>"
+                f"<td>{esc(score.get('score', ''))}/{esc(score.get('max_score', ''))}</td>"
+                f"<td>{esc(score.get('rationale', ''))}</td>"
+                f"<td>{source_links(as_list(score.get('source_ids')), sources)}</td>"
+                "</tr>"
+            )
+        if score_rows:
+            body.append('<table><thead><tr><th>维度</th><th>得分</th><th>理由</th><th>来源</th></tr></thead><tbody>' + "\n".join(score_rows) + '</tbody></table>')
+        for label, key in [("阻塞问题", "blocking_issues"), ("必要迭代", "required_iterations")]:
+            values = as_list(card.get(key))
+            if values:
+                body.append(f'<p><strong>{esc(label)}：</strong>{esc("；".join(map(str, values)))}</p>')
+        if card.get("evaluated_at"):
+            body.append(f'<p class="section-desc">评估时间：{esc(card.get("evaluated_at"))}</p>')
+        chunks.append(header + "\n".join(body) + '</div>')
+    return "\n".join(chunks)
+
+
+def render_iteration_log(data: dict[str, Any]) -> str:
+    rows = []
+    for item in as_list(data.get("iteration_log")):
+        if not isinstance(item, dict):
+            continue
+        rows.append(
+            "<tr>"
+            f"<td><strong>{esc(item.get('iteration_id', ''))}</strong></td>"
+            f"<td>{esc(item.get('stage_id', ''))}</td>"
+            f"<td>{esc(item.get('trigger_scorecard_id', ''))}</td>"
+            f"<td>{esc(item.get('trigger_reason', ''))}</td>"
+            f"<td>{esc(item.get('action', ''))}</td>"
+            f"<td>{esc(item.get('changed_artifact', ''))}</td>"
+            f"<td>{esc(item.get('result_scorecard_id', ''))}</td>"
+            "</tr>"
+        )
+    if not rows:
+        return ""
+    return (
+        '<h2 id="iterations">迭代记录</h2>'
+        '<table><thead><tr><th>迭代</th><th>阶段</th><th>触发评分</th><th>原因</th><th>动作</th><th>变更产物</th><th>复评</th></tr></thead><tbody>'
+        + "\n".join(rows)
+        + '</tbody></table>'
+    )
+
+
 def render_extra_sections(data: dict[str, Any], config: dict[str, Any]) -> str:
     chunks = []
     for idx, section in enumerate(as_list(data.get("sections")), 1):
@@ -642,6 +774,7 @@ def render_report(data: dict[str, Any], template: str, config: dict[str, Any] | 
          + render_summary(data, sources, config)
          + render_metrics(data)
          + render_profile(data.get("topic_profile") if isinstance(data.get("topic_profile"), dict) else {})),
+        ("cycle", render_cycle(data)),
         ("findings", render_findings(data, sources, config)),
         ("paper-traces", render_paper_traces(data, sources)),
         ("keywords", keyword_html),
@@ -649,6 +782,8 @@ def render_report(data: dict[str, Any], template: str, config: dict[str, Any] | 
         ("gaps", render_gaps(data, sources)),
         ("ideas", render_ideas(data, sources)),
         ("roadmap", render_experiment_roadmap(data)),
+        ("evaluation", render_evaluation_scorecards(data, sources)),
+        ("iterations", render_iteration_log(data)),
         ("derivation", render_formula_derivation(data)),
         ("analysis", render_extra_sections(data, config)),
         ("risks", render_list_section("risks", "风险与限制", as_list(data.get("risks")))),
@@ -718,6 +853,23 @@ def build_graph_rows(data: dict[str, Any], run_id: str) -> tuple[list[dict[str, 
         }
         row.update({k: v for k, v in extra.items() if v not in (None, "", [])})
         links[lid] = row
+
+    stage_entities: dict[str, str] = {}
+    for item in as_list(data.get("stage_artifacts")):
+        if not isinstance(item, dict):
+            continue
+        stage_id = text(item.get("stage_id"))
+        if not stage_id:
+            continue
+        stage_entities[stage_id] = add_entity(
+            "cycle_stage",
+            stage_id,
+            stage_id,
+            stage_mode=item.get("mode"),
+            status=item.get("status"),
+            json_path=item.get("json_path"),
+            html_path=item.get("html_path"),
+        )
 
     source_entities: dict[str, str] = {}
     for idx, src in enumerate(as_list(data.get("sources")), 1):
@@ -824,6 +976,40 @@ def build_graph_rows(data: dict[str, Any], run_id: str) -> tuple[list[dict[str, 
         for idea_id, _ in idea_entities:
             add_link(fid, "validates", idea_id)
 
+    evaluation_entities: dict[str, str] = {}
+    for item in as_list(data.get("evaluation_scorecards")):
+        if not isinstance(item, dict):
+            continue
+        scorecard_id = text(item.get("scorecard_id"))
+        if not scorecard_id:
+            continue
+        artifact_id = text(item.get("artifact_id"))
+        eid = add_entity(
+            "evaluation",
+            scorecard_id,
+            scorecard_id,
+            artifact_id=artifact_id,
+            total_score=item.get("total_score"),
+            verdict=item.get("verdict"),
+            rubric_version=item.get("rubric_version"),
+        )
+        evaluation_entities[scorecard_id] = eid
+        if artifact_id in stage_entities:
+            add_link(eid, "evaluates", stage_entities[artifact_id])
+            if text(item.get("verdict")) == "blocked" or as_list(item.get("blocking_issues")):
+                add_link(eid, "blocks", stage_entities[artifact_id])
+
+    for item in as_list(data.get("iteration_log")):
+        if not isinstance(item, dict):
+            continue
+        stage_id = text(item.get("stage_id"))
+        result_scorecard = text(item.get("result_scorecard_id"))
+        trigger_scorecard = text(item.get("trigger_scorecard_id"))
+        if stage_id in stage_entities and result_scorecard in evaluation_entities:
+            add_link(evaluation_entities[result_scorecard], "improves", stage_entities[stage_id])
+        if stage_id in stage_entities and trigger_scorecard in evaluation_entities:
+            add_link(evaluation_entities[trigger_scorecard], "blocks", stage_entities[stage_id])
+
     return list(entities.values()), list(links.values())
 
 
@@ -848,6 +1034,8 @@ def update_kb(data: dict[str, Any], output: Path, kb_root: Path) -> None:
     effective_trends = [] if light_update_mode(mode) else as_list(data.get("trend_clusters"))
     effective_gaps = as_list(data.get("gaps"))
     effective_ideas = as_list(data.get("ideas"))
+    effective_stages = as_list(data.get("stage_artifacts"))
+    effective_scorecards = as_list(data.get("evaluation_scorecards"))
     keywords_doc = {
         "schema_version": schema_version,
         "topic": data.get("topic"),
@@ -858,6 +1046,8 @@ def update_kb(data: dict[str, Any], output: Path, kb_root: Path) -> None:
         "keywords": effective_keywords,
         "gaps": effective_gaps,
         "ideas": effective_ideas,
+        "stage_artifacts": effective_stages,
+        "evaluation_scorecards": effective_scorecards,
     }
     (topic_dir / "keywords.json").write_text(json.dumps(keywords_doc, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
@@ -878,6 +1068,8 @@ def update_kb(data: dict[str, Any], output: Path, kb_root: Path) -> None:
         "trend_count": len(effective_trends),
         "gap_count": len(effective_gaps),
         "idea_count": len(effective_ideas),
+        "stage_count": len(effective_stages),
+        "evaluation_scorecard_count": len(effective_scorecards),
         "graph_entity_count": len(graph_entities),
         "graph_link_count": len(graph_links),
     }

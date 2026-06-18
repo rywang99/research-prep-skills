@@ -16,7 +16,7 @@ Use this guide when adding a new research mode, output section, source type, or 
 
 ## Add a report section
 
-Prefer using the generic `sections` array in `report_schema.md`. Use `paper_traces` for paper-level technical lineage that should render as expanded HTML cards. Only change the renderer when the section needs a distinct layout, such as a timeline, heatmap, scorecard, or a new interactive block.
+Prefer using the generic `sections` array in `report_schema.md`. Use `paper_traces` for paper-level technical lineage, `evaluation_scorecards` for independent scoring, and `cycle_plan`/`stage_artifacts` for yearly orchestration. Only change the renderer when the section needs a distinct layout, such as a timeline, heatmap, scorecard, or a new interactive block.
 
 When adding a rendered section:
 
@@ -53,5 +53,6 @@ Knowledge-base files are append-friendly and should remain backward compatible:
 - `runs.jsonl`: append one run summary per rendered report.
 - `keywords.json`: latest keyword snapshot for quick reuse; daily/weekly lightweight reports intentionally write an empty keyword list.
 - `entities.jsonl`, `links.jsonl`, and `graph_latest.json`: lightweight research graph artifacts; follow `knowledge_base_schema.md` and keep readers tolerant of missing `schema_version`.
+- Full-cycle additions such as `cycle_stage` and `evaluation` entities remain append-only and must not require migrating older topic directories.
 
 If a future migration is required, write a new script under `scripts/` and keep old files readable.

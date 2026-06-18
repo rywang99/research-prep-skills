@@ -1,0 +1,488 @@
+{
+  "schema_version": "1.0",
+  "topic": "AI Agent 评测",
+  "topic_slug": "ai-agent-evaluation",
+  "mode": "yearly-full-cycle",
+  "generated_at": "2026-06-16T12:00:00+08:00",
+  "snapshot_date": "2026-06-16",
+  "time_window": {
+    "label": "最近 365 天",
+    "start": "2025-06-17",
+    "end": "2026-06-16"
+  },
+  "language": "zh-CN",
+  "topic_profile": {
+    "aliases": [
+      "AI agent evaluation",
+      "agent benchmark",
+      "long-horizon agent eval"
+    ],
+    "subtopics": [
+      "长程任务",
+      "工具调用",
+      "多智能体协作"
+    ],
+    "broader_terms": [
+      "AI agents",
+      "LLM evaluation"
+    ],
+    "exclusions": [
+      "human agent staffing"
+    ],
+    "likely_sources": [
+      "arXiv",
+      "OpenReview",
+      "GitHub",
+      "official benchmark pages"
+    ]
+  },
+  "queries": [
+    {
+      "query": "AI agent evaluation benchmark 2026",
+      "purpose": "年度代表来源",
+      "source": "web"
+    }
+  ],
+  "summary_judgments": [
+    {
+      "title": "年度链路已形成可迭代底座",
+      "body": "月度切片、趋势、缺口、idea 和路线图均有独立产物记录，适合后续持续追踪。",
+      "tone": "green",
+      "sources": [
+        "src-survey"
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "label": "月度切片",
+      "value": "12",
+      "note": "覆盖完整年度窗口"
+    },
+    {
+      "label": "阶段产物",
+      "value": "7",
+      "note": "包含评分与复评"
+    }
+  ],
+  "cycle_plan": {
+    "snapshot_date": "2026-06-16",
+    "annual_window_label": "2025-06-17 至 2026-06-16",
+    "stage_order": [
+      "monthly",
+      "yearly-hotwords",
+      "yearly-trends",
+      "gap-analysis",
+      "idea-planning",
+      "experiment-roadmap",
+      "independent-evaluation"
+    ],
+    "goal_strategy": "显式请求时创建一个总 goal；产物仍写入 reports 与 knowledge_base。",
+    "evaluation_strategy": "80 分通过，70-79 分记录改进，低于 70 分必须定向迭代。",
+    "monthly_slices": [
+      {
+        "slice_id": "M01",
+        "label": "2025-06",
+        "start": "2025-06-17",
+        "end": "2025-07-16",
+        "status": "complete",
+        "artifact_path": "reports/ai-agent-evaluation/m01_monthly.html"
+      },
+      {
+        "slice_id": "M02",
+        "label": "2025-07",
+        "start": "2025-07-17",
+        "end": "2025-08-16",
+        "status": "complete",
+        "artifact_path": "reports/ai-agent-evaluation/m02_monthly.html"
+      },
+      {
+        "slice_id": "M03",
+        "label": "2025-08",
+        "start": "2025-08-17",
+        "end": "2025-09-16",
+        "status": "complete",
+        "artifact_path": "reports/ai-agent-evaluation/m03_monthly.html"
+      },
+      {
+        "slice_id": "M04",
+        "label": "2025-09",
+        "start": "2025-09-17",
+        "end": "2025-10-16",
+        "status": "complete",
+        "artifact_path": "reports/ai-agent-evaluation/m04_monthly.html"
+      },
+      {
+        "slice_id": "M05",
+        "label": "2025-10",
+        "start": "2025-10-17",
+        "end": "2025-11-16",
+        "status": "complete",
+        "artifact_path": "reports/ai-agent-evaluation/m05_monthly.html"
+      },
+      {
+        "slice_id": "M06",
+        "label": "2025-11",
+        "start": "2025-11-17",
+        "end": "2025-12-16",
+        "status": "complete",
+        "artifact_path": "reports/ai-agent-evaluation/m06_monthly.html"
+      },
+      {
+        "slice_id": "M07",
+        "label": "2025-12",
+        "start": "2025-12-17",
+        "end": "2026-01-16",
+        "status": "complete",
+        "artifact_path": "reports/ai-agent-evaluation/m07_monthly.html"
+      },
+      {
+        "slice_id": "M08",
+        "label": "2026-01",
+        "start": "2026-01-17",
+        "end": "2026-02-16",
+        "status": "complete",
+        "artifact_path": "reports/ai-agent-evaluation/m08_monthly.html"
+      },
+      {
+        "slice_id": "M09",
+        "label": "2026-02",
+        "start": "2026-02-17",
+        "end": "2026-03-16",
+        "status": "complete",
+        "artifact_path": "reports/ai-agent-evaluation/m09_monthly.html"
+      },
+      {
+        "slice_id": "M10",
+        "label": "2026-03",
+        "start": "2026-03-17",
+        "end": "2026-04-16",
+        "status": "complete",
+        "artifact_path": "reports/ai-agent-evaluation/m10_monthly.html"
+      },
+      {
+        "slice_id": "M11",
+        "label": "2026-04",
+        "start": "2026-04-17",
+        "end": "2026-05-16",
+        "status": "complete",
+        "artifact_path": "reports/ai-agent-evaluation/m11_monthly.html"
+      },
+      {
+        "slice_id": "M12",
+        "label": "2026-05",
+        "start": "2026-05-17",
+        "end": "2026-06-16",
+        "status": "complete",
+        "artifact_path": "reports/ai-agent-evaluation/m12_monthly.html"
+      }
+    ]
+  },
+  "stage_artifacts": [
+    {
+      "stage_id": "monthly-foundation",
+      "mode": "monthly",
+      "status": "complete",
+      "input_artifacts": [],
+      "json_path": "reports/ai-agent-evaluation/monthly_foundation.json",
+      "html_path": "reports/ai-agent-evaluation/monthly_foundation.html",
+      "depends_on": [],
+      "notes": "12 个切片均完成。"
+    },
+    {
+      "stage_id": "hotwords",
+      "mode": "yearly-hotwords",
+      "status": "complete",
+      "input_artifacts": [
+        "monthly-foundation"
+      ],
+      "json_path": "reports/ai-agent-evaluation/yearly_hotwords.json",
+      "html_path": "reports/ai-agent-evaluation/yearly_hotwords.html",
+      "depends_on": [
+        "monthly-foundation"
+      ],
+      "notes": "热词用于生成后续 weekly query。"
+    },
+    {
+      "stage_id": "trends",
+      "mode": "yearly-trends",
+      "status": "complete",
+      "input_artifacts": [
+        "monthly-foundation"
+      ],
+      "json_path": "reports/ai-agent-evaluation/yearly_trends.json",
+      "html_path": "reports/ai-agent-evaluation/yearly_trends.html",
+      "depends_on": [
+        "monthly-foundation"
+      ],
+      "notes": "趋势按成熟度分层。"
+    },
+    {
+      "stage_id": "gaps",
+      "mode": "gap-analysis",
+      "status": "complete",
+      "input_artifacts": [
+        "trends"
+      ],
+      "json_path": "reports/ai-agent-evaluation/gap_analysis.json",
+      "html_path": "reports/ai-agent-evaluation/gap_analysis.html",
+      "depends_on": [
+        "trends"
+      ],
+      "notes": "缺口基于趋势和 benchmark 证据。"
+    },
+    {
+      "stage_id": "ideas",
+      "mode": "idea-planning",
+      "status": "needs_iteration",
+      "input_artifacts": [
+        "gaps"
+      ],
+      "json_path": "reports/ai-agent-evaluation/idea_planning_v1.json",
+      "html_path": "reports/ai-agent-evaluation/idea_planning_v1.html",
+      "depends_on": [
+        "gaps"
+      ],
+      "notes": "首次评分要求补充 closest prior work。"
+    },
+    {
+      "stage_id": "roadmap",
+      "mode": "experiment-roadmap",
+      "status": "complete",
+      "input_artifacts": [
+        "ideas"
+      ],
+      "json_path": "reports/ai-agent-evaluation/roadmap.json",
+      "html_path": "reports/ai-agent-evaluation/roadmap.html",
+      "depends_on": [
+        "ideas"
+      ],
+      "notes": "只规划，不运行实验。"
+    }
+  ],
+  "findings": [
+    {
+      "title": "长程任务评测成为年度主线",
+      "date": "2026-04-12",
+      "category": "benchmark",
+      "summary": "代表性 benchmark 将任务跨度和工具调用稳定性作为核心评测目标。",
+      "importance": "为后续缺口和 idea 提供问题锚点。",
+      "confidence": "medium",
+      "source_ids": [
+        "src-benchmark"
+      ],
+      "tags": [
+        "long-horizon"
+      ]
+    }
+  ],
+  "gaps": [
+    {
+      "name": "跨 benchmark 可比性不足",
+      "gap_type": "evaluation",
+      "description": "不同 agent benchmark 的任务粒度、工具权限和成功标准差异较大。",
+      "why_it_matters": "影响方法改进是否能稳定迁移。",
+      "closest_work": "Example Long Horizon Agent Benchmark",
+      "actionable_opportunity": "设计归一化任务属性表和跨 benchmark replay protocol。",
+      "confidence": "medium",
+      "risk": "可能被新 benchmark 部分缓解。",
+      "source_ids": [
+        "src-benchmark"
+      ]
+    }
+  ],
+  "ideas": [
+    {
+      "name": "Benchmark-Normalized Agent Replay",
+      "problem_anchor": "跨 benchmark 可比性不足",
+      "core_mechanism": "将任务、工具权限和状态转移抽象为统一 replay schema。",
+      "novelty_delta": "相对单一 benchmark 更强调跨集合可比性。",
+      "closest_prior_work": "Example Long Horizon Agent Benchmark",
+      "novelty_verdict": "uncertain",
+      "novelty_evidence": [
+        "年度趋势显示 replay 和长程评测需求上升。"
+      ],
+      "novelty_risk": "已有内部 benchmark 可能覆盖类似 schema。",
+      "validation_path": "先在两个公开 benchmark 上做 schema 对齐试验。",
+      "priority": "high",
+      "risk": "任务抽象可能损失细节。",
+      "tags": [
+        "benchmark",
+        "replay"
+      ],
+      "source_ids": [
+        "src-survey",
+        "src-benchmark"
+      ]
+    }
+  ],
+  "experiment_roadmap": {
+    "claims": [
+      {
+        "id": "C1",
+        "claim": "统一 replay schema 能提升跨 benchmark 对比一致性。",
+        "minimum_evidence": "至少两个 benchmark 的任务属性可映射且人工审计一致率提高。",
+        "blocks": [
+          "B1"
+        ]
+      }
+    ],
+    "blocks": [
+      {
+        "name": "Schema Mapping Pilot",
+        "question": "不同 benchmark 是否可映射到统一属性表？",
+        "dataset": "two public agent benchmarks",
+        "systems": [
+          "original protocol",
+          "normalized replay schema"
+        ],
+        "metrics": [
+          "mapping coverage",
+          "audit agreement"
+        ],
+        "success_criterion": "覆盖率超过 80%，审计一致率提高。",
+        "failure_interpretation": "schema 过粗或 benchmark 差异不可归一。",
+        "figure_target": "main table"
+      }
+    ],
+    "milestones": [
+      {
+        "name": "最小闭环",
+        "goal": "完成人工 schema mapping 和一致性审计",
+        "estimated_cost": "1-2 周人力",
+        "gate": "若覆盖率低于 60% 则停止。"
+      }
+    ]
+  },
+  "evaluation_scorecards": [
+    {
+      "scorecard_id": "eval-ideas-v1",
+      "artifact_id": "ideas",
+      "artifact_path": "reports/ai-agent-evaluation/idea_planning_v1.json",
+      "evaluator": "research-independent-evaluator",
+      "rubric_version": "research-quality-v1",
+      "scores": [
+        {
+          "dimension": "Evidence quality",
+          "score": 18,
+          "max_score": 20,
+          "rationale": "Representative sources are primary or benchmark-like fixtures and key claims are attached to source ids.",
+          "source_ids": [
+            "src-survey"
+          ]
+        },
+        {
+          "dimension": "Coverage completeness",
+          "score": 12,
+          "max_score": 15,
+          "rationale": "Academic and benchmark evidence are present; product signals are intentionally sparse in this fixture.",
+          "source_ids": [
+            "src-survey",
+            "src-benchmark"
+          ]
+        },
+        {
+          "dimension": "Freshness and deduplication",
+          "score": 8,
+          "max_score": 10,
+          "rationale": "The annual window uses explicit dates and monthly slices; deduplication is only documented at fixture level.",
+          "source_ids": [
+            "src-benchmark"
+          ]
+        },
+        {
+          "dimension": "Trend and gap judgment",
+          "score": 13,
+          "max_score": 15,
+          "rationale": "Trend and gap stages are connected through stage artifacts and source-backed findings.",
+          "source_ids": [
+            "src-survey"
+          ]
+        },
+        {
+          "dimension": "Idea novelty",
+          "score": 11,
+          "max_score": 15,
+          "rationale": "The idea stage names closest work but still needs deeper prior-work checking.",
+          "source_ids": [
+            "src-survey"
+          ]
+        },
+        {
+          "dimension": "Verifiability",
+          "score": 12,
+          "max_score": 15,
+          "rationale": "The roadmap has validation gates, but compute estimates are coarse.",
+          "source_ids": [
+            "src-benchmark"
+          ]
+        },
+        {
+          "dimension": "Risk calibration",
+          "score": 8,
+          "max_score": 10,
+          "rationale": "Limitations are stated and weak areas are not overclaimed.",
+          "source_ids": [
+            "src-survey"
+          ]
+        }
+      ],
+      "total_score": 82,
+      "verdict": "pass",
+      "blocking_issues": [],
+      "required_iterations": [
+        "补充 product/industry 侧 benchmark 来源以增强覆盖。"
+      ],
+      "evaluated_at": "2026-06-16T13:00:00+08:00"
+    }
+  ],
+  "iteration_log": [
+    {
+      "iteration_id": "iter-ideas-001",
+      "stage_id": "ideas",
+      "trigger_scorecard_id": "eval-ideas-v0",
+      "trigger_reason": "closest prior work 对比不足。",
+      "action": "追加 benchmark + survey 检索并重写 novelty_risk。",
+      "changed_artifact": "reports/ai-agent-evaluation/idea_planning_v1.json",
+      "result_scorecard_id": "eval-ideas-v1"
+    }
+  ],
+  "risks": [
+    "示例 fixture 使用占位来源，真实运行必须复核原文。",
+    "评分只是质量门控，不替代专家判断。"
+  ],
+  "next_queries": [
+    "agent benchmark replay schema",
+    "long horizon agent evaluation comparable metrics"
+  ],
+  "sources": [
+    {
+      "id": "src-survey",
+      "title": "Example Survey on AI Agent Evaluation",
+      "url": "https://example.com/agent-eval-survey",
+      "source_type": "paper",
+      "published_at": "2026-02-10",
+      "accessed_at": "2026-06-16",
+      "authors_or_org": "Example Lab",
+      "summary": "Survey fixture covering evaluation protocols for long-horizon agents.",
+      "tags": [
+        "agent-evaluation"
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "src-benchmark",
+      "title": "Example Long Horizon Agent Benchmark",
+      "url": "https://example.com/long-horizon-benchmark",
+      "source_type": "benchmark",
+      "published_at": "2026-04-12",
+      "accessed_at": "2026-06-16",
+      "authors_or_org": "Benchmark Org",
+      "summary": "Benchmark fixture for multi-step tool-use tasks.",
+      "tags": [
+        "benchmark"
+      ],
+      "confidence": "medium"
+    }
+  ]
+}

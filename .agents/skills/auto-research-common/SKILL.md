@@ -22,6 +22,7 @@ This skill provides shared resources for the auto-research skill family.
 - Repository-level `scripts/query_knowledge_base.py`: query local `entities.jsonl` and `links.jsonl` graph artifacts.
 - Preparation modes such as `gap-analysis`, `idea-planning`, and `experiment-roadmap` use the same renderer and schema but do not run experiments.
 - `--update-kb` also writes lightweight graph files under `knowledge_base/<topic_slug>/` (`entities.jsonl`, `links.jsonl`, `graph_latest.json`) so research-wiki/wiki-enrich style persistence is folded into the existing knowledge base rather than exposed as a parallel skill.
+- Yearly full-cycle reports use `cycle_plan`, `stage_artifacts`, `evaluation_scorecards`, and `iteration_log` fields; the renderer and knowledge base treat them as optional extensions.
 
 ## Standard command
 

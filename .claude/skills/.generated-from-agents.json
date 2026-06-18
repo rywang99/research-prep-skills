@@ -1,0 +1,162 @@
+{
+  "generated_by": "scripts/sync_claude_skills.py",
+  "note": "Generated mirror for Claude Code project skills. Do not edit by hand; update .agents/skills and rerun the sync script.",
+  "skills": [
+    {
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "39d81d54542f52bd00326e26eb37ae60b0abaaffbda529c98201165e1ee26b3c"
+        }
+      ],
+      "name": "auto-research"
+    },
+    {
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "8c68b51e4aae81fa0d36a8a8980c104a6133b0bbde962f5f2fc41ce9405c132c"
+        },
+        {
+          "path": "assets/report_template.html",
+          "sha256": "bee10089dfeb0fe309f12760db62eb0991130f67eed7f8c781c64f9b87088153"
+        },
+        {
+          "path": "config/research_modes.json",
+          "sha256": "48166e877fcc4e8ddb9b43d702683e7b4df7c8a7c57c11554fcad87302d42769"
+        },
+        {
+          "path": "references/extension_guide.md",
+          "sha256": "db96d45810fdec66d2018ad940302a19c9f62662fac002d09fe1f7246d2b3f0e"
+        },
+        {
+          "path": "references/knowledge_base_schema.md",
+          "sha256": "75d9fbd987b100d9f732885678da99e19a378845e959d342397734efb5461e5a"
+        },
+        {
+          "path": "references/report_schema.md",
+          "sha256": "c904a3ced12f1aa4a40b7553ab0772609221fb8d54cc3a982ad58aed1eaf7c54"
+        },
+        {
+          "path": "references/source_policy.md",
+          "sha256": "8552bb626411d943e5f5cd6a65102abdd05f1d7bd972b7b397c5f88008bf0863"
+        },
+        {
+          "path": "scripts/render_report.py",
+          "sha256": "248e3f084aee1c25026c6ff50784bb8336935caf1c1420e483acdac27bd5dbda"
+        }
+      ],
+      "name": "auto-research-common"
+    },
+    {
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "af5d79a56b0a3bad5da8745b7f445a8992de0c8bb9f3ab24725c728fb9841492"
+        }
+      ],
+      "name": "experiment-roadmap"
+    },
+    {
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "88c7cecd4c1cc5a1073e1cc9378de8d7f8f4838cac811a1b12c238028601edfb"
+        }
+      ],
+      "name": "formula-derivation"
+    },
+    {
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "34358dc29b2c65b76110a11a70490265dcd419d954172c2cde8198139701688c"
+        }
+      ],
+      "name": "paper-trace"
+    },
+    {
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "eeb92fe9c02b2a6aead49c820cdb40040e5cbbf1cc84cea7f491325afd03908c"
+        }
+      ],
+      "name": "research-daily"
+    },
+    {
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "7cfedae1d850eea9d0c9dd36c9547f987caf99d7a40835fcab550fc085779343"
+        }
+      ],
+      "name": "research-gap-analysis"
+    },
+    {
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "2d9da9c98d5a5d1ca0d1947ad9a7e30cd6fdb083273662ea0e400a8023ee4c4a"
+        }
+      ],
+      "name": "research-idea-planning"
+    },
+    {
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "9825fa8f36f551b06e50196b04cc7a3c4366497df577f99df0e29a9d9d790877"
+        }
+      ],
+      "name": "research-independent-evaluator"
+    },
+    {
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "76a8f48c9518dee260eacced5101ca313063df869bdb713fa752951cb998748a"
+        }
+      ],
+      "name": "research-monthly"
+    },
+    {
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "7287efeede68f353834ffcde99b634512151608505b2f7b0779e52711dfc377e"
+        }
+      ],
+      "name": "research-weekly"
+    },
+    {
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "4148f93e03040803c9744e32d418f00fc87ebb3f895968d4c66653f1b6b9cf75"
+        }
+      ],
+      "name": "research-yearly-full-cycle"
+    },
+    {
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "f5a91dc36f2ecd12e5ce796c92b66dc2d679216fc23ba9264c69067cf2df64e2"
+        }
+      ],
+      "name": "research-yearly-hotwords"
+    },
+    {
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "22238e466a8466b2cd6262ff3750604dc163763c69e8bc2ed600830ead03aaa1"
+        }
+      ],
+      "name": "research-yearly-trends"
+    }
+  ],
+  "source": ".agents/skills",
+  "target": ".claude/skills"
+}

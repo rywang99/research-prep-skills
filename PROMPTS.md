@@ -4,7 +4,7 @@
 
 ## 1. 总控入口：让 auto-research 路由子技能
 
-`auto-research` 是高层入口，适合你只描述目标，由它选择或串联下游 skill。
+`auto-research` 是高层入口，适合你只描述目标，由它选择或串联下游 skill。Codex 中使用 `$skill-name`，Claude Code 中使用 `/skill-name`。
 
 调用关系：
 
@@ -22,6 +22,12 @@ auto-research
 
 ```text
 使用 $auto-research 调研“AI Agent 评测”，自动判断适合的调研粒度，输出中文 HTML 报告，并更新本地知识库。
+```
+
+Claude Code 等价写法：
+
+```text
+/auto-research 调研“AI Agent 评测”，自动判断适合的调研粒度，输出中文 HTML 报告，并更新本地知识库。
 ```
 
 ```text
@@ -202,6 +208,12 @@ auto-research
 
 ```text
 使用 $research-independent-evaluator 独立评分 reports/ai-agent-evaluation/idea_planning_v1.json，按科研选题质量 rubric 给出总分、阻塞问题和必要迭代建议，不要改写原报告。
+```
+
+Claude Code 等价写法：
+
+```text
+/research-independent-evaluator 独立评分 reports/ai-agent-evaluation/idea_planning_v1.json，按科研选题质量 rubric 给出总分、阻塞问题和必要迭代建议，不要改写原报告。
 ```
 
 ### 周期巡检 → 重点深读 → 缺口

@@ -23,6 +23,9 @@ COLLECTOR_PATH = ROOT / "scripts" / "collect_sources.py"
 TRACE_REPORT_PATH = ROOT / "scripts" / "trace_report_papers.py"
 TRACE_SINGLE_PATH = ROOT / "scripts" / "trace_single_paper.py"
 QUERY_KB_PATH = ROOT / "scripts" / "query_knowledge_base.py"
+CLAUDE_SKILLS = ROOT / ".claude" / "skills"
+CLAUDE_SYNC_PATH = ROOT / "scripts" / "sync_claude_skills.py"
+CLAUDE_MD_PATH = ROOT / "CLAUDE.md"
 SCHEMA_VERSION = "1.0"
 PREPARATION_FIXTURES = [
     (ROOT / "examples" / "gap_analysis_report.json", "gaps", 'id="gaps"'),
@@ -154,6 +157,30 @@ def validate_paper_trace_naming() -> None:
         fail("paper-trace default output should use method slug without date prefix")
 
 
+def validate_claude_skills(required: set[str]) -> None:
+    if not CLAUDE_MD_PATH.exists():
+        fail(f"missing Claude Code project guide: {CLAUDE_MD_PATH}")
+    if not CLAUDE_SYNC_PATH.exists():
+        fail(f"missing {CLAUDE_SYNC_PATH}")
+    if not CLAUDE_SKILLS.is_dir():
+        fail(f"missing Claude Code skills mirror: {CLAUDE_SKILLS}")
+    manifest = CLAUDE_SKILLS / ".generated-from-agents.json"
+    if not manifest.exists():
+        fail("Claude Code skills mirror missing generation manifest")
+    for name in sorted(required):
+        skill_md = CLAUDE_SKILLS / name / "SKILL.md"
+        if not skill_md.exists():
+            fail(f"missing Claude Code skill mirror: {skill_md}")
+        validate_frontmatter(skill_md)
+        if (CLAUDE_SKILLS / name / "agents").exists():
+            fail(f"Claude Code skill mirror should not include Codex UI metadata: {CLAUDE_SKILLS / name / 'agents'}")
+    subprocess.run(
+        [sys.executable, str(CLAUDE_SYNC_PATH), "--check"],
+        cwd=ROOT,
+        check=True,
+    )
+
+
 def main() -> int:
     if not SKILLS.is_dir():
         fail(f"skills dir missing: {SKILLS}")
@@ -190,6 +217,7 @@ def main() -> int:
     for anchor in {"overview", "findings", "refs", "gaps", "ideas", "roadmap", "derivation", "cycle", "evaluation", "iterations"}:
         if anchor not in nav_anchors:
             fail(f"config nav_sections missing anchor: {anchor}")
+    validate_claude_skills(required)
     minimal = json.loads((ROOT / "examples" / "minimal_report.json").read_text(encoding="utf-8"))
     if minimal.get("schema_version") != SCHEMA_VERSION:
         fail("minimal report fixture missing current schema_version")

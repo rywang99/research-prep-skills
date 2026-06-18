@@ -1,6 +1,6 @@
 # Architecture Notes
 
-This repository is a config-driven Codex skills library for research preparation before humans run experiments. It is not an autonomous training, experiment execution, paper-writing, or submission system.
+This repository is a config-driven Codex and Claude Code skills library for research preparation before humans run experiments. It is not an autonomous training, experiment execution, paper-writing, or submission system.
 
 ## Current extensibility status
 
@@ -8,6 +8,7 @@ The design is extensible for common research workflow changes:
 
 - New modes are registered in `.agents/skills/auto-research-common/config/research_modes.json`.
 - Each mode owns concise instructions in `.agents/skills/<skill-name>/SKILL.md`; shared behavior stays in `auto-research-common`.
+- Claude Code compatibility is generated from `.agents/skills/` into `.claude/skills/`; `.agents/skills/` remains the source of truth.
 - Shared policy, report schema, knowledge-base schema, renderer, and HTML template live in `.agents/skills/auto-research-common/`.
 - Candidate source collection starts with `scripts/collect_sources.py`, which queries no-key public APIs and emits normalized JSONL.
 - Report content uses a generic JSON schema with `schema_version: "1.0"`; missing versions remain readable for older local artifacts.
@@ -22,6 +23,7 @@ The design is extensible for common research workflow changes:
 ## Extension points
 
 - Add a mode: run `python3 scripts/new_research_mode.py quarterly --label 季度调研 --window-days 90 --description "最近 90 天阶段性趋势复盘"`.
+- Sync Claude Code skills: run `python3 scripts/sync_claude_skills.py` after changing `.agents/skills/`.
 - Add a prompt: update `PROMPTS.md` with one or two user-facing examples.
 - Add a source category: update `source_types` in `research_modes.json`; unknown types still render safely.
 - Add a source provider: add a collector function in `scripts/collect_sources.py`, map it to the report source fields, and add an offline fixture row.

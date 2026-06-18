@@ -1,7 +1,7 @@
 interface:
   display_name: "Independent Evaluator"
   short_description: "Score saved research artifacts independently"
-  brand_color: "#B45309"
+  brand_color: "#9333EA"
   default_prompt: "Use $research-independent-evaluator to independently score saved research artifacts with a rubric."
 policy:
   allow_implicit_invocation: true

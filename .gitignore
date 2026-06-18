@@ -13,6 +13,7 @@ venv/
 !.env.example
 *.pem
 *.key
+.claude/settings.local.json
 
 # Generated reports and personal research knowledge base
 # Keep directory placeholders only; actual research outputs stay local.

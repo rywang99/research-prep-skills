@@ -1,0 +1,166 @@
+{
+  "modes": {
+    "daily": {
+      "label": "日调研",
+      "skill": "research-daily",
+      "default_window_days": 1,
+      "description": "今日或最近 24 小时动态"
+    },
+    "weekly": {
+      "label": "周调研",
+      "skill": "research-weekly",
+      "default_window_days": 7,
+      "description": "最近 7 天论文、项目和产业动态"
+    },
+    "monthly": {
+      "label": "月调研",
+      "skill": "research-monthly",
+      "default_window_days": 30,
+      "description": "最近 30 天阶段性综述"
+    },
+    "yearly-hotwords": {
+      "label": "近一年热词分析",
+      "skill": "research-yearly-hotwords",
+      "default_window_days": 365,
+      "description": "近一年研究热词、增长信号和代表证据"
+    },
+    "yearly-trends": {
+      "label": "近一年趋势分析",
+      "skill": "research-yearly-trends",
+      "default_window_days": 365,
+      "description": "近一年趋势聚类、驱动因素、机会和风险"
+    },
+    "gap-analysis": {
+      "label": "研究缺口分析",
+      "skill": "research-gap-analysis",
+      "default_window_days": 365,
+      "description": "领域现有不足、评价瓶颈、数据缺口和可验证机会"
+    },
+    "idea-planning": {
+      "label": "研究 idea 规划",
+      "skill": "research-idea-planning",
+      "default_window_days": 365,
+      "description": "基于调研证据生成、筛选和排序研究 idea"
+    },
+    "experiment-roadmap": {
+      "label": "实验路线图",
+      "skill": "experiment-roadmap",
+      "default_window_days": 0,
+      "description": "将选定 idea 转化为 claim-driven 实验规划"
+    },
+    "formula-derivation": {
+      "label": "公式推导准备",
+      "skill": "formula-derivation",
+      "default_window_days": 0,
+      "description": "理论型方向的变量、假设、推导步骤和可验证条件规划"
+    },
+    "paper-trace": {
+      "label": "论文溯源",
+      "skill": "paper-trace",
+      "default_window_days": 0,
+      "description": "单篇论文技术脉络、实验协议和复现风险分析"
+    },
+    "yearly-full-cycle": {
+      "label": "全年全流程调研",
+      "skill": "research-yearly-full-cycle",
+      "default_window_days": 365,
+      "description": "月度切片、全年综合、独立评分和定向迭代的长流程调研"
+    },
+    "independent-evaluation": {
+      "label": "独立评分",
+      "skill": "research-independent-evaluator",
+      "default_window_days": 0,
+      "description": "对已生成调研产物进行独立 rubric 评分和质量门控"
+    }
+  },
+  "nav_sections": [
+    {
+      "anchor": "overview",
+      "label": "总览"
+    },
+    {
+      "anchor": "cycle",
+      "label": "全年流程"
+    },
+    {
+      "anchor": "findings",
+      "label": "核心发现"
+    },
+    {
+      "anchor": "paper-traces",
+      "label": "论文溯源"
+    },
+    {
+      "anchor": "keywords",
+      "label": "研究热词"
+    },
+    {
+      "anchor": "trends",
+      "label": "趋势聚类"
+    },
+    {
+      "anchor": "gaps",
+      "label": "研究缺口"
+    },
+    {
+      "anchor": "ideas",
+      "label": "Idea 规划"
+    },
+    {
+      "anchor": "roadmap",
+      "label": "实验路线"
+    },
+    {
+      "anchor": "evaluation",
+      "label": "独立评分"
+    },
+    {
+      "anchor": "iterations",
+      "label": "迭代记录"
+    },
+    {
+      "anchor": "derivation",
+      "label": "公式推导"
+    },
+    {
+      "anchor": "analysis",
+      "label": "补充分析"
+    },
+    {
+      "anchor": "risks",
+      "label": "风险与限制"
+    },
+    {
+      "anchor": "next",
+      "label": "后续追踪"
+    },
+    {
+      "anchor": "queries",
+      "label": "检索式"
+    },
+    {
+      "anchor": "refs",
+      "label": "参考来源"
+    }
+  ],
+  "source_types": {
+    "paper": "论文",
+    "repo": "代码",
+    "blog": "博客",
+    "news": "新闻",
+    "benchmark": "评测",
+    "dataset": "数据集",
+    "standard": "标准",
+    "community": "社区",
+    "product": "产品",
+    "signal": "信号",
+    "other": "其他"
+  },
+  "tones": [
+    "blue",
+    "green",
+    "amber",
+    "red",
+    "purple"
+  ]
+}

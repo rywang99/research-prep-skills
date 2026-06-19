@@ -7,7 +7,7 @@ The renderer expects one JSON object. Required fields are marked with `required`
   "schema_version": "optional, default 1.0; emitted to knowledge-base artifacts",
   "topic": "required: human-readable topic",
   "topic_slug": "optional: filesystem-safe slug; renderer can derive one",
-  "mode": "required: registered mode id from config/research_modes.json, e.g. daily | weekly | monthly | yearly-hotwords | yearly-trends | gap-analysis | idea-planning | experiment-roadmap | formula-derivation | paper-trace | yearly-full-cycle | independent-evaluation",
+  "mode": "required: registered mode id from config/research_modes.json, e.g. daily | weekly | monthly | yearly-hotwords | yearly-trends | gap-analysis | idea-planning | idea-expansion | experiment-roadmap | formula-derivation | paper-trace | yearly-full-cycle | independent-evaluation",
   "generated_at": "optional ISO datetime",
   "snapshot_date": "optional YYYY-MM-DD",
   "time_window": {

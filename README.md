@@ -27,6 +27,10 @@
 ```
 
 ```text
+使用 $research-idea-expansion 基于上一份 idea 报告中的“Cross-Format Spatial Alignment Scorecard”做扩充，给出多条可执行路线、开源代码框架静态调研和可行性评估。
+```
+
+```text
 使用 $experiment-roadmap 为 Cross-Format Spatial Token Alignment 规划实验验证路线，不运行实验。
 ```
 
@@ -44,32 +48,52 @@
 
 更多提示词示例见 `PROMPTS.md`。
 
-## 能力概览
+## 能力与依赖关系
 
-- `auto-research`：总控入口，按用户意图自动路由到合适的调研模式。
-- `research-daily`：今日或最近 24 小时动态追踪，默认不生成研究热词/趋势聚类。
-- `research-weekly`：最近 7 天论文、开源项目、产品和产业信号周报，默认不生成研究热词/趋势聚类。
-- `research-monthly`：最近 30 天阶段性综述。
-- `research-yearly-hotwords`：近一年研究热词、增长信号和代表证据分析。
-- `research-yearly-trends`：近一年趋势聚类、驱动因素、机会和风险分析。
-- `research-gap-analysis`：总结领域现有不足、评价瓶颈、数据缺口和可验证机会；宽口径/全年请求默认保留 8-15 个多类型缺口。
-- `research-idea-planning`：基于调研证据生成和排序研究 idea，不运行实验；宽口径/全年请求默认保留 10-20 个发散候选。
-- `experiment-roadmap`：把选定 idea 转成 claim-driven 实验路线图，不创建或提交实验任务。
-- `formula-derivation`：为理论型方向整理变量、假设、推导步骤和验证条件，不声称自动证明。
-- `paper-trace`：针对单篇论文生成技术溯源、重点阅读信号和复现风险 HTML。
-- `research-yearly-full-cycle`：编排全年月度切片、热词/趋势、缺口、idea、实验路线/公式准备、独立评分和必要迭代。
-- `research-independent-evaluator`：独立读取已保存产物并按 rubric 评分，不在同一 pass 中改写被评报告。
-- `scripts/collect_sources.py`：从无密钥公共 API 采集候选来源，生成可复用 JSONL。
-- `scripts/trace_report_papers.py`：为日/周调研自动嵌入所有区间内文献的展开 trace。
-- `scripts/archive_reports.py`：把长期累积的 dated 报告移动到 `archive/YYYY/MM/<mode>/` 并生成主题索引。
-- `scripts/query_knowledge_base.py`：查询本地 `knowledge_base/` 中的实体和关系图谱。
-- `scripts/common_utils.py`：仓库级脚本共用的轻量 JSON、时间和 slug 工具。
+这套 skills 不是一组彼此独立的命令，而是一条从“证据采集 → 时间切片 → 综合判断 → 选题准备 → 独立评分 → 本地沉淀”的流水线。通常从 `auto-research` 进入，由它根据用户意图路由到下游模式；需要长流程时，`research-yearly-full-cycle` 会编排多个模式并把阶段产物串起来。
+
+```text
+auto-research
+├── 轻量监控层
+│   ├── research-daily
+│   ├── research-weekly ──┐
+│   └── research-monthly  │
+│                         ├── 可调用 paper-trace 深读重点论文
+├── 年度综合层             │
+│   ├── research-yearly-hotwords
+│   └── research-yearly-trends
+├── 研究准备层
+│   ├── research-gap-analysis
+│   ├── research-idea-planning
+│   ├── research-idea-expansion (可选深化)
+│   ├── experiment-roadmap
+│   └── formula-derivation
+├── 质量门控层
+│   └── research-independent-evaluator
+└── 长流程编排层
+    └── research-yearly-full-cycle
+        ├── monthly slices
+        ├── yearly hotwords / trends
+        ├── gaps → ideas → 可选 idea 扩充 → roadmap / formula
+        ├── independent evaluation
+        └── iteration log
+```
+
+- **共享基础层**：`auto-research-common` 提供模式注册、source policy、report schema、HTML 模板、渲染器和知识库更新逻辑；大多数 skill 最终都会依赖它生成 HTML/JSON 并写入 `knowledge_base/`。
+- **证据入口层**：`scripts/collect_sources.py` 从 arXiv、OpenAlex、GitHub 等无密钥来源采集候选 JSONL；Agent 复核后才会写入报告来源。`paper-trace` 和 `scripts/trace_report_papers.py` 负责把重点论文转成技术溯源卡片，日/周报可自动嵌入。
+- **时间切片层**：`research-daily`、`research-weekly`、`research-monthly` 用于短周期事实更新；默认不生成年度热词/趋势，以避免轻量报告过载。它们的结果可作为后续趋势、缺口和 idea 的证据底座。
+- **年度综合层**：`research-yearly-hotwords` 和 `research-yearly-trends` 从较长窗口提取关键词、趋势簇、驱动因素、风险和机会；`research-yearly-full-cycle` 会复用这些结果，不把它们当成孤立报告。
+- **研究准备层**：`research-gap-analysis` 依赖前面的证据、趋势和 paper trace，总结 8-15 个多类型 gaps；`research-idea-planning` 再基于 gaps/trends/paper traces 生成 10-20 个可验证 ideas；`research-idea-expansion` 是可选深化层，针对其中一个 idea 做多路线扩充、开源框架静态代码调研和可行性矩阵；`experiment-roadmap` 可直接承接 idea，也可承接扩充后的选定路线并转成 claim-driven 实验路线图；理论型方向则先走 `formula-derivation`。
+- **独立评分层**：`research-independent-evaluator` 只读取已保存产物并按 rubric 打分，不在同一 pass 中改写被评报告；`research-yearly-full-cycle` 用它做阶段质量门控和必要迭代触发。
+- **本地沉淀层**：`render_report.py --update-kb` 把来源、run、关键词、gap、idea、claim、scorecard 等写入 `knowledge_base/`；`scripts/query_knowledge_base.py` 查询轻量图谱；`scripts/archive_reports.py` 把长期累积的 dated 报告归档到 `archive/YYYY/MM/<mode>/` 并可修复历史 KB 路径。
+- **仓库工具层**：`scripts/common_utils.py` 存放仓库级脚本共用的时间、slug、JSON/JSONL 工具；skill 内部脚本保持可独立运行，避免外部路径依赖。
 
 ## 目录结构
 
 ```text
 .agents/skills/auto-research/              # 调研总控 skill
 .agents/skills/research-*/                 # 各调研模式的 skill 指令
+.agents/skills/research-idea-expansion/    # 单个 idea 扩充、代码框架调研和可行性评估 skill
 .agents/skills/formula-derivation/         # 理论准备与公式推导规划 skill
 .agents/skills/paper-trace/                # 单篇论文技术溯源 skill
 .agents/skills/research-yearly-full-cycle/ # 全年全流程调研、评分和迭代编排 skill

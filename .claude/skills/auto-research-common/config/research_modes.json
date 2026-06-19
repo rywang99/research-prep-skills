@@ -42,6 +42,12 @@
       "default_window_days": 365,
       "description": "基于调研证据生成、筛选和排序研究 idea"
     },
+    "idea-expansion": {
+      "label": "Idea 扩充调研",
+      "skill": "research-idea-expansion",
+      "default_window_days": 365,
+      "description": "基于报告中的单个 idea 扩充多条可执行路线、开源代码框架调研和可行性评估"
+    },
     "experiment-roadmap": {
       "label": "实验路线图",
       "skill": "experiment-roadmap",

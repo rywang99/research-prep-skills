@@ -6,7 +6,7 @@
       "files": [
         {
           "path": "SKILL.md",
-          "sha256": "4e99457992659cdc429d0420507045bbdfc7c2367f5c10ae95053bbb97b6f33b"
+          "sha256": "eeb6fcb77a1ebb03fb08682e2bac11042b2a9a13485e95c8d41a519e7ccbf073"
         }
       ],
       "name": "auto-research"
@@ -23,7 +23,7 @@
         },
         {
           "path": "config/research_modes.json",
-          "sha256": "48166e877fcc4e8ddb9b43d702683e7b4df7c8a7c57c11554fcad87302d42769"
+          "sha256": "2a2d45816a2f538c91fcb69e80d59bd57f0c07acd660d2dc142d61f8feaeb9bd"
         },
         {
           "path": "references/extension_guide.md",
@@ -35,7 +35,7 @@
         },
         {
           "path": "references/report_schema.md",
-          "sha256": "49965eb5600a75f95abb173c4d6bdb7d08a55a9afeccd7f0427be07513bebae6"
+          "sha256": "a43a8f1f4e6328f317ca3cbeb3fcba497293f7c998b9d8855a59b56022ac2024"
         },
         {
           "path": "references/source_policy.md",
@@ -96,6 +96,15 @@
         }
       ],
       "name": "research-gap-analysis"
+    },
+    {
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "73bff3e6534fc4233b5f6f9d5bfe1997cffc2a8a9570d7ae3401287d085b59b6"
+        }
+      ],
+      "name": "research-idea-expansion"
     },
     {
       "files": [

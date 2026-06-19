@@ -1,0 +1,315 @@
+{
+  "schema_version": "1.0",
+  "topic": "多说话人语音识别",
+  "topic_slug": "multi-speaker-speech-recognition",
+  "mode": "idea-expansion",
+  "snapshot_date": "2026-06-19",
+  "time_window": {
+    "label": "基于已有 yearly-full-cycle 报告的单个 idea 扩充"
+  },
+  "topic_profile": {
+    "aliases": [
+      "multi-speaker ASR",
+      "multi-talker speech recognition",
+      "speaker diarization + ASR",
+      "overlapped speech recognition"
+    ],
+    "subtopics": [
+      "speaker diarization",
+      "overlap-aware ASR",
+      "target-speaker extraction",
+      "speaker-attributed ASR"
+    ],
+    "broader_terms": [
+      "speech processing",
+      "audio foundation models"
+    ],
+    "exclusions": [
+      "single-speaker ASR only",
+      "generic TTS"
+    ],
+    "likely_sources": [
+      "arXiv eess.AS",
+      "INTERSPEECH",
+      "ICASSP",
+      "pyannote.audio",
+      "ESPnet",
+      "SpeechBrain",
+      "NVIDIA NeMo"
+    ]
+  },
+  "queries": [
+    {
+      "query": "multi-speaker ASR diarization perturbation curriculum",
+      "purpose": "确认原始 idea 的相邻工作和命名重叠",
+      "source": "web"
+    },
+    {
+      "query": "speaker diarization open source framework pyannote ESPnet SpeechBrain NeMo",
+      "purpose": "筛选可静态阅读和复用的开源代码框架",
+      "source": "github"
+    },
+    {
+      "query": "speaker-attributed ASR overlap speech recognition benchmark",
+      "purpose": "查找评测数据、baseline 和指标",
+      "source": "openalex"
+    }
+  ],
+  "summary_judgments": [
+    {
+      "title": "优先路线是先重构 diarization-to-ASR 接口，再做扰动课程",
+      "body": "原始 idea 不应直接训练大模型；更稳妥的入口是复用 pyannote.audio 的说话人时间轴和 ESPnet/SpeechBrain 的 ASR 配方，先建立可控扰动基线。",
+      "tone": "green",
+      "sources": [
+        "src-pyannote",
+        "src-espnet",
+        "src-speechbrain"
+      ]
+    },
+    {
+      "title": "最大风险来自数据闭环和归因指标",
+      "body": "多说话人场景需要同时判断识别文本、说话人归属和重叠片段边界；如果只报告 WER，无法证明 idea 解决了归因问题。",
+      "tone": "amber",
+      "sources": [
+        "src-nemo",
+        "src-espnet"
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "label": "扩充路线",
+      "value": "4",
+      "note": "覆盖 curriculum、数据扰动、接口重构和评测工具"
+    },
+    {
+      "label": "静态调研框架",
+      "value": "4",
+      "note": "pyannote.audio / ESPnet / SpeechBrain / NeMo"
+    }
+  ],
+  "findings": [
+    {
+      "title": "pyannote.audio 适合作为 diarization 时间轴和 overlap detector 入口",
+      "date": "2026-06-19",
+      "category": "repo",
+      "summary": "静态阅读优先关注 pipeline、segmentation model、配置和预训练模型使用方式，适合产出可替换的说话人边界扰动接口。",
+      "importance": "它提供了与 ASR 解耦的说话人时间轴，便于构造不同扰动强度的课程阶段。",
+      "confidence": "medium",
+      "source_ids": [
+        "src-pyannote"
+      ],
+      "tags": [
+        "diarization",
+        "framework"
+      ]
+    },
+    {
+      "title": "ESPnet 和 SpeechBrain 更适合复用 ASR recipe 与评测脚手架",
+      "date": "2026-06-19",
+      "category": "repo",
+      "summary": "静态阅读应聚焦 egs/recipes、data preparation、model configuration、inference 和 scoring 脚本，而不是重写训练框架。",
+      "importance": "可把 idea 降维为数据与接口扰动实验，减少框架迁移成本。",
+      "confidence": "medium",
+      "source_ids": [
+        "src-espnet",
+        "src-speechbrain"
+      ],
+      "tags": [
+        "asr",
+        "recipe"
+      ]
+    },
+    {
+      "title": "NeMo 可作为工业化 pipeline 和 diarization 配置参考",
+      "date": "2026-06-19",
+      "category": "repo",
+      "summary": "静态阅读重点是 diarization 配置、speaker embedding、VAD 和 ASR/diarization 组合示例。",
+      "importance": "如果开源学术框架难以拼接，NeMo 的 pipeline 组织方式可作为工程路线的备选参考。",
+      "confidence": "medium",
+      "source_ids": [
+        "src-nemo"
+      ],
+      "tags": [
+        "pipeline",
+        "deployment"
+      ]
+    }
+  ],
+  "ideas": [
+    {
+      "name": "Diarization Perturbation Curriculum for Speaker-Attributed ASR",
+      "problem_anchor": "原始报告中的 idea：多说话人识别系统过度依赖理想说话人边界，缺少对边界错位、重叠漏检和说话人切换噪声的系统鲁棒性训练/评测。",
+      "core_mechanism": "把 diarization 输出作为可扰动中间变量，按边界偏移、重叠片段删除、speaker label swap 和 segment fragmentation 构造课程阶段，再评估 speaker-attributed ASR 的文本与归因鲁棒性。",
+      "novelty_delta": "相对单纯提升 diarization 或 ASR，重点在可控扰动课程和归因鲁棒性诊断的组合。",
+      "closest_prior_work": "pyannote.audio diarization pipelines, ESPnet/SpeechBrain ASR recipes, NeMo diarization pipelines",
+      "novelty_verdict": "uncertain",
+      "novelty_evidence": [
+        "开源框架分别覆盖 diarization、ASR 和 pipeline，但需要进一步检索是否已有同名 curriculum 或系统扰动 benchmark。"
+      ],
+      "novelty_risk": "可能已有 speaker-attributed ASR benchmark 覆盖类似扰动，或公开数据无法支持稳定的说话人级归因评测。",
+      "validation_path": "先用一个公开多说话人数据集和两个 baseline 建立不训练的扰动评测，再决定是否进入训练课程。",
+      "priority": "high",
+      "risk": "数据准备和指标对齐可能消耗大部分时间。",
+      "tags": [
+        "high-priority",
+        "evaluation",
+        "method"
+      ],
+      "source_ids": [
+        "src-pyannote",
+        "src-espnet",
+        "src-speechbrain",
+        "src-nemo"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "title": "原始 idea 基准",
+      "tone": "blue",
+      "items": [
+        "基准表述：围绕 diarization 输出的不确定性构造扰动课程，让 speaker-attributed ASR 在边界错位、重叠漏检和说话人切换噪声下保持文本与归因稳定。",
+        "不变边界：本扩充只做静态代码和文献调研，不训练模型、不运行 benchmark、不声称已有实验收益。",
+        "需要验证的假设：多说话人 ASR 的主要脆弱点不是单一识别错误，而是 diarization-to-ASR 接口误差被后续模块放大。"
+      ]
+    },
+    {
+      "title": "可执行路线",
+      "tone": "green",
+      "items": [
+        {
+          "title": "路线 A：扰动评测先行",
+          "body": "复用 pyannote.audio 生成时间轴，在 ESPnet/SpeechBrain inference 前插入边界偏移、segment merge/split 和 speaker label swap，先得到无需训练的鲁棒性曲线。Stop/go：如果 baseline 对扰动不敏感或指标无法反映归因错误，暂停训练路线。"
+        },
+        {
+          "title": "路线 B：课程式数据增强",
+          "body": "把路线 A 中最有判别力的扰动转成训练阶段，从轻微边界 jitter 到重叠片段 drop，观察 speaker-attributed WER 和 diarization error 的联合变化。Stop/go：若数据准备超过两周仍无法自动生成标签，退回评测工具路线。"
+        },
+        {
+          "title": "路线 C：接口鲁棒层",
+          "body": "在 diarization-to-ASR 之间加入 segment confidence、overlap mask 和 speaker consistency features，把 idea 变成轻量 wrapper，而不是改动整个 ASR 模型。Stop/go：若现有框架无法暴露必要置信度，则转向 NeMo pipeline 配置参考。"
+        },
+        {
+          "title": "路线 D：错误归因诊断工具",
+          "body": "把文本错误、说话人错误、边界错误和重叠错误拆成诊断面板，作为 paper artifact 或后续 benchmark。Stop/go：如果方法新颖性不足，仍可作为支撑其它路线的评测贡献。"
+        }
+      ]
+    },
+    {
+      "title": "开源代码框架静态调研",
+      "tone": "amber",
+      "items": [
+        "pyannote.audio：优先阅读 pipeline、segmentation、pretrained model 使用说明、license 和 Hugging Face model 访问要求；复用点是 diarization 时间轴与 overlap 信息。",
+        "ESPnet：优先阅读 egs2 recipe、ASR inference/scoring、data preparation 和 YAML 配置；复用点是快速接入公开 ASR baseline。",
+        "SpeechBrain：优先阅读 recipes、pretrained interfaces、hyperparams YAML 和 diarization/ASR 示例；复用点是 Python 级组合和快速原型。",
+        "NVIDIA NeMo：优先阅读 diarization configs、VAD/speaker embedding 组件和 ASR-diarization 示例；复用点是 pipeline 组织方式和工业化配置参考。"
+      ]
+    },
+    {
+      "title": "可行性矩阵",
+      "tone": "purple",
+      "items": [
+        "路线 A：新颖性中等、实现成本低、数据可得性中等、评测清晰度高、复现风险低；推荐作为第一周最小闭环。",
+        "路线 B：新颖性较高、实现成本高、数据可得性中等、评测清晰度中等、复现风险中高；只在路线 A 证明扰动有判别力后推进。",
+        "路线 C：新颖性中等、实现成本中等、数据可得性中等、评测清晰度中等、复现风险中等；适合做方法贡献备选。",
+        "路线 D：新颖性中等、实现成本低、数据可得性高、评测清晰度高、复现风险低；适合作为保底 artifact 和论文支撑工具。"
+      ]
+    },
+    {
+      "title": "推荐推进顺序",
+      "tone": "green",
+      "items": [
+        "第 1 步：静态读 pyannote.audio、ESPnet/SpeechBrain 的最短 inference 路径，确认输入输出格式和许可证边界。",
+        "第 2 步：实现路线 A 的伪代码级设计和数据清单，交给 experiment-roadmap 规划 claim、baseline、指标和 ablation。",
+        "第 3 步：若扰动曲线有明显分层，再选择路线 B 或 C 作为主方法；路线 D 全程作为诊断工具积累。"
+      ]
+    }
+  ],
+  "risks": [
+    "本 fixture 未执行实时仓库 clone 或测试，只表达 research-idea-expansion 报告结构和静态调研应覆盖的信息类型。",
+    "公开仓库的许可证、模型访问条件和目录结构会变化，真实运行时必须重新核验。",
+    "speaker-attributed ASR 的指标设计复杂，WER、DER 和说话人归因错误需要同时呈现。"
+  ],
+  "next_queries": [
+    "speaker-attributed ASR benchmark overlap diarization error attribution",
+    "pyannote audio overlap detection speaker-attributed ASR integration",
+    "ESPnet multi speaker ASR diarization recipe",
+    "SpeechBrain speaker diarization ASR recipe",
+    "NeMo speaker diarization ASR pipeline"
+  ],
+  "sources": [
+    {
+      "id": "src-pyannote",
+      "title": "pyannote.audio GitHub repository",
+      "url": "https://github.com/pyannote/pyannote-audio",
+      "source_type": "repo",
+      "published_at": "",
+      "accessed_at": "2026-06-19",
+      "authors_or_org": "pyannote",
+      "summary": "Open-source toolkit for speaker diarization and related audio pipelines.",
+      "tags": [
+        "diarization",
+        "framework"
+      ],
+      "confidence": "medium",
+      "provider": "github",
+      "query": "speaker diarization open source framework pyannote",
+      "external_id": "pyannote/pyannote-audio"
+    },
+    {
+      "id": "src-espnet",
+      "title": "ESPnet GitHub repository",
+      "url": "https://github.com/espnet/espnet",
+      "source_type": "repo",
+      "published_at": "",
+      "accessed_at": "2026-06-19",
+      "authors_or_org": "ESPnet contributors",
+      "summary": "End-to-end speech processing toolkit with ASR recipes and evaluation scripts.",
+      "tags": [
+        "asr",
+        "recipe"
+      ],
+      "confidence": "medium",
+      "provider": "github",
+      "query": "ESPnet multi speaker ASR recipe",
+      "external_id": "espnet/espnet"
+    },
+    {
+      "id": "src-speechbrain",
+      "title": "SpeechBrain GitHub repository",
+      "url": "https://github.com/speechbrain/speechbrain",
+      "source_type": "repo",
+      "published_at": "",
+      "accessed_at": "2026-06-19",
+      "authors_or_org": "SpeechBrain contributors",
+      "summary": "PyTorch speech toolkit with recipes for ASR, speaker recognition, and diarization-related tasks.",
+      "tags": [
+        "asr",
+        "framework"
+      ],
+      "confidence": "medium",
+      "provider": "github",
+      "query": "SpeechBrain diarization ASR recipe",
+      "external_id": "speechbrain/speechbrain"
+    },
+    {
+      "id": "src-nemo",
+      "title": "NVIDIA NeMo GitHub repository",
+      "url": "https://github.com/NVIDIA/NeMo",
+      "source_type": "repo",
+      "published_at": "",
+      "accessed_at": "2026-06-19",
+      "authors_or_org": "NVIDIA",
+      "summary": "Toolkit containing speech and diarization pipeline components useful for static pipeline design review.",
+      "tags": [
+        "diarization",
+        "pipeline"
+      ],
+      "confidence": "medium",
+      "provider": "github",
+      "query": "NeMo speaker diarization ASR pipeline",
+      "external_id": "NVIDIA/NeMo"
+    }
+  ]
+}

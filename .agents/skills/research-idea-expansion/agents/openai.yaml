@@ -1,0 +1,7 @@
+interface:
+  display_name: "Research Idea Expansion"
+  short_description: "扩充单个 idea 的路线与代码可行性"
+  brand_color: "#2563EB"
+  default_prompt: "Use $research-idea-expansion to expand one selected idea from a saved report into executable routes with static open-source code review and feasibility assessment."
+policy:
+  allow_implicit_invocation: true

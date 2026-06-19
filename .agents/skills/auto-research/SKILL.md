@@ -1,6 +1,6 @@
 ---
 name: auto-research
-description: Orchestrate automated research for a user-provided domain by expanding the topic, choosing daily/weekly/monthly/yearly-hotword/yearly-trend/gap-analysis/idea-planning/experiment-roadmap/formula-derivation workflows, collecting current web evidence, updating the local knowledge base, and producing a self-contained Chinese HTML report.
+description: Orchestrate automated research for a user-provided domain by expanding the topic, choosing daily/weekly/monthly/yearly-hotword/yearly-trend/gap-analysis/idea-planning/idea-expansion/experiment-roadmap/formula-derivation workflows, collecting current web evidence, updating the local knowledge base, and producing a self-contained Chinese HTML report.
 ---
 
 # Auto Research
@@ -29,6 +29,7 @@ Use this skill when the user asks for automated research, domain monitoring, lit
    - 趋势/方向/路线/未来机会 -> `research-yearly-trends`
    - 不足/瓶颈/缺口/机会/open problem -> `research-gap-analysis`
    - 找 idea/课题构思/选题/可做什么 -> `research-idea-planning`
+   - idea 扩充/路线扩展/代码框架调研/静态代码阅读/可行性评估/基于报告某个 idea 深挖 -> `research-idea-expansion`
    - 实验规划/验证路线/ablation/怎么证明 -> `experiment-roadmap`
    - 理论推导/公式/assumption/数学建模/derive -> `formula-derivation`
    - 全年全流程/一整年/长时自动化/迭代优化/独立评分/full-cycle -> `research-yearly-full-cycle`
@@ -71,6 +72,7 @@ Use the profile to generate bilingual search queries. Record the final query lis
 - Trends: cluster, timeline signal, drivers, evidence strength, maturity, open questions, and actionable opportunities.
 - Gap analysis: evidence-backed missing pieces, closest work, why each gap matters, and actionable opportunities; for broad/yearly requests default to 8-15 diverse gaps rather than a tiny shortlist.
 - Idea planning: ranked idea cards grounded in gaps, trends, or paper traces; for broad/yearly requests default to 10-20 ideas after raw candidate screening, include closest prior work and preliminary novelty verdict; no pilots or experiment execution.
+- Idea expansion: expand exactly one selected idea from a saved report into 3-6 executable routes, static open-source framework/code review, feasibility matrix, and recommended route; no training, benchmarks, or repo edits.
 - Experiment roadmap: claim map, must-run experiment blocks, ablations, metrics, run order, and stop/go gates; no job launch or code generation.
 - Formula derivation: theory-preparation package with variables, assumptions, derivation steps, sanity checks, and validation conditions; no final proof claims unless supplied and checkable.
 - Yearly full cycle: monthly evidence slices, yearly hotwords/trends, gaps, ideas, roadmap or formula preparation, independent scorecards, and iteration logs; use platform goal/status tracking only when explicitly requested and available.

@@ -36,6 +36,7 @@ SCHEMA_VERSION = "1.0"
 PREPARATION_FIXTURES = [
     (ROOT / "examples" / "gap_analysis_report.json", "gaps", 'id="gaps"'),
     (ROOT / "examples" / "idea_planning_report.json", "ideas", 'id="ideas"'),
+    (ROOT / "examples" / "idea_expansion_report.json", "sections", 'id="analysis"'),
     (ROOT / "examples" / "experiment_roadmap_report.json", "experiment_roadmap", 'id="roadmap"'),
     (ROOT / "examples" / "formula_derivation_report.json", "formula_derivation", 'id="derivation"'),
     (ROOT / "examples" / "yearly_full_cycle_report.json", "stage_artifacts", 'id="cycle"'),
@@ -252,6 +253,14 @@ def main() -> int:
             fail(f"idea fixture missing novelty_verdict: {fixture}")
         if field == "ideas" and len(data.get("ideas", [])) < 10:
             fail(f"idea fixture should include at least 10 divergent ideas: {fixture}")
+        if data.get("mode") == "idea-expansion":
+            sections = data.get("sections", [])
+            titles = {str(item.get("title", "")) for item in sections if isinstance(item, dict)}
+            if len(sections) < 4:
+                fail(f"idea expansion fixture should include at least 4 analysis sections: {fixture}")
+            for required_title in {"可执行路线", "开源代码框架静态调研", "可行性矩阵"}:
+                if required_title not in titles:
+                    fail(f"idea expansion fixture missing section {required_title}: {fixture}")
     validate_collected_sources_fixture()
     validate_paper_trace_naming()
     for path in (TRACE_REPORT_PATH, TRACE_SINGLE_PATH, QUERY_KB_PATH, ARCHIVE_REPORTS_PATH, COMMON_UTILS_PATH):
@@ -485,6 +494,8 @@ def main() -> int:
                 fail(f"renderer did not create expected preparation section {expected_anchor} for {fixture.name}")
             if fixture_field == "gaps" and "core-gap" not in rendered:
                 fail("renderer did not display gap tags")
+            if fixture.name == "idea_expansion_report.json" and ("开源代码框架" not in rendered or "可执行路线" not in rendered):
+                fail("renderer did not display idea expansion route/framework sections")
         if not any((tmpdir / "preparation_kb").rglob("graph_latest.json")):
             fail("preparation fixture rendering did not create graph snapshots")
         query_result = subprocess.run(

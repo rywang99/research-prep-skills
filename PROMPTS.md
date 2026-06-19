@@ -15,6 +15,7 @@ auto-research
 ├── 单篇深读：paper-trace
 ├── 长时全流程：research-yearly-full-cycle → research-independent-evaluator
 └── 研究准备层：research-gap-analysis → research-idea-planning → experiment-roadmap
+    ├── 可选深化：research-idea-expansion
     └── 可选理论准备：formula-derivation
 ```
 
@@ -174,6 +175,20 @@ Claude Code 等价写法：
 使用 $research-idea-planning 基于上一份 gap-analysis 报告，筛选 3 个最值得人类投入实验的 idea，并按新颖性、可验证性、成本和失败风险排序。
 ```
 
+### Idea 扩充调研：research-idea-expansion
+
+用于针对报告中某一个已选 idea 继续深挖：以原报告内容为基准，扩充 3-6 条可执行路线，调研相关开源代码框架，静态阅读 README、配置、入口脚本、数据加载、模型和评测模块，并评估路线可行性。它是 `research-idea-planning` 和 `experiment-roadmap` 之间的可选深化层，不运行训练、benchmark 或代码改造。
+
+```text
+使用 $research-idea-expansion 基于 reports/multi-speaker-speech-recognition/2026-06-19_yearly-full-cycle.json 中 Idea “Diarization Perturbation Curriculum” 做扩充，给出 4 条可执行路线，调研相关开源框架并静态阅读代码，评估可行性，输出中文 HTML。
+```
+
+Claude Code 等价写法：
+
+```text
+/research-idea-expansion 基于 reports/multi-speaker-speech-recognition/2026-06-19_yearly-full-cycle.json 中 Idea “Diarization Perturbation Curriculum” 做扩充，给出 4 条可执行路线，调研相关开源框架并静态阅读代码，评估可行性，输出中文 HTML。
+```
+
 ### 实验路线图：experiment-roadmap
 
 用于把选中的 idea 转成 claim-driven 的实验规划；只规划，不执行。
@@ -208,7 +223,7 @@ Claude Code 等价写法：
 使用 $research-yearly-full-cycle 对“AI Agent 评测”执行全年全流程调研：
 1. 将最近 365 天拆成 12 个连续月度切片；
 2. 生成全年热词和趋势；
-3. 做研究缺口、idea 规划和实验路线图；
+3. 做研究缺口、idea 规划和实验路线图；需要深挖某个 idea 时再插入单个 idea 扩充；
 4. 每个关键阶段调用 $research-independent-evaluator 独立评分；
 5. 低于 80 分时记录必要改进，低于 70 分时先定向迭代再继续。
 请使用 Codex goal 跟踪总任务状态，所有产物生成中文 HTML 并更新 knowledge_base，不运行实验。
@@ -246,7 +261,8 @@ Claude Code 等价写法：
 2. 总结关键热词和代表来源；
 3. 做研究缺口分析；
 4. 生成并排序研究 idea；
-5. 如 idea 偏理论，先生成 formula-derivation；否则直接生成实验路线图。
+5. 如需要深挖最高优先级 idea，可先做 research-idea-expansion，静态调研开源框架并筛选路线；
+6. 如 idea 偏理论，先生成 formula-derivation；否则直接生成实验路线图。
 所有阶段都生成中文 HTML，不要运行实验。
 ```
 
